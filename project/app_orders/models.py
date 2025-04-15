@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from ..app_products.models import Product
-from ..app_users.models import PickupPoints
-from ..app_shops.models import Shop
+from app_products.models import Product
+from app_users.models import PickupPoints
+from app_shops.models import Shop
 # Create your models here.
 
 """
