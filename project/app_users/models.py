@@ -36,23 +36,14 @@ class UserProfile(models.Model):
             models.Index(fields=['user', 'role']),  # Составной индекс для поиска профиля по пользователю и роли
         ]
 
-class Address(models.Model):
+class PickupPoints(models.Model):
     """
-    * Связь ForeignKey с User для хранения нескольких адресов.
-    * is_default — для указания основного адреса доставки.
     * Поля минимальны: город, улица, почтовый индекс (опционально).
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
     city = models.CharField(max_length=100, db_index=True)  # Индекс для фильтрации по городу
     street = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
-    is_default = models.BooleanField(default=False, db_index=True)  # Индекс для фильтрации по умолчанию
+    description = models.TextField(blank=True, null=True)  # Поле для описания адреса
 
     def __str__(self):
         return f"{self.city}, {self.street}"
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['user', 'is_default']),  # Составной индекс для поиска адресов пользователя по is_default
-        ]
-
