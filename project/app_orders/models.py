@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from app_products.models import Product
-from app_users.models import Address
-
+from ..app_products.models import Product
+from ..app_users.models import PickupPoints
+from ..app_shops.models import Shop
 # Create your models here.
 
 """
@@ -51,8 +51,8 @@ class Order(models.Model):
     status с базовыми состояниями заказа.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-    shop = models.ForeignKey('app_shops.Shop', on_delete=models.CASCADE, related_name='orders')
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, related_name='orders')
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='orders')
+    pickup_point = models.ForeignKey(PickupPoints, on_delete=models.SET_NULL, null=True, related_name='orders')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)  # Индекс для фильтрации
     status = models.CharField(
         max_length=20,
