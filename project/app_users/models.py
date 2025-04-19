@@ -19,12 +19,13 @@ class UserProfile(models.Model):
 
 # Пункты выдачи заказов (ПВЗ) для доставки.
 class PickupPoints(models.Model):
+    name = models.CharField(max_length=100)  # Название ПВЗ, например, "Минск - ПВЗ #1"
     city = models.CharField(max_length=100, db_index=True)  # Город
     street = models.CharField(max_length=200)  # Улица
     postal_code = models.CharField(max_length=20, blank=True, null=True)  # Почтовый индекс
     description = models.TextField(blank=True, null=True)  # Описание ПВЗ
     is_active = models.BooleanField(default=True, db_index=True)  # Активность ПВЗ
-    def __str__(self): return f"{self.city}, {self.street}"
+    def __str__(self): return self.name  # Теперь возвращаем name
     class Meta:
         indexes = [models.Index(fields=['city', 'is_active'])]
         verbose_name = 'Pickup Point'
