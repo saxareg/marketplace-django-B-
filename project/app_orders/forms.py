@@ -1,5 +1,5 @@
 from django import forms
-from .models import Order
+from .models import Order, CartItem
 from app_users.models import PickupPoints
 
 
@@ -14,3 +14,9 @@ class OrderCreateForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['pickup_point']
+
+
+class CartItemForm(forms.ModelForm):
+    class Meta:
+        model = CartItem
+        fields = ['product', 'quantity']
