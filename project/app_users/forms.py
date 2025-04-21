@@ -22,11 +22,24 @@ class UserLoginForm(AuthenticationForm):
 
 
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, help_text='')
+    password1 = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput,
+        help_text=''  # Убираем подсказки
+    )
+    password2 = forms.CharField(
+        label="Подтверждение пароля",
+        widget=forms.PasswordInput,
+        help_text=''  # Убираем подсказки
+    )
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+        help_texts = {
+            'username': '',  # Убираем "150 characters or fewer..."
+        }
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
