@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 from app_users.models import UserProfile, PickupPoints
 from app_shops.models import Shop
 from app_products.models import Category, Product, Review
@@ -11,6 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # Очистка данных (кроме суперпользователей)
         User.objects.exclude(is_superuser=True).delete()
+        UserProfile.objects.all().delete()
         PickupPoints.objects.all().delete()
         Category.objects.all().delete()
         Shop.objects.all().delete()
@@ -33,16 +36,13 @@ class Command(BaseCommand):
             {"city": "Бобруйск", "street": "ул. Минская, 133", "postal_code": "213809", "description": "ТЦ Корона, 09:00-21:00", "is_active": True, "name": "Бобруйск - ПВЗ #10"},
         ]
         pvz_objects = []
-        # Создание пользователей для ПВЗ и привязка через UserProfile
         for i, point in enumerate(pickup_points, 1):
-            # Создаём пользователя для ПВЗ
             pvz_username = f"pvz_worker_{point['name'].lower().replace(' ', '_').replace('#', '')}"
             pvz_user = User.objects.create_user(
                 username=pvz_username,
                 email=f"mktplc-pvz_{i}@mailinator.com",
                 password="12345"
             )
-            # Создаём ПВЗ
             point_obj = PickupPoints.objects.create(
                 city=point["city"],
                 street=point["street"],
@@ -51,7 +51,6 @@ class Command(BaseCommand):
                 is_active=point["is_active"],
                 name=point["name"]
             )
-            # Привязываем пользователя к ПВЗ через UserProfile
             UserProfile.objects.create(
                 user=pvz_user,
                 role="pp_staff",
@@ -70,11 +69,12 @@ class Command(BaseCommand):
             {"name": "Игрушки", "slug": "toys", "description": "Игрушки для детей всех возрастов"},
             {"name": "Продукты питания", "slug": "food", "description": "Продукты и напитки"},
         ]
+        category_objects = []
         for cat in categories:
-            Category.objects.create(**cat)
+            category_obj = Category.objects.create(**cat)
+            category_objects.append(category_obj)
 
         # 3. Users and Profiles (10 покупателей, 5 продавцов)
-        # Покупатели
         buyers = []
         for i in range(1, 11):
             user = User.objects.create_user(
@@ -85,7 +85,6 @@ class Command(BaseCommand):
             UserProfile.objects.create(user=user, role="buyer")
             buyers.append(user)
 
-        # Продавцы
         sellers = []
         for i in range(1, 6):
             user = User.objects.create_user(
@@ -142,52 +141,327 @@ class Command(BaseCommand):
         # 5. Products (40 штук, распределены по магазинам и категориям)
         products = [
             # Минск Маркет (общий, 10 товаров)
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="electronics"), "name": "Смартфон Samsung", "slug": "samsung-phone", "description": "Samsung Galaxy A54, 128 ГБ", "price": 1200, "stock": 15, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="electronics"), "name": "Ноутбук Lenovo", "slug": "lenovo-laptop", "description": "Lenovo IdeaPad 3, 16 ГБ RAM", "price": 2500, "stock": 8, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="clothing"), "name": "Куртка мужская", "slug": "mens-jacket", "description": "Зимняя куртка, размер M", "price": 200, "stock": 20, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="clothing"), "name": "Джинсы женские", "slug": "womens-jeans", "description": "Джинсы slim, размер 28", "price": 150, "stock": 25, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="books"), "name": "Книга '1984'", "slug": "book-1984", "description": "Роман Дж. Оруэлла", "price": 30, "stock": 30, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="appliances"), "name": "Микроволновка", "slug": "microwave", "description": "Микроволновая печь 20 л", "price": 300, "stock": 10, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="cosmetics"), "name": "Крем для лица", "slug": "face-cream", "description": "Увлажняющий крем 50 мл", "price": 50, "stock": 40, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="toys"), "name": "Конструктор LEGO", "slug": "lego-set", "description": "LEGO Classic 500 деталей", "price": 100, "stock": 15, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="food"), "name": "Шоколад Milka", "slug": "milka-chocolate", "description": "Молочный шоколад 100 г", "price": 5, "stock": 100, "is_active": True},
-            {"shop": shop_objects[0], "category": Category.objects.get(slug="sports"), "name": "Фитнес-браслет", "slug": "fitness-tracker", "description": "Считает шаги и пульс", "price": 80, "stock": 20, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[0], "name": "Смартфон Samsung - Galaxy A54", "slug": "samsung-galaxy-a54", "description": "Samsung Galaxy A54, 128 ГБ, 5G", "price": 1200, "stock": 15, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[0], "name": "Ноутбук Lenovo - IdeaPad 3", "slug": "lenovo-ideapad-3", "description": "Lenovo IdeaPad 3, 16 ГБ RAM, SSD 512 ГБ", "price": 2500, "stock": 8, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[1], "name": "Куртка Columbia - FrostPeak", "slug": "columbia-frostpeak", "description": "Зимняя куртка, размер M, водоотталкивающая", "price": 200, "stock": 20, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[1], "name": "Джинсы Levi's - 501 Slim", "slug": "levis-501-slim", "description": "Джинсы slim, размер 28, хлопок", "price": 150, "stock": 25, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[2], "name": "Книга Penguin - 1984", "slug": "penguin-1984", "description": "Роман Дж. Оруэлла, мягкая обложка", "price": 30, "stock": 30, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[3], "name": "Микроволновка Bosch - HMT75M", "slug": "bosch-hmt75m", "description": "Микроволновая печь 20 л, 800 Вт", "price": 300, "stock": 10, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[5], "name": "Крем L'Oréal - Hydrating", "slug": "loreal-hydrating", "description": "Увлажняющий крем 50 мл, для всех типов кожи", "price": 50, "stock": 40, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[6], "name": "Конструктор LEGO - Classic 500", "slug": "lego-classic-500", "description": "LEGO Classic, 500 деталей, 6+", "price": 100, "stock": 15, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[7], "name": "Шоколад Milka - Alpine Milk", "slug": "milka-alpine-milk", "description": "Молочный шоколад 100 г", "price": 5, "stock": 100, "is_active": True},
+            {"shop": shop_objects[0], "category": category_objects[4], "name": "Фитнес-браслет Xiaomi - Mi Band 8", "slug": "xiaomi-mi-band-8", "description": "Считает шаги, пульс, водозащита", "price": 80, "stock": 20, "is_active": True},
             # Беларусь Универсал (общий, 10 товаров)
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="electronics"), "name": "Планшет Huawei", "slug": "huawei-tablet", "description": "Huawei MatePad, 64 ГБ", "price": 800, "stock": 12, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="electronics"), "name": "Наушники Sony", "slug": "sony-headphones", "description": "Беспроводные наушники", "price": 200, "stock": 25, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="clothing"), "name": "Футболка унисекс", "slug": "unisex-tshirt", "description": "Хлопковая футболка, размер L", "price": 40, "stock": 50, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="clothing"), "name": "Свитер женский", "slug": "womens-sweater", "description": "Тёплый свитер, размер S", "price": 120, "stock": 15, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="books"), "name": "Книга 'Дюна'", "slug": "book-dune", "description": "Роман Фрэнка Герберта", "price": 35, "stock": 20, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="appliances"), "name": "Чайник электрический", "slug": "electric-kettle", "description": "Чайник 1.7 л", "price": 100, "stock": 18, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="cosmetics"), "name": "Шампунь", "slug": "shampoo", "description": "Шампунь для волос 250 мл", "price": 20, "stock": 60, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="toys"), "name": "Мягкая игрушка", "slug": "soft-toy", "description": "Плюшевый медведь 30 см", "price": 50, "stock": 30, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="food"), "name": "Кофе Nescafe", "slug": "nescafe-coffee", "description": "Растворимый кофе 100 г", "price": 15, "stock": 80, "is_active": True},
-            {"shop": shop_objects[1], "category": Category.objects.get(slug="sports"), "name": "Коврик для йоги", "slug": "yoga-mat", "description": "Коврик 6 мм", "price": 60, "stock": 25, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[0], "name": "Планшет Huawei - MatePad T10", "slug": "huawei-matepad-t10", "description": "Huawei MatePad T10, 64 ГБ, Wi-Fi", "price": 800, "stock": 12, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[0], "name": "Наушники Sony - WH-CH510", "slug": "sony-wh-ch510", "description": "Беспроводные наушники, Bluetooth", "price": 200, "stock": 25, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[1], "name": "Футболка Nike - Sportswear", "slug": "nike-sportswear", "description": "Хлопковая футболка, размер L", "price": 40, "stock": 50, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[1], "name": "Свитер Zara - CozyFit", "slug": "zara-cozyfit", "description": "Тёплый свитер, размер S, шерсть", "price": 120, "stock": 15, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[2], "name": "Книга Harper - Dune", "slug": "harper-dune", "description": "Роман Фрэнка Герберта, твёрдая обложка", "price": 35, "stock": 20, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[3], "name": "Чайник Philips - Daily HD9350", "slug": "philips-hd9350", "description": "Чайник 1.7 л, нержавеющая сталь", "price": 100, "stock": 18, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[5], "name": "Шампунь Garnier - Fructis", "slug": "garnier-fructis", "description": "Шампунь для волос 250 мл", "price": 20, "stock": 60, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[6], "name": "Мягкая игрушка Hasbro - Teddy Bear", "slug": "hasbro-teddy-bear", "description": "Плюшевый медведь 30 см", "price": 50, "stock": 30, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[7], "name": "Кофе Nescafé - Gold", "slug": "nescafe-gold", "description": "Растворимый кофе 100 г", "price": 15, "stock": 80, "is_active": True},
+            {"shop": shop_objects[1], "category": category_objects[4], "name": "Коврик Reebok - Yoga Mat 6mm", "slug": "reebok-yoga-mat", "description": "Коврик для йоги 6 мм", "price": 60, "stock": 25, "is_active": True},
             # TechTrend (электроника, 8 товаров)
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "Телевизор LG", "slug": "lg-tv", "description": "Smart TV 43 дюйма", "price": 1500, "stock": 10, "is_active": True},
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "Игровая мышь", "slug": "gaming-mouse", "description": "Logitech G Pro", "price": 150, "stock": 30, "is_active": True},
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "Клавиатура", "slug": "keyboard", "description": "Механическая клавиатура", "price": 200, "stock": 20, "is_active": True},
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "SSD 1 ТБ", "slug": "ssd-1tb", "description": "Samsung SSD 1 ТБ", "price": 300, "stock": 15, "is_active": True},
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "Power Bank", "slug": "power-bank", "description": "10000 мАч", "price": 80, "stock": 40, "is_active": True},
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "Умные часы", "slug": "smart-watch", "description": "Xiaomi Mi Watch", "price": 250, "stock": 12, "is_active": True},
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "Роутер Wi-Fi", "slug": "wifi-router", "description": "TP-Link Archer", "price": 120, "stock": 18, "is_active": True},
-            {"shop": shop_objects[2], "category": Category.objects.get(slug="electronics"), "name": "Веб-камера", "slug": "webcam", "description": "Logitech C920", "price": 100, "stock": 25, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "Телевизор LG - 43UP7800", "slug": "lg-43up7800", "description": "Smart TV 43 дюйма, 4K", "price": 1500, "stock": 10, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "Мышь Logitech - G Pro Wireless", "slug": "logitech-g-pro", "description": "Игровая мышь, беспроводная", "price": 150, "stock": 30, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "Клавиатура Razer - Huntsman Mini", "slug": "razer-huntsman-mini", "description": "Механическая клавиатура, RGB", "price": 200, "stock": 20, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "SSD Samsung - 970 EVO 1TB", "slug": "samsung-970-evo-1tb", "description": "SSD 1 ТБ, NVMe", "price": 300, "stock": 15, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "Power Bank Anker - PowerCore 10000", "slug": "anker-powercore-10000", "description": "Power Bank 10000 мАч", "price": 80, "stock": 40, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "Часы Xiaomi - Mi Watch 2", "slug": "xiaomi-mi-watch-2", "description": "Умные часы, AMOLED экран", "price": 250, "stock": 12, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "Роутер TP-Link - Archer AX50", "slug": "tplink-archer-ax50", "description": "Wi-Fi роутер, AX3000", "price": 120, "stock": 18, "is_active": True},
+            {"shop": shop_objects[2], "category": category_objects[0], "name": "Веб-камера Logitech - C920 HD", "slug": "logitech-c920-hd", "description": "Веб-камера Full HD", "price": 100, "stock": 25, "is_active": True},
             # BookHaven (книги, 6 товаров)
-            {"shop": shop_objects[3], "category": Category.objects.get(slug="books"), "name": "Книга 'Война и мир'", "slug": "war-and-peace", "description": "Роман Л. Толстого", "price": 50, "stock": 15, "is_active": True},
-            {"shop": shop_objects[3], "category": Category.objects.get(slug="books"), "name": "Книга 'Преступление и наказание'", "slug": "crime-and-punishment", "description": "Роман Ф. Достоевского", "price": 40, "stock": 20, "is_active": True},
-            {"shop": shop_objects[3], "category": Category.objects.get(slug="books"), "name": "Книга 'Гарри Поттер'", "slug": "harry-potter", "description": "Дж. Роулинг, 1 часть", "price": 45, "stock": 25, "is_active": True},
-            {"shop": shop_objects[3], "category": Category.objects.get(slug="books"), "name": "Учебник Python", "slug": "python-book", "description": "Программирование на Python", "price": 60, "stock": 10, "is_active": True},
-            {"shop": shop_objects[3], "category": Category.objects.get(slug="books"), "name": "Книга 'Мастер и Маргарита'", "slug": "master-and-margarita", "description": "Роман М. Булгакова", "price": 35, "stock": 18, "is_active": True},
-            {"shop": shop_objects[3], "category": Category.objects.get(slug="books"), "name": "Детская энциклопедия", "slug": "kids-encyclopedia", "description": "Энциклопедия для детей", "price": 30, "stock": 20, "is_active": True},
+            {"shop": shop_objects[3], "category": category_objects[2], "name": "Книга Эксмо - Война и мир", "slug": "eksmo-war-and-peace", "description": "Роман Л. Толстого, твёрдая обложка", "price": 50, "stock": 15, "is_active": True},
+            {"shop": shop_objects[3], "category": category_objects[2], "name": "Книга Азбука - Преступление и наказание", "slug": "azbuka-crime-and-punishment", "description": "Роман Ф. Достоевского", "price": 40, "stock": 20, "is_active": True},
+            {"shop": shop_objects[3], "category": category_objects[2], "name": "Книга Bloomsbury - Гарри Поттер", "slug": "bloomsbury-harry-potter", "description": "Дж. Роулинг, 1 часть", "price": 45, "stock": 25, "is_active": True},
+            {"shop": shop_objects[3], "category": category_objects[2], "name": "Книга O’Reilly - Python Programming", "slug": "oreilly-python-programming", "description": "Программирование на Python", "price": 60, "stock": 10, "is_active": True},
+            {"shop": shop_objects[3], "category": category_objects[2], "name": "Книга АСТ - Мастер и Маргарита", "slug": "ast-master-and-margarita", "description": "Роман М. Булгакова", "price": 35, "stock": 18, "is_active": True},
+            {"shop": shop_objects[3], "category": category_objects[2], "name": "Книга Dorling - Kids Encyclopedia", "slug": "dorling-kids-encyclopedia", "description": "Энциклопедия для детей", "price": 30, "stock": 20, "is_active": True},
             # SportZone (спорт, 6 товаров)
-            {"shop": shop_objects[4], "category": Category.objects.get(slug="sports"), "name": "Гантели 10 кг", "slug": "dumbbells-10kg", "description": "Пара гантелей 10 кг", "price": 100, "stock": 15, "is_active": True},
-            {"shop": shop_objects[4], "category": Category.objects.get(slug="sports"), "name": "Велосипед горный", "slug": "mountain-bike", "description": "Велосипед 26 дюймов", "price": 800, "stock": 5, "is_active": True},
-            {"shop": shop_objects[4], "category": Category.objects.get(slug="sports"), "name": "Спортивная форма", "slug": "sportswear", "description": "Комплект для бега, размер M", "price": 120, "stock": 20, "is_active": True},
-            {"shop": shop_objects[4], "category": Category.objects.get(slug="sports"), "name": "Тренажёр эллиптический", "slug": "elliptical-trainer", "description": "Домашний тренажёр", "price": 1000, "stock": 3, "is_active": True},
-            {"shop": shop_objects[4], "category": Category.objects.get(slug="sports"), "name": "Мяч футбольный", "slug": "football-ball", "description": "Мяч размер 5", "price": 50, "stock": 30, "is_active": True},
-            {"shop": shop_objects[4], "category": Category.objects.get(slug="sports"), "name": "Рюкзак спортивный", "slug": "sports-backpack", "description": "Рюкзак 20 л", "price": 80, "stock": 25, "is_active": True},
+            {"shop": shop_objects[4], "category": category_objects[4], "name": "Гантели Adidas - PowerLift 10kg", "slug": "adidas-powerlift-10kg", "description": "Пара гантелей 10 кг", "price": 100, "stock": 15, "is_active": True},
+            {"shop": shop_objects[4], "category": category_objects[4], "name": "Велосипед Trek - Marlin 7", "slug": "trek-marlin-7", "description": "Горный велосипед, 26 дюймов", "price": 800, "stock": 5, "is_active": True},
+            {"shop": shop_objects[4], "category": category_objects[4], "name": "Форма Under Armour - HeatGear", "slug": "under-armour-heatgear", "description": "Комплект для бега, размер M", "price": 120, "stock": 20, "is_active": True},
+            {"shop": shop_objects[4], "category": category_objects[4], "name": "Тренажёр Horizon - Andes 3", "slug": "horizon-andes-3", "description": "Эллиптический тренажёр", "price": 1000, "stock": 3, "is_active": True},
+            {"shop": shop_objects[4], "category": category_objects[4], "name": "Мяч Adidas - Starlancer V", "slug": "adidas-starlancer-v", "description": "Футбольный мяч, размер 5", "price": 50, "stock": 30, "is_active": True},
+            {"shop": shop_objects[4], "category": category_objects[4], "name": "Рюкзак Puma - Active 20L", "slug": "puma-active-20l", "description": "Спортивный рюкзак 20 л", "price": 80, "stock": 25, "is_active": True},
         ]
+        product_objects = []
         for prod in products:
-            Product.objects.create(**prod)
+            product_obj = Product.objects.create(**prod)
+            product_objects.append(product_obj)
 
-        self.stdout.write(self.style.SUCCESS("Тестовые данные успешно добавлены!"))
+        # 6. Carts and CartItems (для buyer1–buyer5)
+        carts = [
+            # buyer1: 3 товара из Минск Маркет
+            {
+                "user": buyers[0],
+                "items": [
+                    {"product": product_objects[0], "quantity": 1},  # Смартфон Samsung
+                    {"product": product_objects[2], "quantity": 2},  # Куртка Columbia
+                    {"product": product_objects[4], "quantity": 1},  # Книга Penguin
+                ]
+            },
+            # buyer2: 2 товара из разных магазинов
+            {
+                "user": buyers[1],
+                "items": [
+                    {"product": product_objects[10], "quantity": 1},  # Планшет Huawei (Беларусь Универсал)
+                    {"product": product_objects[20], "quantity": 1},  # Телевизор LG (TechTrend)
+                ]
+            },
+            # buyer3: 4 товара из TechTrend
+            {
+                "user": buyers[2],
+                "items": [
+                    {"product": product_objects[21], "quantity": 1},  # Мышь Logitech
+                    {"product": product_objects[22], "quantity": 1},  # Клавиатура Razer
+                    {"product": product_objects[23], "quantity": 2},  # SSD Samsung
+                    {"product": product_objects[24], "quantity": 1},  # Power Bank Anker
+                ]
+            },
+            # buyer4: 1 товар из BookHaven
+            {
+                "user": buyers[3],
+                "items": [
+                    {"product": product_objects[28], "quantity": 2},  # Книга Эксмо
+                ]
+            },
+            # buyer5: 5 товаров из разных магазинов
+            {
+                "user": buyers[4],
+                "items": [
+                    {"product": product_objects[8], "quantity": 10},  # Шоколад Milka (Минск Маркет)
+                    {"product": product_objects[13], "quantity": 1},  # Свитер Zara (Беларусь Универсал)
+                    {"product": product_objects[25], "quantity": 1},  # Часы Xiaomi (TechTrend)
+                    {"product": product_objects[30], "quantity": 1},  # Книга Bloomsbury (BookHaven)
+                    {"product": product_objects[34], "quantity": 2},  # Гантели Adidas (SportZone)
+                ]
+            },
+        ]
+        for cart_data in carts:
+            cart = Cart.objects.create(user=cart_data["user"])
+            for item in cart_data["items"]:
+                CartItem.objects.create(
+                    cart=cart,
+                    product=item["product"],
+                    quantity=item["quantity"]
+                )
+
+        # 7. Orders and OrderItems (для buyer1–buyer6, 15 заказов)
+        orders = [
+            # buyer1: 3 заказа
+            {
+                "user": buyers[0],
+                "shop": shop_objects[0],  # Минск Маркет
+                "pickup_point": pvz_objects[0],  # Минск - ПВЗ #1
+                "status": "delivered",  # Статус: Заказ доставлен покупателю (создан 13 дней назад, завершён 8 дней назад)
+                "is_paid": True,
+                "created_at": timezone.now() - timedelta(days=13),
+                "status_updated_at": timezone.now() - timedelta(days=8),
+                "items": [
+                    {"product": product_objects[0], "quantity": 1, "price": 1200},  # Смартфон Samsung
+                    {"product": product_objects[2], "quantity": 1, "price": 200},   # Куртка Columbia
+                ]
+            },
+            {
+                "user": buyers[0],
+                "shop": shop_objects[1],  # Беларусь Универсал
+                "pickup_point": pvz_objects[1],  # Минск - ПВЗ #2
+                "status": "ready_for_pickup",  # Статус: Заказ готов к выдаче на ПВЗ (создан 8 дней назад, готов 3 дня назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=8),
+                "status_updated_at": timezone.now() - timedelta(days=3),
+                "items": [
+                    {"product": product_objects[10], "quantity": 1, "price": 800},  # Планшет Huawei
+                ]
+            },
+            {
+                "user": buyers[0],
+                "shop": shop_objects[0],  # Минск Маркет
+                "pickup_point": pvz_objects[2],  # Минск - ПВЗ #3
+                "status": "pending",  # Статус: Заказ только создан (создан 1 день назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=1),
+                "status_updated_at": timezone.now() - timedelta(days=1),
+                "items": [
+                    {"product": product_objects[4], "quantity": 2, "price": 30},  # Книга Penguin
+                    {"product": product_objects[8], "quantity": 5, "price": 5},   # Шоколад Milka
+                ]
+            },
+            # buyer2: 2 заказа
+            {
+                "user": buyers[1],
+                "shop": shop_objects[2],  # TechTrend
+                "pickup_point": pvz_objects[3],  # Минск - ПВЗ #4
+                "status": "returned",  # Статус: Заказ возвращён после осмотра на ПВЗ (создан 12 дней назад, возвращён 7 дней назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=12),
+                "status_updated_at": timezone.now() - timedelta(days=7),
+                "items": [
+                    {"product": product_objects[20], "quantity": 1, "price": 1500},  # Телевизор LG
+                ]
+            },
+            {
+                "user": buyers[1],
+                "shop": shop_objects[1],  # Беларусь Универсал
+                "pickup_point": pvz_objects[4],  # Гродно - ПВЗ #5
+                "status": "confirmed",  # Статус: Заказ подтверждён магазином (создан 3 дня назад, подтверждён 2 дня назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=3),
+                "status_updated_at": timezone.now() - timedelta(days=2),
+                "items": [
+                    {"product": product_objects[12], "quantity": 2, "price": 40},  # Футболка Nike
+                    {"product": product_objects[13], "quantity": 1, "price": 120}, # Свитер Zara
+                ]
+            },
+            # buyer3: 3 заказа
+            {
+                "user": buyers[2],
+                "shop": shop_objects[2],  # TechTrend
+                "pickup_point": pvz_objects[5],  # Брест - ПВЗ #6
+                "status": "delivered",  # Статус: Заказ доставлен покупателю (создан 14 дней назад, завершён 9 дней назад)
+                "is_paid": True,
+                "created_at": timezone.now() - timedelta(days=14),
+                "status_updated_at": timezone.now() - timedelta(days=9),
+                "items": [
+                    {"product": product_objects[23], "quantity": 1, "price": 300},  # SSD Samsung
+                ]
+            },
+            {
+                "user": buyers[2],
+                "shop": shop_objects[2],  # TechTrend
+                "pickup_point": pvz_objects[6],  # Витебск - ПВЗ #7
+                "status": "ready_for_pickup",  # Статус: Заказ готов к выдаче на ПВЗ более 7 дней (создан 9 дней назад, готов 8 дней назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=9),
+                "status_updated_at": timezone.now() - timedelta(days=8),
+                "items": [
+                    {"product": product_objects[21], "quantity": 1, "price": 150},  # Мышь Logitech
+                    {"product": product_objects[22], "quantity": 1, "price": 200},  # Клавиатура Razer
+                ]
+            },
+            {
+                "user": buyers[2],
+                "shop": shop_objects[0],  # Минск Маркет
+                "pickup_point": pvz_objects[0],  # Минск - ПВЗ #1
+                "status": "shipped",  # Статус: Заказ отправлен на ПВЗ (создан 5 дней назад, отправлен 3 дня назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=5),
+                "status_updated_at": timezone.now() - timedelta(days=3),
+                "items": [
+                    {"product": product_objects[9], "quantity": 1, "price": 80},  # Фитнес-браслет Xiaomi
+                ]
+            },
+            # buyer4: 2 заказа
+            {
+                "user": buyers[3],
+                "shop": shop_objects[3],  # BookHaven
+                "pickup_point": pvz_objects[7],  # Гомель - ПВЗ #8
+                "status": "delivered",  # Статус: Заказ доставлен покупателю (создан 15 дней назад, завершён 10 дней назад)
+                "is_paid": True,
+                "created_at": timezone.now() - timedelta(days=15),
+                "status_updated_at": timezone.now() - timedelta(days=10),
+                "items": [
+                    {"product": product_objects[28], "quantity": 2, "price": 50},  # Книга Эксмо
+                    {"product": product_objects[29], "quantity": 1, "price": 40},  # Книга Азбука
+                ]
+            },
+            {
+                "user": buyers[3],
+                "shop": shop_objects[3],  # BookHaven
+                "pickup_point": pvz_objects[8],  # Могилёв - ПВЗ #9
+                "status": "confirmed",  # Статус: Заказ подтверждён магазином (создан 4 дня назад, подтверждён 3 дня назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=4),
+                "status_updated_at": timezone.now() - timedelta(days=3),
+                "items": [
+                    {"product": product_objects[30], "quantity": 1, "price": 45},  # Книга Bloomsbury
+                ]
+            },
+            # buyer5: 3 заказа
+            {
+                "user": buyers[4],
+                "shop": shop_objects[4],  # SportZone
+                "pickup_point": pvz_objects[9],  # Бобруйск - ПВЗ #10
+                "status": "ready_for_pickup",  # Статус: Заказ готов к выдаче на ПВЗ более 7 дней (создан 11 дней назад, готов 9 дней назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=11),
+                "status_updated_at": timezone.now() - timedelta(days=9),
+                "items": [
+                    {"product": product_objects[34], "quantity": 1, "price": 100},  # Гантели Adidas
+                    {"product": product_objects[36], "quantity": 1, "price": 120},  # Форма Under Armour
+                ]
+            },
+            {
+                "user": buyers[4],
+                "shop": shop_objects[0],  # Минск Маркет
+                "pickup_point": pvz_objects[1],  # Минск - ПВЗ #2
+                "status": "returned",  # Статус: Заказ возвращён после осмотра на ПВЗ (создан 13 дней назад, возвращён 8 дней назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=13),
+                "status_updated_at": timezone.now() - timedelta(days=8),
+                "items": [
+                    {"product": product_objects[7], "quantity": 1, "price": 100},  # Конструктор LEGO
+                ]
+            },
+            {
+                "user": buyers[4],
+                "shop": shop_objects[1],  # Беларусь Универсал
+                "pickup_point": pvz_objects[2],  # Минск - ПВЗ #3
+                "status": "shipped",  # Статус: Заказ отправлен на ПВЗ (создан 6 дней назад, отправлен 4 дня назад)
+                "is_paid": False,
+                "created_at": timezone.now() - timedelta(days=6),
+                "status_updated_at": timezone.now() - timedelta(days=4),
+                "items": [
+                    {"product": product_objects[18], "quantity": 3, "price": 15},  # Кофе Nescafé
+                ]
+            },
+            # buyer6: 2 заказа
+            {
+                "user": buyers[5],
+                "shop": shop_objects[4],  # SportZone
+                "pickup_point": pvz_objects[3],  # Минск - ПВЗ #4
+                "status": "delivered",  # Статус: Заказ доставлен покупателю (создан 16 дней назад, завершён 11 дней назад)
+                "is_paid": True,
+                "created_at": timezone.now() - timedelta(days=16),
+                "status_updated_at": timezone.now() - timedelta(days=11),
+                "items": [
+                    {"product": product_objects[35], "quantity": 1, "price": 800},  # Велосипед Trek
+                ]
+            },
+            {
+                "user": buyers[5],
+                "shop": shop_objects[2],  # TechTrend
+                "pickup_point": pvz_objects[4],  # Гродно - ПВЗ #5
+                "status": "pending",  # Статус: Заказ только создан (создан сегодня)
+                "is_paid": False,
+                "created_at": timezone.now(),
+                "status_updated_at": timezone.now(),
+                "items": [
+                    {"product": product_objects[25], "quantity": 1, "price": 250},  # Часы Xiaomi
+                    {"product": product_objects[27], "quantity": 1, "price": 100},  # Веб-камера Logitech
+                ]
+            },
+        ]
+        for order_data in orders:
+            total_price = sum(item["price"] * item["quantity"] for item in order_data["items"])
+            order = Order.objects.create(
+                user=order_data["user"],
+                shop=order_data["shop"],
+                pickup_point=order_data["pickup_point"],
+                total_price=total_price,
+                status=order_data["status"],
+                is_paid=order_data["is_paid"],
+                created_at=order_data["created_at"],
+                status_updated_at=order_data["status_updated_at"]
+            )
+            for item in order_data["items"]:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item["product"],
+                    quantity=item["quantity"],
+                    price=item["price"]
+                )
+
+        self.stdout.write(self.style.SUCCESS('Successfully seeded the database'))
