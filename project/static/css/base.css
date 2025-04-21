@@ -1,0 +1,93 @@
+/* Общие стили для всего сайта */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; /* Белый фон */
+    color: #343a40; /* Темно-серый текст */
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #007BFF; /* Синий для хедера */
+    padding: 15px;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #ffffff; /* Белый цвет для текста ссылок */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #28a745; /* Зеленый при наведении */
+}
+
+footer {
+    background-color: #343a40; /* Темно-серый фон */
+    color: #ffffff; /* Белый текст */
+    text-align: center;
+    padding: 15px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+}
+
+main {
+    padding: 30px;
+}
+
+h1, h2, h3 {
+    color: #007BFF; /* Синий для заголовков */
+}
+
+/* Стили для форм */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="submit"],
+button {
+    padding: 10px;
+    border: 1px solid #007BFF; /* Синий бордер для полей */
+    border-radius: 5px;
+    margin: 10px 0;
+    width: 100%;
+    font-size: 16px;
+}
+
+input[type="submit"], button {
+    background-color: #28a745; /* Зеленая кнопка */
+    color: white;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover, button:hover {
+    background-color: #007BFF; /* Синий при наведении */
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    border-color: #28a745; /* Зеленый бордер при фокусе */
+}
+
+form {
+    max-width: 400px;
+    margin: 0 auto;
+}

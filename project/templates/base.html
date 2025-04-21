@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Мой магазин{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {# 👇 Вставляем блок для дополнительных стилей #}
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'products' %}">Главная</a></li>
+                <li><a href="{% url 'register' %}">Регистрация</a></li>
+                <li><a href="{% url 'login' %}">Вход</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Выход</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        <!-- Контент страницы будет вставляться сюда -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Мой магазин</p>
+    </footer>
+</body>
+</html>
