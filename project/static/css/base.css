@@ -1,93 +1,90 @@
-/* Общие стили для всего сайта */
+/* Общие стили для страницы */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #ffffff; /* Белый фон */
-    color: #343a40; /* Темно-серый текст */
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
     margin: 0;
     padding: 0;
 }
 
+/* Стили для хедера */
 header {
-    background-color: #007BFF; /* Синий для хедера */
-    padding: 15px;
+    background-color: #007BFF; /* Синий фон */
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+header nav {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
 }
 
-nav ul li {
-    margin: 0 15px;
+header nav ul {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
 }
 
-nav ul li a {
-    color: #ffffff; /* Белый цвет для текста ссылок */
-    text-decoration: none;
+header nav ul li {
+    margin-right: 25px;
+}
+
+header nav ul li:last-child {
+    margin-right: 0;
+}
+
+header nav ul li a {
+    color: white;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    text-decoration: none; /* Убираем подчеркивание */
+    transition: background-color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    background-color: #0056b3; /* Темно-синий при наведении */
+}
+
+/* Профильное изображение и никнейм */
+header .profile-menu a {
+    display: flex;
+    align-items: center;
     font-weight: bold;
-    transition: color 0.3s ease;
 }
 
-nav ul li a:hover {
-    color: #28a745; /* Зеленый при наведении */
+header .profile-menu img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
 }
 
+/* Стили для контента */
+main {
+    padding: 30px 50px;
+    min-height: calc(100vh - 120px); /* Убираем высоту хедера и футера */
+}
+
+/* Стили для футера */
 footer {
-    background-color: #343a40; /* Темно-серый фон */
-    color: #ffffff; /* Белый текст */
+    background-color: #343a40; /* Темно-серый цвет */
+    color: white;
     text-align: center;
-    padding: 15px;
-    position: fixed;
+    padding: 20px 0;
+    position: relative;
     bottom: 0;
     width: 100%;
 }
 
+/* Стили для текста в футере */
 footer p {
     margin: 0;
-}
-
-main {
-    padding: 30px;
-}
-
-h1, h2, h3 {
-    color: #007BFF; /* Синий для заголовков */
-}
-
-/* Стили для форм */
-input[type="text"],
-input[type="password"],
-input[type="email"],
-input[type="submit"],
-button {
-    padding: 10px;
-    border: 1px solid #007BFF; /* Синий бордер для полей */
-    border-radius: 5px;
-    margin: 10px 0;
-    width: 100%;
-    font-size: 16px;
-}
-
-input[type="submit"], button {
-    background-color: #28a745; /* Зеленая кнопка */
-    color: white;
-    cursor: pointer;
-}
-
-input[type="submit"]:hover, button:hover {
-    background-color: #007BFF; /* Синий при наведении */
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus {
-    border-color: #28a745; /* Зеленый бордер при фокусе */
-}
-
-form {
-    max-width: 400px;
-    margin: 0 auto;
+    font-size: 14px;
+    opacity: 0.8;
 }

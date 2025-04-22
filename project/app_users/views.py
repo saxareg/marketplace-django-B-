@@ -11,8 +11,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Регистрация прошла успешно!")
-            return redirect('home')  # Перенаправление на главную страницу
+            return redirect('products')  # Перенаправление на главную страницу
         else:
             messages.error(request, "Ошибка при регистрации.")
     else:
@@ -28,7 +27,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')
+            return redirect('products')
         else:
             messages.error(request, "Неверные данные для входа.")
     else:
