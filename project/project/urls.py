@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('products/', include('app_products.urls')),
     path('users/', include('app_users.urls')),
+    path('cart/', include('app_orders.urls')),
     path('', lambda request: redirect('products/')),
 ]
 

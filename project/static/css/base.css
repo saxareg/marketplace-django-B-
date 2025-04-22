@@ -6,6 +6,14 @@ body {
     padding: 0;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: hidden;
+}
+
 /* Стили для хедера */
 header {
     background-color: #007BFF; /* Синий фон */
@@ -19,7 +27,7 @@ header {
 
 header nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end; /* Было space-between, стало flex-end */
     align-items: center;
 }
 
