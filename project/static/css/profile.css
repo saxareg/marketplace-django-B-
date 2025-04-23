@@ -1,43 +1,92 @@
 .profile-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 12px;
+    max-width: 700px;
+    padding: 20px 20px 20px 20px;
+    margin: 0 auto;
 }
 
 .profile-container h1 {
-    font-size: 28px;
-    margin-bottom: 25px;
-    color: #343a40;
+    text-align: center;
+    color: #007BFF; /* Синий заголовок */
+    margin-bottom: 30px;
 }
 
-.profile-card {
-    padding: 20px 30px;
+.user-info {
     background-color: #f8f9fa;
-    border-left: 6px solid #007BFF;
+    padding: 20px;
     border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
 }
 
-.profile-info p {
-    margin: 12px 0;
-    font-size: 18px;
-    color: #444;
+.user-info h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #007BFF;
 }
 
-.edit-btn {
-    display: inline-block;
-    margin-top: 25px;
-    padding: 12px 24px;
-    background-color: #28a745;
-    color: white;
-    text-decoration: none;
+.user-info p {
+    font-size: 1rem;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+/* Стили форм */
+form {
+    max-width: 100%;
+    background-color: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+form div {
+    margin-bottom: 15px;
+}
+
+form label {
     font-weight: bold;
-    border-radius: 6px;
+    color: #343a40;
+    display: block;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="file"],
+form input[type="tel"],
+form select,
+form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #007BFF;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+    border-color: #28a745;
+    outline: none;
+}
+
+form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745; /* Зеленая кнопка */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.edit-btn:hover {
-    background-color: #218838;
+form button[type="submit"]:hover {
+    background-color: #007BFF; /* Синий при наведении */
 }

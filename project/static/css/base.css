@@ -18,8 +18,9 @@ html, body {
 header {
     background-color: #007BFF; /* Синий фон */
     padding: 15px 30px;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
     z-index: 1000;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -77,6 +78,7 @@ header .profile-menu img {
 main {
     padding: 30px 50px;
     min-height: calc(100vh - 120px); /* Убираем высоту хедера и футера */
+    margin-top: 40px; /* Добавляем отступ сверху, чтобы контент не перекрывался хедером */
 }
 
 /* Стили для футера */
