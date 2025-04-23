@@ -15,6 +15,7 @@
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'products' %}">Главная</a></li>
                     <li><a href="{% url 'logout' %}">Выход</a></li>
+                    <li><a href="{% url 'cart' %}">🛒</a></li>
                     <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
                 {% else %}
                     <li><a href="{% url 'products' %}">Главная</a></li>

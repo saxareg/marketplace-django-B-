@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1 class="cart-title">Моя корзина</h1>
+
+{% if items %}
+<div class="cart-container">
+    {% for item in items %}
+    <div class="cart-card">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        {% else %}
+            <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
+        {% endif %}
+        <div class="card-details">
+            <h2>{{ item.product.name }}</h2>
+            <p>{{ item.quantity }} × {{ item.product.price }} ₽</p>
+            <p><strong>Сумма:</strong> {{ item.subtotal }} ₽</p>
+        </div>
+        <button type="button"
+                class="remove-button"
+                data-item-id="{{ item.id }}"
+                data-subtotal="{{ item.subtotal }}"
+                title="Удалить из корзины">🗑️</button>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="cart-summary">
+    <p><strong>Общая сумма: {{ total_price }} ₽</strong></p>
+</div>
+{% else %}
+    <p>Ваша корзина пуста.</p>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.remove-button');
+    const summaryElement = document.querySelector('.cart-summary p strong');
+
+    function parsePrice(text) {
+        return parseFloat(text.replace(/[^\d.]/g, ''));
+    }
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const itemId = this.dataset.itemId;
+            const subtotal = parseFloat(this.dataset.subtotal);
+            const card = this.closest('.cart-card');
+
+            fetch("{% url 'cart_remove' %}", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `item_id=${itemId}`
+            })
+            .then(response => {
+                console.log("Raw response:", response);
+                return response.json();
+            })
+            .then(data => {
+                console.log("Parsed data:", data);
+                if (data.success) {
+                    card.remove();
+
+                    summaryElement.textContent = `Общая сумма: ${data.total_price.toFixed(2)} ₽`;
+
+                    if (document.querySelectorAll('.cart-card').length === 0) {
+                        document.querySelector('.cart-container').remove();
+                        document.querySelector('.cart-summary').remove();
+                        document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
+                    }
+                } else {
+                    alert("Ошибка при удалении товара.");
+                }
+            })
+            .catch(error => {
+                console.error("Ошибка запроса:", error);
+            });
+
+        });
+    });
+});
+</script>
+
+
+{% endblock %}

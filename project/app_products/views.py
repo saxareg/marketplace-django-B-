@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Product
+from app_orders.models import Cart, CartItem
 
 
 def product_list(request):
@@ -8,5 +9,14 @@ def product_list(request):
 
 
 def product_detail(request, slug):
-    product = get_object_or_404(Product, slug=slug)
-    return render(request, 'products/product_detail.html', {'product': product})
+    product = Product.objects.get(slug=slug)
+    in_cart = False
+
+    if request.user.is_authenticated:
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        in_cart = CartItem.objects.filter(cart=cart, product=product).exists()
+
+    return render(request, 'products/product_detail.html', {
+        'product': product,
+        'in_cart': in_cart
+    })

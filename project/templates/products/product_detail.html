@@ -22,17 +22,22 @@
 
     <!-- AJAX-кнопка -->
     <button id="add-to-cart-btn" class="add-to-cart-btn" data-product-id="{{ product.id }}">
-        Добавить в корзину
+        {% if in_cart %}
+            Убрать из корзины
+        {% else %}
+            Добавить в корзину
+        {% endif %}
     </button>
-
-    <p id="cart-message" style="color: green;"></p>
 </div>
 
 <script>
-    document.getElementById('add-to-cart-btn').addEventListener('click', function () {
+    const btn = document.getElementById('add-to-cart-btn');
+    const message = document.getElementById('cart-message');
+
+    btn.addEventListener('click', function () {
         const productId = this.dataset.productId;
 
-        fetch("{% url 'add_to_cart_ajax' %}", {
+        fetch("{% url 'toggle_cart_item' %}", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -43,10 +48,17 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('cart-message').textContent = 'Товар добавлен в корзину!';
+                if (data.in_cart) {
+                    btn.textContent = 'Убрать из корзины';
+                } else {
+                    btn.textContent = 'Добавить в корзину';
+                }
             } else {
-                document.getElementById('cart-message').textContent = 'Ошибка добавления.';
+                message.textContent = 'Ошибка: ' + (data.message || 'Попробуйте снова.');
             }
+        })
+        .catch(error => {
+            message.textContent = 'Ошибка соединения.';
         });
     });
 </script>
