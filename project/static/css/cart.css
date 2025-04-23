@@ -54,3 +54,25 @@
     margin-top: 30px;
     font-size: 1.3rem;
 }
+
+.quantity-btn {
+    background-color: #007BFF; /* основной синий */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0 3px;
+    transition: background-color 0.2s ease;
+}
+
+.quantity-btn:hover {
+    background-color: #0056b3;
+}
+
+.item-quantity {
+    font-weight: bold;
+    padding: 0 6px;
+    font-size: 1.1rem;
+}

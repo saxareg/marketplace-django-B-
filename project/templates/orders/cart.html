@@ -19,8 +19,14 @@
         {% endif %}
         <div class="card-details">
             <h2>{{ item.product.name }}</h2>
-            <p>{{ item.quantity }} × {{ item.product.price }} ₽</p>
-            <p><strong>Сумма:</strong> {{ item.subtotal }} ₽</p>
+            <p>
+                <button class="quantity-btn change-qty" data-action="decrease" data-item-id="{{ item.id }}">−</button>
+                <span class="item-quantity">{{ item.quantity }}</span>
+                <button class="quantity-btn change-qty" data-action="increase" data-item-id="{{ item.id }}">+</button>
+                × {{ item.product.price }} ₽
+            </p>
+            <p><strong>Сумма:</strong> <span class="item-subtotal">{{ item.subtotal }}</span> ₽</p>
+
         </div>
         <button type="button"
                 class="remove-button"
@@ -41,7 +47,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const buttons = document.querySelectorAll('.remove-button');
-        const summaryElement = document.querySelector('.cart-summary p strong'); // Выбираем <strong> внутри <p>
+        const summaryElement = document.querySelector('.cart-summary p strong');
 
         buttons.forEach(button => {
             button.addEventListener('click', function () {
@@ -58,18 +64,15 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Response Data:', data); // Логирование ответа
-
                     if (data.success) {
-                        card.remove();  // Удаляем карточку
+                        card.remove();
 
                         if (document.querySelectorAll('.cart-card').length === 0) {
                             document.querySelector('.cart-container').remove();
                             document.querySelector('.cart-summary').remove();
                             document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
                         } else {
-                            // Обновляем общую сумму
-                            summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;  // Здесь не используем toFixed
+                            summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;
                         }
                     } else {
                         alert("Ошибка при удалении товара.");
@@ -82,5 +85,44 @@
             });
         });
     });
+
+    document.querySelectorAll('.change-qty').forEach(button => {
+    button.addEventListener('click', function () {
+        const itemId = this.dataset.itemId;
+        const action = this.dataset.action;
+        const card = this.closest('.cart-card');
+        const quantityElement = card.querySelector('.item-quantity');
+        const subtotalElement = card.querySelector('.item-subtotal');
+        const summaryElement = document.querySelector('.cart-summary p strong');
+
+        fetch("{% url 'cart_update_quantity' %}", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `item_id=${itemId}&action=${action}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.quantity === 0) {
+                    card.remove();
+                } else {
+                    quantityElement.textContent = data.quantity;
+                    subtotalElement.textContent = data.subtotal;
+                }
+                summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;
+
+                // Если после уменьшения всё удалено
+                if (document.querySelectorAll('.cart-card').length === 0) {
+                    document.querySelector('.cart-container').remove();
+                    document.querySelector('.cart-summary').remove();
+                    document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
+                }
+            }
+        });
+    });
+});
 </script>
 {% endblock %}

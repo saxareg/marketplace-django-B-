@@ -59,26 +59,36 @@ def cart_view(request):
 
 
 @require_POST
-def cart_edit_quantity(request):
+def cart_update_quantity(request):
     item_id = request.POST.get('item_id')
-    delta = int(request.POST.get('delta'))
+    action = request.POST.get('action')
 
     try:
-        item = CartItem.objects.get(id=item_id, cart__user=request.user)
-        new_quantity = item.quantity + delta
-        if new_quantity < 1:
-            return JsonResponse({'success': False, 'message': 'Количество не может быть меньше 1'}, status=400)
-        item.quantity = new_quantity
-        item.save()
-        cart = item.cart
-        items = cart.items.all()
-        total_price = sum(i.quantity * i.product.price for i in items)
+        item = CartItem.objects.select_related('product', 'cart').get(id=item_id, cart__user=request.user)
 
+        if action == 'increase':
+            item.quantity += 1
+        elif action == 'decrease':
+            item.quantity -= 1
+
+        if item.quantity <= 0:
+            item.delete()
+            quantity = 0
+            subtotal = 0
+        else:
+            item.save()
+            quantity = item.quantity
+            subtotal = item.quantity * item.product.price
+
+        total_price = sum(
+            ci.quantity * ci.product.price
+            for ci in CartItem.objects.filter(cart__user=request.user)
+        )
         return JsonResponse({
             'success': True,
-            'new_quantity': item.quantity,
-            'new_subtotal': item.quantity * item.product.price,
-            'total_price': total_price
+            'quantity': quantity,
+            'subtotal': f"{subtotal:.2f}",
+            'total_price': f"{total_price:.2f}"
         })
     except CartItem.DoesNotExist:
-        return JsonResponse({'success': False}, status=404)
+        return JsonResponse({'success': False, 'error': 'Item not found'})
