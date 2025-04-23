@@ -12,10 +12,10 @@
 <div class="cart-container">
     {% for item in items %}
     <div class="cart-card">
-        {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
         {% else %}
-            <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
+            <img src="/media/products/images/default.jpg" alt="{{ item.product.name }}" class="product-image">
         {% endif %}
         <div class="card-details">
             <h2>{{ item.product.name }}</h2>
@@ -39,56 +39,48 @@
 {% endif %}
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const buttons = document.querySelectorAll('.remove-button');
-    const summaryElement = document.querySelector('.cart-summary p strong');
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.remove-button');
+        const summaryElement = document.querySelector('.cart-summary p strong'); // Выбираем <strong> внутри <p>
 
-    function parsePrice(text) {
-        return parseFloat(text.replace(/[^\d.]/g, ''));
-    }
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const itemId = this.dataset.itemId;
+                const card = this.closest('.cart-card');
 
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            const itemId = this.dataset.itemId;
-            const subtotal = parseFloat(this.dataset.subtotal);
-            const card = this.closest('.cart-card');
+                fetch("{% url 'cart_remove' %}", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: `item_id=${itemId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response Data:', data); // Логирование ответа
 
-            fetch("{% url 'cart_remove' %}", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: `item_id=${itemId}`
-            })
-            .then(response => {
-                console.log("Raw response:", response);
-                return response.json();
-            })
-            .then(data => {
-                console.log("Parsed data:", data);
-                if (data.success) {
-                    card.remove();
+                    if (data.success) {
+                        card.remove();  // Удаляем карточку
 
-                    summaryElement.textContent = `Общая сумма: ${data.total_price.toFixed(2)} ₽`;
-
-                    if (document.querySelectorAll('.cart-card').length === 0) {
-                        document.querySelector('.cart-container').remove();
-                        document.querySelector('.cart-summary').remove();
-                        document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
+                        if (document.querySelectorAll('.cart-card').length === 0) {
+                            document.querySelector('.cart-container').remove();
+                            document.querySelector('.cart-summary').remove();
+                            document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
+                        } else {
+                            // Обновляем общую сумму
+                            summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;  // Здесь не используем toFixed
+                        }
+                    } else {
+                        alert("Ошибка при удалении товара.");
                     }
-                } else {
-                    alert("Ошибка при удалении товара.");
-                }
-            })
-            .catch(error => {
-                console.error("Ошибка запроса:", error);
+                })
+                .catch(error => {
+                    console.error("Ошибка запроса:", error);
+                    alert("Произошла ошибка при удалении.");
+                });
             });
-
         });
     });
-});
 </script>
-
-
 {% endblock %}
