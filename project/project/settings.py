@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'app_products',
     'app_orders',
     'app_admin',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
