@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мои магазины{% endblock %}
+
+{% block content %}
+<div class="shops-container">
+    <h1>Мои магазины</h1>
+
+    {% if shops %}
+        <div class="shops-list">
+            {% for shop in shops %}
+                <div class="shop-card">
+                    <h2>{{ shop.name }}</h2>
+                    <p><strong>Описание:</strong> {{ shop.description }}</p>
+                    <p><strong>Адрес:</strong> {{ shop.address }}</p>
+                    <a href="{% url 'my-shop-detail' shop.slug %}" class="btn btn-primary">Подробнее</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>У вас пока нет магазинов.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/shops.css' %}">
+{% endblock %}
