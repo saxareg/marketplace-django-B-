@@ -14,9 +14,12 @@
             <ul>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'products' %}">Главная</a></li>
-                    <li><a href="{% url 'logout' %}">Выход</a></li>
-                    <li><a href="{% url 'cart' %}">🛒</a></li>
+                    {% if userprofile.role == 'seller' %}
+                        <li><a href="{% url 'my-shops' %}">Мои магазины</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'cart' %}">Корзина</a></li>
                     <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
+                    <li><a href="{% url 'logout' %}">Выход</a></li>
                 {% else %}
                     <li><a href="{% url 'products' %}">Главная</a></li>
                     <li><a href="{% url 'register' %}">Регистрация</a></li>
