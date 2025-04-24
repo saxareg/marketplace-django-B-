@@ -11,3 +11,12 @@ app.autodiscover_tasks()
 @app.task(bind=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'mark_unclaimed_orders_every_day': {
+        'task': 'app_orders.tasks.mark_unclaimed_orders',
+        'schedule': crontab(minute=0, hour=0),  # каждый день в 00:00
+    },
+}
