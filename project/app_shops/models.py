@@ -7,7 +7,7 @@ class Shop(models.Model):
     slug = models.SlugField(max_length=100, unique=True)  # SEO-дружественный URL
     description = models.TextField(blank=True, null=True)  # Описание магазина
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shops')  # Владелец
-    logo = models.ImageField(upload_to='shops/logos/', blank=True, null=True)  # Логотип
+    logo = models.ImageField(upload_to='shops/logos/', default='shops/logos/default.jpg', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)  # Время создания
     is_active = models.BooleanField(default=True, db_index=True)  # Активность магазина
     def __str__(self): return self.name
