@@ -8,18 +8,17 @@ website-marketplace for team diplom project
 4. Run the server: `python manage.py runserver`
 
 
-# Database Seeding Script
-
+## Database Seeding Script
 The `seed_database.py` Django command fills a marketplace database with test data to enable testing, development, and feature demonstration.
 
-## Usage
+### Usage
 
 The script is included in the project. To run it, ensure your Django project is set up with migrations applied, then execute:
 ```bash
 python manage.py seed_database
 ```
 
-## Seeding Steps
+### Seeding Steps
 
 The script performs the following steps, logged as they complete:
 - **1/9: Clearing Existing Data** — Deletes all non-superuser data from models (`User`, `UserProfile`, `PickupPoints`, `Category`, `Shop`, `Product`, `Cart`, `Order`, `Review`) to ensure a clean database.
