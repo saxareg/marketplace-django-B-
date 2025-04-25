@@ -16,7 +16,9 @@
     {% endif %}
 
     <p><strong>Категория:</strong> {{ product.category.name }}</p>
-    <p><strong>Магазин:</strong> {{ product.shop.name }}</p>
+    <p><strong>Магазин:</strong>
+        <a class='shop-ref' href="{% url 'shop-detail' product.shop.slug %}">{{ product.shop.name }}</a>
+    </p>
     <p><strong>Описание:</strong> {{ product.description }}</p>
     <p><strong>Цена:</strong> {{ product.price }} ₽</p>
 

@@ -74,4 +74,3 @@ def profile_view(request):
         'phone_form': phone_form,
         'user_profile': user_profile
     })
-

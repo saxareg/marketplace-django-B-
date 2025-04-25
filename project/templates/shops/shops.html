@@ -14,7 +14,7 @@
                     <h2>{{ shop.name }}</h2>
                     <p><strong>Описание:</strong> {{ shop.description }}</p>
                     <p><strong>Адрес:</strong> {{ shop.address }}</p>
-                    <a href="{% url 'my-shop-detail' shop.slug %}" class="btn btn-primary">Подробнее</a>
+                    <a href="{% url 'shop-detail' shop.slug %}" class="btn btn-primary">Подробнее</a>
                 </div>
             {% endfor %}
         </div>

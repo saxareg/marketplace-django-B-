@@ -65,3 +65,23 @@
     font-weight: 500;
     color: #28a745;
 }
+
+.shop-ref {
+    text-decoration: none;
+    color: #007BFF;
+    transition: color 0.3s ease;
+}
+
+.shop-ref:visited {
+    color: #007BFF; /* Цвет после посещения */
+}
+
+.shop-ref:hover {
+    color: #0056b3; /* Цвет при наведении */
+}
+
+.shop-ref:active {
+    color: #003f7f; /* Цвет при нажатии */
+}
+
+
