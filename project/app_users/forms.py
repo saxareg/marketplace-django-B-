@@ -10,13 +10,28 @@ class PhoneForm(forms.ModelForm):
         fields = ['phone']
 
 
+ROLE_CHOICES = [
+    ('buyer', 'Покупатель'),
+    ('seller', 'Продавец'),
+]
+
+
 class UserProfileUpdateForm(forms.ModelForm):
     username = forms.CharField(label='Username', max_length=150)
     email = forms.EmailField(label='Email')
+    role = forms.ChoiceField(label='Role', choices=ROLE_CHOICES)
 
     class Meta:
         model = User
         fields = ['username', 'email']
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.get('instance')
+        super().__init__(*args, **kwargs)
+
+        # Предзаполнение роли из профиля
+        if self.user and hasattr(self.user, 'profile'):
+            self.fields['role'].initial = self.user.profile.role
 
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -37,8 +52,10 @@ class UserProfileUpdateForm(forms.ModelForm):
         if commit:
             user.save()
         user_profile = user.profile
+        user_profile.role = self.cleaned_data['role']
         user_profile.save()
         return user
+
 
 
 class PickupPointForm(forms.ModelForm):
