@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-from django.contrib import messages
 from .forms import *
 
 
@@ -14,8 +13,6 @@ def register(request):
             profile.save()
             login(request, user)
             return redirect('products')
-        else:
-            messages.error(request, "Ошибка при регистрации.")
     else:
         form = UserRegisterForm()
 
@@ -30,15 +27,12 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             return redirect('products')
-        else:
-            messages.error(request, "Неверные данные для входа.")
     else:
         form = UserLoginForm()
 
     return render(request, 'users/login.html', {'form': form})
 
 
-# Представление для выхода
 def logout_view(request):
     logout(request)
     return redirect('products')
@@ -59,14 +53,12 @@ def profile_view(request):
             user_form = UserProfileUpdateForm(request.POST, instance=user)
             if user_form.is_valid():
                 user_form.save()
-                messages.success(request, 'Данные обновлены.')
                 return redirect('me')
 
         elif form_type == 'phone_form':
             phone_form = PhoneForm(request.POST, instance=user_profile)
             if phone_form.is_valid():
                 phone_form.save()
-                messages.success(request, 'Номер телефона обновлен.')
                 return redirect('me')
 
     return render(request, 'users/profile.html', {
