@@ -33,6 +33,7 @@ class ShopCreationRequest(BaseShop):
                                        ('approved', 'Одобрена'),
                                        ('rejected', 'Отклонена')], default='pending')
     response_time = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requests')
 
     def __str__(self):
         return f"Заявка на создание магазина: {self.name} от {self.user.username}"
