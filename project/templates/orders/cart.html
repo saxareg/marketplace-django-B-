@@ -13,10 +13,11 @@
     {% for item in items %}
     <div class="cart-card">
         {% if item.product.image %}
-            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
         {% else %}
-            <img src="/media/products/images/default.jpg" alt="{{ item.product.name }}" class="product-image">
+            <img src="{% static 'images/default-preview.jpg' %}" alt="{{ item.product.name }}" class="product-image">
         {% endif %}
+
         <div class="card-details">
             <h2>{{ item.product.name }}</h2>
             <p>

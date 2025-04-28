@@ -10,7 +10,7 @@
     <h1>{{ product.name }}</h1>
 
     {% if product.image %}
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
     {% else %}
         <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
     {% endif %}

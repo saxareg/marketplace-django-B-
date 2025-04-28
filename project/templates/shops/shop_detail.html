@@ -13,7 +13,7 @@
         {% if shop.logo %}
             <img src="{{ shop.logo.url }}" alt="{{ shop.name }}" class="shop-logo">
         {% else %}
-            <img src="/media/shops/logos/default.jpg" alt="{{ shop.name }}" class="shop-logo">
+            <img src="{% static 'images/default-logo.jpg' %}" alt="{{ shop.name }}" class="shop-logo">
         {% endif %}
         <div class="shop-info">
             <h1>{{ shop.name }}</h1>
@@ -47,7 +47,7 @@
             {% for product in products %}
                 <div class="product-card">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
                     {% else %}
                         <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
                     {% endif %}
