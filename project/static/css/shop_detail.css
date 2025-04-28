@@ -1,3 +1,4 @@
+/* Основной контейнер страницы магазина */
 .shop-detail-container {
     max-width: 1100px;
     margin: 0 auto;
@@ -7,6 +8,7 @@
     background-color: #ffffff;
 }
 
+/* Заголовок и логотип магазина */
 .shop-header {
     display: flex;
     align-items: center;
@@ -53,13 +55,40 @@
     font-weight: bold;
 }
 
-h2 {
-    font-size: 1.5rem;
-    color: #343a40;
+/* Заголовок и кнопка для добавления товара */
+.products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
 
+.products-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #343a40;
+}
+
+/* Стиль кнопки добавления товара */
+.btn-add-product {
+    background-color: #007BFF;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Эффект при наведении на кнопку */
+.btn-add-product:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Сетка товаров */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -111,4 +140,16 @@ h2 {
 
 .view-details:hover {
     background-color: #0056b3;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .products-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-add-product {
+        margin-top: 1rem;
+    }
 }
