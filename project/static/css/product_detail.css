@@ -1,87 +1,92 @@
 .product-detail {
     max-width: 800px;
     margin: 40px auto;
-    padding: 30px;
+    padding: 20px;
     background-color: #ffffff;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
     color: #343a40;
 }
 
 .product-detail h1 {
-    font-size: 2rem;
-    color: #007BFF;
+    font-size: 2em;
     margin-bottom: 20px;
     text-align: center;
+    color: #007BFF;
 }
 
 .product-image {
     display: block;
     max-width: 100%;
     height: auto;
-    margin: 0 auto 20px auto;
+    margin: 0 auto 20px;
     border-radius: 12px;
-    border: 1px solid #e9ecef;
+    border: 1px solid #ddd;
 }
 
 .product-detail p {
-    font-size: 1.1rem;
-    margin: 10px 0;
-    line-height: 1.5;
-}
-
-.add-to-cart-btn {
-    display: block;
-    width: 100%;
-    max-width: 300px;
-    margin: 30px auto 0 auto;
-    padding: 12px 24px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-align: center;
-    color: #ffffff;
-    background-color: #28a745;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.add-to-cart-btn:hover {
-    background-color: #218838;
-    transform: scale(1.02);
-}
-
-.add-to-cart-btn:active {
-    transform: scale(0.98);
-    background-color: #1e7e34;
-}
-
-/* Сообщение при ошибке или успехе (если используешь его снова) */
-#cart-message {
-    text-align: center;
-    margin-top: 16px;
-    font-weight: 500;
-    color: #28a745;
+    font-size: 1.1em;
+    margin-bottom: 12px;
 }
 
 .shop-ref {
+    color: #28a745;
+    font-weight: bold;
     text-decoration: none;
-    color: #007BFF;
-    transition: color 0.3s ease;
-}
-
-.shop-ref:visited {
-    color: #007BFF; /* Цвет после посещения */
 }
 
 .shop-ref:hover {
-    color: #0056b3; /* Цвет при наведении */
+    text-decoration: none;
 }
 
-.shop-ref:active {
-    color: #003f7f; /* Цвет при нажатии */
+.btn {
+    padding: 10px 20px;
+    margin: 10px 5px 0 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
 }
 
+.btn-primary {
+    background-color: #007BFF;
+    color: white;
+}
 
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.add-to-cart-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #007BFF;
+}
+
+#cart-message {
+    margin-top: 10px;
+    font-size: 0.95em;
+    color: red;
+    text-align: center;
+}
