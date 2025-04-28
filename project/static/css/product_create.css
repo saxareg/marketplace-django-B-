@@ -1,0 +1,98 @@
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #343a40;
+    background-color: #ffffff;
+}
+
+h2 {
+    text-align: center;
+    color: #007BFF;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+form.card {
+    background-color: #fefefe;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+}
+
+.mb-3 label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #333;
+}
+
+.mb-3 input[type="text"],
+.mb-3 input[type="number"],
+.mb-3 input[type="file"],
+.mb-3 textarea,
+.mb-3 select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fafafa;
+    transition: border-color 0.3s;
+    font-size: 1rem;
+}
+
+.mb-3 input[type="text"]:focus,
+.mb-3 input[type="number"]:focus,
+.mb-3 input[type="file"]:focus,
+.mb-3 textarea:focus,
+.mb-3 select:focus {
+    border-color: #007BFF;
+    outline: none;
+    background-color: #fff;
+}
+
+.text-danger.small {
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
