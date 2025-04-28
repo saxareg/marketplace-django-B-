@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/product_edit.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container edit-product-container">
+    <h2 class="edit-product-title">Редактировать товар: {{ product.name }}</h2>
+
+    <form method="post" enctype="multipart/form-data" class="edit-product-form">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.name != 'clear_field_name' %}
+                <div class="form-group">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="form-error">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-save">Сохранить изменения</button>
+            <a href="{% url 'product_detail' slug=product.slug %}" class="btn btn-cancel">Вернуться в магазин</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
