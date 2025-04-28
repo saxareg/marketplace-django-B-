@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product
 from app_orders.models import Cart, CartItem
+from app_shops.models import Shop
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required
 
@@ -53,8 +54,29 @@ def edit_product(request, slug):
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            return redirect('shop-detail', slug=product.shop.slug)  # После сохранения — на страницу магазина
+            return redirect('shop-detail', slug=product.shop.slug)
     else:
         form = ProductForm(instance=product)
 
     return render(request, 'products/product_edit.html', {'form': form, 'product': product})
+
+
+@login_required
+def create_product(request):
+    shop_slug = request.GET.get('shop')
+    shop = get_object_or_404(Shop, slug=shop_slug)
+
+    if shop.owner != request.user:
+        return redirect('shop-detail', slug=shop.slug)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.shop = shop
+            product.save()
+            return redirect('shop-detail', slug=shop.slug)
+    else:
+        form = ProductForm()
+
+    return render(request, 'products/product_create.html', {'form': form, 'shop': shop})
