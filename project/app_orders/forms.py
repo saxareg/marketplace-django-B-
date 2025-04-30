@@ -20,3 +20,21 @@ class CartItemForm(forms.ModelForm):
     class Meta:
         model = CartItem
         fields = ['product', 'quantity']
+
+
+class OrderStatusUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        allowed_statuses = [
+            ('ready_for_pickup', 'Готов к выдаче'),
+            ('delivered', 'Доставлен'),
+            ('returned', 'Возвращён')
+        ]
+        self.fields['status'].choices = allowed_statuses
