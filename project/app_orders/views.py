@@ -3,9 +3,10 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
-from django.shortcuts import render, redirect
-from .models import Cart, CartItem
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Cart, CartItem, Order
 from app_products.models import Product
+from .forms import OrderStatusUpdateForm
 
 
 @require_POST
@@ -92,3 +93,20 @@ def cart_update_quantity(request):
         })
     except CartItem.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Item not found'})
+
+
+def order_detail_view(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == 'POST':
+        form = OrderStatusUpdateForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('order-detail', order_id=order_id)  # правильно
+    else:
+        form = OrderStatusUpdateForm(instance=order)
+
+    return render(request, 'orders/order_detail.html', {
+        'order': order,
+        'form': form
+    })
