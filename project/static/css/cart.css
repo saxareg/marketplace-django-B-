@@ -4,6 +4,10 @@
     text-align: center;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 .cart-container {
     display: flex;
     flex-wrap: wrap;
