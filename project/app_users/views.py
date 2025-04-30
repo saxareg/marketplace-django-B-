@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .forms import *
+from app_orders.models import Order
 
 
 def register(request):
@@ -64,5 +65,16 @@ def profile_view(request):
     return render(request, 'users/profile.html', {
         'user_form': user_form,
         'phone_form': phone_form,
-        'user_profile': user_profile
+        'user_profile': user_profile,
+    })
+
+
+@login_required
+def pp_view(request):
+    profile = request.user.profile
+    orders = Order.objects.filter(pickup_point=profile.pickup_point).order_by('-created_at')
+
+    return render(request, 'users/pp.html', {
+        'orders': orders,
+        'pickup_point': profile.pickup_point,
     })
