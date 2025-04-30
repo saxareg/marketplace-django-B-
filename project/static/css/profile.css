@@ -1,3 +1,7 @@
+html {
+  overflow-y: scroll;
+}
+
 .profile-container {
     max-width: 700px;
     padding: 20px 20px 20px 20px;

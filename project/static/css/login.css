@@ -35,6 +35,10 @@ form button[type="submit"] {
     box-sizing: border-box;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 form button[type="submit"] {
     background-color: #28a745; /* Зеленая кнопка */
     color: white;

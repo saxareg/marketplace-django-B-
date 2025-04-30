@@ -4,6 +4,10 @@ h1 {
     color: #007BFF; /* Синий цвет для заголовка */
 }
 
+html {
+  overflow-y: scroll;
+}
+
 form {
     max-width: 400px;
     margin: 20px auto;
