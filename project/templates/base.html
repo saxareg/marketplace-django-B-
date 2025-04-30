@@ -16,6 +16,8 @@
                     <li><a href="{% url 'products' %}">Главная</a></li>
                     {% if userprofile.role == 'seller' %}
                         <li><a href="{% url 'my-shops' %}">Мои магазины</a></li>
+                    {% elif userprofile.role == 'pp_staff' %}
+                        <li><a href="{% url 'my-pp' %}">Мой ПВЗ</a></li>
                     {% endif %}
                     <li><a href="{% url 'cart' %}">Корзина</a></li>
                     <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
