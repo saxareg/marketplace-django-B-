@@ -10,19 +10,27 @@
 {% block content %}
     <h1>Добро пожаловать в наш магазин!</h1>
 
+    <form method="get" action="" class="search-form">
+        <input type="text" name="q" placeholder="Поиск товаров..." value="{{ request.GET.q }}" class="search-input">
+        <button type="submit" class="search-button">🔍</button>
+    </form>
+
+    {% if products %}
     <div class="product-list">
         {% for product in products %}
             <div class="product-card">
                 {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
                 {% else %}
                     <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
                 {% endif %}
-                    <h2 class="product-name">{{ product.name|slice:":20" }}{% if product.name|length > 20 %}...{% endif %}</h2>
+                <h2 class="product-name">{{ product.name|slice:":20" }}{% if product.name|length > 20 %}...{% endif %}</h2>
                 <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
                 <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
             </div>
         {% endfor %}
     </div>
+    {% else %}
+        <p>По вашему запросу ничего не найдено.</p>
+    {% endif %}
 {% endblock %}
-
