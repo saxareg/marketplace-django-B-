@@ -15,19 +15,22 @@
             <p><strong>Номер телефона:</strong> {{ user_profile.phone }}</p>
         </div>
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="user_form">
-            {{ user_form.as_p }}
-            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-        </form>
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="phone_form">
-            {{ phone_form.as_p }}
-            <button type="submit" class="btn btn-primary">Сохранить номер</button>
-        </form>
+        {% if user_profile.role != 'pp_staff' %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="user_form">
+                {{ user_form.as_p }}
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            </form>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="phone_form">
+                {{ phone_form.as_p }}
+                <button type="submit" class="btn btn-primary">Сохранить номер</button>
+            </form>
+        {% endif %}
     </div>
 {% endblock %}
 
