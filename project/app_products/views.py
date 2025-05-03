@@ -4,11 +4,23 @@ from app_orders.models import Cart, CartItem
 from app_shops.models import Shop
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 
 def product_list(request):
+    query = request.GET.get('q')  # Приводим запрос к нижнему регистру
     products = Product.objects.all()
-    return render(request, 'products/products.html', {'products': products})
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(slug__icontains=query) |
+            Q(category__name__icontains=query) |
+            Q(shop__name__icontains=query)
+        ).distinct()
+
+    return render(request, 'products/products.html', {'products': products, 'query': query})
 
 
 def product_detail(request, slug):
