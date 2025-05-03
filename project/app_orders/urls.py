@@ -5,5 +5,7 @@ urlpatterns = [
     path('edit/', views.toggle_cart_item, name='toggle_cart_item'),
     path('remove/', views.cart_remove, name='cart_remove'),
     path('update-quantity/', views.cart_update_quantity, name='cart_update_quantity'),
-    path('', views.cart_view, name='cart')
+    path('', views.cart_view, name='cart'),
+    path('order-create/', views.order_create, name='order-create'),
+    path('my-orders/', views.my_orders_view, name='my-orders'),
 ]
