@@ -31,15 +31,13 @@ class OrderCreate(forms.Form):
     payment_method = forms.ChoiceField(
         choices=[('online', 'Онлайн'), ('offline', 'На месте')],
         widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        required=True,
+        error_messages={'required': ''},  # пустая строка = ничего не выводится
     )
 
     pickup_point = forms.ModelChoiceField(
         queryset=PickupPoints.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        required=True,
+        error_messages={'required': ''},
     )
-
-    class Meta:
-        model = Order
-        fields = ['payment_method', 'pickup_point']
