@@ -80,3 +80,73 @@ html {
     padding: 0 6px;
     font-size: 1.1rem;
 }
+
+.checkbox-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-container .checkmark {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #eee;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+}
+
+.checkbox-container input:checked + .checkmark {
+    background-color: #28a745;
+}
+
+.checkbox-container .checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked + .checkmark::after {
+    display: block;
+    left: 7px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-success:active {
+    background-color: #1e7e34;
+    transform: translateY(1px);
+}
+
+.btn-success:disabled {
+    background-color: #a1d7aa;
+    cursor: not-allowed;
+}
