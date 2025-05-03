@@ -3,19 +3,6 @@ from .models import Order, CartItem
 from app_users.models import PickupPoints
 
 
-class OrderCreateForm(forms.ModelForm):
-    pickup_point = forms.ModelChoiceField(
-        queryset=PickupPoints.objects.all(),
-        required=True,
-        label='Пункт выдачи',
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-    class Meta:
-        model = Order
-        fields = ['pickup_point']
-
-
 class CartItemForm(forms.ModelForm):
     class Meta:
         model = CartItem
@@ -38,3 +25,21 @@ class OrderStatusUpdateForm(forms.ModelForm):
             ('returned', 'Возвращён')
         ]
         self.fields['status'].choices = allowed_statuses
+
+
+class OrderCreate(forms.Form):
+    payment_method = forms.ChoiceField(
+        choices=[('online', 'Онлайн'), ('offline', 'На месте')],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+
+    pickup_point = forms.ModelChoiceField(
+        queryset=PickupPoints.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+
+    class Meta:
+        model = Order
+        fields = ['payment_method', 'pickup_point']
