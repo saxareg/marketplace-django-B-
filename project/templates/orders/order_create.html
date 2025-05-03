@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/order_create.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="order-wrapper">
+  <h1 class="order-title">Оформление заказа</h1>
+
+  <ul class="order-list">
+    {% for item in items %}
+      <li>
+        <span>{{ item.product.name }}</span>
+        <span>{{ item.quantity }} × {{ item.product.price }} ₽</span>
+      </li>
+    {% endfor %}
+  </ul>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  {% for item in items %}
+    <input type="hidden" name="selected_items" value="{{ item.id }}">
+  {% endfor %}
+
+  <button type="submit">Подтвердить заказ</button>
+</form>
+
+  <a href="{% url 'cart' %}" class="back-link">⬅ Вернуться в корзину</a>
+</div>
+{% endblock %}

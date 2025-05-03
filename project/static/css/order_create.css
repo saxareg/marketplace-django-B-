@@ -1,0 +1,100 @@
+/* Контейнер страницы */
+.order-wrapper {
+    max-width: 700px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Заголовок */
+.order-title {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Список товаров */
+.order-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+}
+
+.order-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eaeaea;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Стилизация формы */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+form label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+form select,
+form input[type="text"],
+form input[type="number"],
+form textarea {
+    padding: 12px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    background-color: #f9f9f9;
+    transition: border 0.3s ease;
+}
+
+form select:focus,
+form input:focus,
+form textarea:focus {
+    border-color: #007BFF;
+    background-color: #fff;
+    outline: none;
+}
+
+/* Кнопка отправки */
+button[type="submit"] {
+    background-color: #007BFF;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Ссылка "назад" */
+.back-link {
+    display: block;
+    margin-top: 30px;
+    text-align: center;
+    color: #007BFF;
+    font-size: 15px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
