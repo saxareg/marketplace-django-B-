@@ -4,9 +4,10 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Cart, CartItem, Order
+from .models import Cart, CartItem, Order, OrderItem
 from app_products.models import Product
-from .forms import OrderStatusUpdateForm
+from .forms import OrderStatusUpdateForm, OrderCreate
+from django.db import transaction
 
 
 @require_POST
@@ -110,3 +111,78 @@ def order_detail_view(request, order_id):
         'order': order,
         'form': form
     })
+
+
+@login_required
+@transaction.atomic
+def order_create(request):
+    cart = Cart.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        selected_ids = request.POST.getlist('selected_items')
+        form = OrderCreate(request.POST)
+
+        if not selected_ids:
+            return redirect('cart')
+
+        selected_items = cart.items.filter(id__in=selected_ids)
+
+        if form.is_valid():
+            orders_by_shop = {}
+
+            payment_method = form.cleaned_data['payment_method']
+            pickup_point = form.cleaned_data['pickup_point']
+            is_paid = payment_method == 'online'
+
+            for item in selected_items:
+                shop = item.product.shop
+                if shop not in orders_by_shop:
+                    orders_by_shop[shop] = {
+                        'items': [],
+                        'total_price': 0
+                    }
+
+                orders_by_shop[shop]['items'].append(item)
+                orders_by_shop[shop]['total_price'] += item.product.price * item.quantity
+
+            for shop, data in orders_by_shop.items():
+                order = Order.objects.create(
+                    user=request.user,
+                    shop=shop,
+                    pickup_point=pickup_point,
+                    total_price=data['total_price'],
+                    is_paid=is_paid,
+                )
+
+                for item in data['items']:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        quantity=item.quantity,
+                        price=item.product.price,
+                    )
+
+            return redirect('my-orders')
+    else:
+        form = OrderCreate()
+        selected_ids = request.GET.getlist('selected_items')
+        selected_items = cart.items.filter(id__in=selected_ids) if selected_ids else cart.items.all()
+
+    return render(request, 'orders/order_create.html', {
+        'form': form,
+        'items': selected_items,
+    })
+
+
+# @login_required
+# def orders_view(request):
+#     orders = (Order.objects.select_related('shop', 'pickup_point')
+#               .prefetch_related('items__product')
+#               .order_by('-created_at'))
+#     return render(request, 'orders/my_orders.html', {'orders': orders})
+
+
+@login_required
+def my_orders_view(request):
+    orders = request.user.orders.all()
+    return render(request, 'orders/my_orders.html', {'orders': orders})
