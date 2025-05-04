@@ -116,18 +116,36 @@ def order_detail_view(request, order_id):
 @login_required
 @transaction.atomic
 def order_create(request):
+    print("Order create view accessed")
+
     cart = Cart.objects.get(user=request.user)
 
-    if request.method == 'POST':
+    # Если это GET-запрос, отображаем форму оформления
+    if request.method == 'GET':
+        selected_ids = request.GET.getlist('selected_items')  # Список выбранных товаров
+        selected_items = cart.items.filter(id__in=selected_ids) if selected_ids else cart.items.all()
+
+        form = OrderCreate()
+        return render(request, 'orders/order_create.html', {
+            'form': form,
+            'items': selected_items,
+        })
+
+    # Если это POST-запрос, создаем заказ
+    elif request.method == 'POST':
+        print("POST request received")
+
         selected_ids = request.POST.getlist('selected_items')
         form = OrderCreate(request.POST)
 
         if not selected_ids:
+            print("No items selected")
             return redirect('cart')
 
         selected_items = cart.items.filter(id__in=selected_ids)
 
         if form.is_valid():
+            print(f"Form is valid: {form.cleaned_data}")
             orders_by_shop = {}
 
             payment_method = form.cleaned_data['payment_method']
@@ -162,24 +180,16 @@ def order_create(request):
                         price=item.product.price,
                     )
 
+            selected_items.delete()
+
             return redirect('my-orders')
-    else:
-        form = OrderCreate()
-        selected_ids = request.GET.getlist('selected_items')
-        selected_items = cart.items.filter(id__in=selected_ids) if selected_ids else cart.items.all()
 
-    return render(request, 'orders/order_create.html', {
-        'form': form,
-        'items': selected_items,
-    })
-
-
-# @login_required
-# def orders_view(request):
-#     orders = (Order.objects.select_related('shop', 'pickup_point')
-#               .prefetch_related('items__product')
-#               .order_by('-created_at'))
-#     return render(request, 'orders/my_orders.html', {'orders': orders})
+        else:
+            print(f"Form errors: {form.errors}")
+            return render(request, 'orders/order_create.html', {
+                'form': form,
+                'items': selected_items,
+            })
 
 
 @login_required

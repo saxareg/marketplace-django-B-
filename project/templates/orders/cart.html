@@ -9,7 +9,7 @@
 <h1 class="cart-title">Моя корзина</h1>
 
 {% if items %}
-<form id="checkout-form" method="POST" action="{% url 'order-create' %}">
+<form id="checkout-form" method="GET" action="{% url 'order-create' %}">
     {% csrf_token %}
     <div class="cart-container">
         {% for item in items %}
@@ -39,7 +39,6 @@
             <button type="button"
                     class="remove-button"
                     data-item-id="{{ item.id }}"
-                    data-subtotal="{{ item.subtotal }}"
                     title="Удалить из корзины">🗑️</button>
         </div>
         {% endfor %}
@@ -56,6 +55,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Логика удаления товара из корзины
         const buttons = document.querySelectorAll('.remove-button');
         const summaryElement = document.querySelector('.cart-summary p strong');
 
@@ -94,6 +94,7 @@
             });
         });
 
+        // Логика изменения количества товара в корзине
         document.querySelectorAll('.change-qty').forEach(button => {
             button.addEventListener('click', function () {
                 const itemId = this.dataset.itemId;
