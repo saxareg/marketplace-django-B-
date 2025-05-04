@@ -31,7 +31,7 @@ class Order(models.Model):
         ('delivered', 'Доставлен'),
         ('returned', 'Возвращён'),
         ('unclaimed', 'Невостребован'),
-    ], default='pending', db_index=True)  # Статус заказа
+    ], default='shipped', db_index=True)  # Статус заказа
     is_paid = models.BooleanField(default=False, db_index=True)  # Оплачен ли заказ
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)  # Время создания
     status_updated_at = models.DateTimeField(null=True, blank=True)  # Время изменения статуса
