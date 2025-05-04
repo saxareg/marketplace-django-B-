@@ -9,6 +9,7 @@ urlpatterns = [
     path('users/', include('app_users.urls')),
     path('cart/', include('app_orders.urls')),
     path('shops/', include('app_shops.urls')),
+    path('admin/', include('app_admin.urls')),  # Кастомная админка
     path('', lambda request: redirect('products/')),
 ]
 
