@@ -33,19 +33,15 @@
     {% for item in items %}
       <input type="hidden" name="selected_items" value="{{ item.id }}">
     {% endfor %}
-
-    <input type="hidden" name="pickup_point" id="pickup-point-input">
-
     <button type="submit">Подтвердить заказ</button>
   </form>
 
   <h3>Наши пункты выдачи:</h3>
-  <script type="text/javascript" charset="utf-8" src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor:0899d9b405551d611a2c4e2fb48564172cfd225b73647e47218ae39101ad5011&amp;width=100%25&amp;height=450&amp;lang=ru_RU&amp;scroll=true"></script>
-
+  <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A6a0fa98dfbe396e9ef94a2d3d1a1df39d2b34c80789c99d7deb8aa4cb46a8cc6&amp;width=774&amp;height=602&amp;lang=ru_RU&amp;scroll=true"></script>
   <a href="{% url 'cart' %}" class="back-link">⬅ Вернуться в корзину</a>
 </div>
 
 <script>
-
+    // Скрипты для интерактивных элементов, если нужно
 </script>
 {% endblock %}
