@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/product_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="product-detail">
+    <h1>{{ product.name }}</h1>
+
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
+    {% else %}
+        <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
+    {% endif %}
+
+    <p><strong>Категория:</strong> {{ product.category.name }}</p>
+    <p><strong>Магазин:</strong>
+        <a class='shop-ref' href="{% url 'shop-detail' product.shop.slug %}">{{ product.shop.name }}</a>
+    </p>
+    <p><strong>Описание:</strong> {{ product.description }}</p>
+    <p><strong>Цена:</strong> {{ product.price }} ₽</p>
+
+    {% if is_owner %}
+        <a href="{% url 'edit_product' product.slug %}" class="btn btn-primary">Редактировать</a>
+        <form action="{% url 'delete_product' product.slug %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+    {% else %}
+        <button id="add-to-cart-btn" class="add-to-cart-btn" data-product-id="{{ product.id }}">
+            {% if in_cart %}
+                Убрать из корзины
+            {% else %}
+                Добавить в корзину
+            {% endif %}
+        </button>
+    {% endif %}
+</div>
+
+<script>
+    const btn = document.getElementById('add-to-cart-btn');
+    const message = document.getElementById('cart-message');
+
+    btn.addEventListener('click', function () {
+        const productId = this.dataset.productId;
+
+        fetch("{% url 'toggle_cart_item' %}", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ product_id: productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.in_cart) {
+                    btn.textContent = 'Убрать из корзины';
+                } else {
+                    btn.textContent = 'Добавить в корзину';
+                }
+            } else {
+                message.textContent = 'Ошибка: ' + (data.message || 'Попробуйте снова.');
+            }
+        })
+        .catch(error => {
+            message.textContent = 'Ошибка соединения.';
+        });
+    });
+</script>
+{% endblock %}

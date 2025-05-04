@@ -1,13 +1,14 @@
-from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('custom-admin/', include('app_admin.urls')),
     path('products/', include('app_products.urls')),
-    path('auth/', include('app_users.urls')),
+    path('users/', include('app_users.urls')),
+    path('cart/', include('app_orders.urls')),
+    path('shops/', include('app_shops.urls')),
     path('', lambda request: redirect('products/')),
 ]
 

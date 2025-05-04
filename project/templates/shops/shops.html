@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мои магазины{% endblock %}
+
+{% block content %}
+<div class="shops-container">
+    <h1>Мои магазины</h1>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="create-btn-wrapper">
+        <a href="{% url 'shop-create-request' %}" class="btn btn-success create-shop-btn">+ Создать магазин</a>
+    </div>
+
+    {% if shops %}
+        <div class="shops-list">
+            {% for shop in shops %}
+                <div class="shop-card">
+                    <div class="shop-info">
+                        <h2>{{ shop.name }}</h2>
+                        <p><strong>Описание:</strong> {{ shop.description }}</p>
+                    </div>
+                    <div class="shop-actions">
+                        <a href="{% url 'shop-detail' shop.slug %}" class="btn btn-primary">Подробнее</a>
+                        <form action="{% url 'shop-delete' shop.slug %}" method="POST" class="delete-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-shops-msg">У вас пока нет магазинов.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/shops.css' %}">
+{% endblock %}

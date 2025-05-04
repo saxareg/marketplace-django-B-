@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ shop.name }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/shop_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="shop-detail-container">
+    <div class="shop-header">
+        {% if shop.logo %}
+            <img src="{{ shop.logo.url }}" alt="{{ shop.name }}" class="shop-logo">
+        {% else %}
+            <img src="{% static 'images/default-logo.jpg' %}" alt="{{ shop.name }}" class="shop-logo">
+        {% endif %}
+        <div class="shop-info">
+            <h1>{{ shop.name }}</h1>
+            <p class="shop-meta">
+                Владелец: {{ shop.owner.username }}<br>
+                Дата создания: {{ shop.created_at|date:"d.m.Y" }}<br>
+                Статус:
+                {% if shop.is_active %}
+                    <span class="status-active">Активен</span>
+                {% else %}
+                    <span class="status-inactive">Неактивен</span>
+                {% endif %}
+            </p>
+            {% if shop.description %}
+                <p class="shop-description">{{ shop.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="products-header">
+        <h2>Товары магазина</h2>
+        {% if user.is_authenticated and user == shop.owner %}
+            <a href="{% url 'create_product' %}?shop={{ shop.slug }}" class="btn-add-product">
+                ➕ Добавить товар
+            </a>
+        {% endif %}
+    </div>
+
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
+                    {% else %}
+                        <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
+                    {% endif %}
+                    <h2 class="product-name">{{ product.name|slice:":15" }}{% if product.name|length > 15 %}...{% endif %}</h2>
+                    <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
+                    <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>В этом магазине пока нет товаров.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1 class="cart-title">Моя корзина</h1>
+
+{% if items %}
+<form id="checkout-form" method="POST" action="{% url 'order-create' %}">
+    {% csrf_token %}
+    <div class="cart-container">
+        {% for item in items %}
+        <div class="cart-card">
+            <label class="checkbox-container">
+                <input type="checkbox" name="selected_items" value="{{ item.id }}" class="item-checkbox">
+                <span class="checkmark"></span>
+            </label>
+
+            {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
+            {% else %}
+                <img src="{% static 'images/default-preview.jpg' %}" alt="{{ item.product.name }}" class="product-image">
+            {% endif %}
+
+            <div class="card-details">
+                <h2>{{ item.product.name }}</h2>
+                <p>
+                    <button type="button" class="quantity-btn change-qty" data-action="decrease" data-item-id="{{ item.id }}">−</button>
+                    <span class="item-quantity">{{ item.quantity }}</span>
+                    <button type="button" class="quantity-btn change-qty" data-action="increase" data-item-id="{{ item.id }}">+</button>
+                    × {{ item.product.price }} ₽
+                </p>
+                <p><strong>Сумма:</strong> <span class="item-subtotal">{{ item.subtotal }}</span> ₽</p>
+            </div>
+
+            <button type="button"
+                    class="remove-button"
+                    data-item-id="{{ item.id }}"
+                    data-subtotal="{{ item.subtotal }}"
+                    title="Удалить из корзины">🗑️</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="cart-summary">
+        <p><strong>Общая сумма: {{ total_price }} ₽</strong></p>
+        <button type="submit" class="btn btn-success" name="checkout">Перейти к оформлению</button>
+    </div>
+</form>
+{% else %}
+    <p>Ваша корзина пуста.</p>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.remove-button');
+        const summaryElement = document.querySelector('.cart-summary p strong');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const itemId = this.dataset.itemId;
+                const card = this.closest('.cart-card');
+
+                fetch("{% url 'cart_remove' %}", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: `item_id=${itemId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        card.remove();
+                        if (document.querySelectorAll('.cart-card').length === 0) {
+                            document.querySelector('.cart-container').remove();
+                            document.querySelector('.cart-summary').remove();
+                            document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
+                        } else {
+                            summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;
+                        }
+                    } else {
+                        alert("Ошибка при удалении товара.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка запроса:", error);
+                    alert("Произошла ошибка при удалении.");
+                });
+            });
+        });
+
+        document.querySelectorAll('.change-qty').forEach(button => {
+            button.addEventListener('click', function () {
+                const itemId = this.dataset.itemId;
+                const action = this.dataset.action;
+                const card = this.closest('.cart-card');
+                const quantityElement = card.querySelector('.item-quantity');
+                const subtotalElement = card.querySelector('.item-subtotal');
+                const summaryElement = document.querySelector('.cart-summary p strong');
+
+                fetch("{% url 'cart_update_quantity' %}", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: `item_id=${itemId}&action=${action}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.quantity === 0) {
+                            card.remove();
+                        } else {
+                            quantityElement.textContent = data.quantity;
+                            subtotalElement.textContent = data.subtotal;
+                        }
+                        summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;
+
+                        if (document.querySelectorAll('.cart-card').length === 0) {
+                            document.querySelector('.cart-container').remove();
+                            document.querySelector('.cart-summary').remove();
+                            document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
+                        }
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

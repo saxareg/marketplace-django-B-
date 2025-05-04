@@ -1,0 +1,93 @@
+/* Контейнер страницы */
+.edit-product-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок */
+.edit-product-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Форма */
+.edit-product-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Каждая группа полей */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Лейблы */
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* Инпуты, текстовые поля, выбор файла */
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007BFF;
+    background-color: #fff;
+    outline: none;
+}
+
+/* Ошибки */
+.form-error {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Кнопки */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 10px 24px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-save {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+}

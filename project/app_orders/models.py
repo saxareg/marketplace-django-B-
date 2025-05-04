@@ -26,7 +26,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=[
         ('pending', 'Ожидает'),
         ('confirmed', 'Подтверждён'),
-        ('shipped', 'Отправлен'),
+        ('shipped', 'В пути'),
         ('ready_for_pickup', 'Готов к выдаче'),
         ('delivered', 'Доставлен'),
         ('returned', 'Возвращён'),

@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Вход{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
 
 {% block content %}
     <h1>Вход в магазин</h1>
@@ -12,6 +15,3 @@
     </form>
 {% endblock %}
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock %}

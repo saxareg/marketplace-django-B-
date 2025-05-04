@@ -1,0 +1,68 @@
+/* Сброс стилей по умолчанию */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+.order-detail h2 {
+    color: #007BFF;
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+}
+
+.order-detail p {
+    font-size: 16px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.order-detail form {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.order-detail form button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.order-detail form button:hover {
+    background-color: #218838;
+}
+
+.order-detail a {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.order-detail a:hover {
+    text-decoration: underline;
+}
+
+.order-detail strong {
+    color: #007BFF;
+    font-weight: bold;
+}
+
+body {
+    transition: background-color 0.3s ease;
+}

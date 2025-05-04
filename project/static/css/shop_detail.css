@@ -1,0 +1,155 @@
+/* Основной контейнер страницы магазина */
+.shop-detail-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #343a40;
+    background-color: #ffffff;
+}
+
+/* Заголовок и логотип магазина */
+.shop-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.shop-logo {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+}
+
+.shop-info h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #007BFF;
+}
+
+.shop-meta {
+    font-size: 0.95rem;
+    color: #555;
+    margin: 0.5rem 0;
+}
+
+.shop-description {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    color: #333;
+}
+
+.status-active {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Заголовок и кнопка для добавления товара */
+.products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.products-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #343a40;
+}
+
+/* Стиль кнопки добавления товара */
+.btn-add-product {
+    background-color: #007BFF;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Эффект при наведении на кнопку */
+.btn-add-product:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Сетка товаров */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    background-color: #fefefe;
+    transition: box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.product-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    color: #007BFF;
+    margin: 0.5rem 0;
+}
+
+.product-price {
+    color: #28a745;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.view-details {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #007BFF;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.view-details:hover {
+    background-color: #0056b3;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .products-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-add-product {
+        margin-top: 1rem;
+    }
+}
