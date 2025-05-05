@@ -39,11 +39,40 @@
     {% endif %}
 </div>
 
+<hr>
+
+<div class="review-section">
+    <h2>Отзывы о товаре</h2>
+
+    <div id="reviews">
+        {% for review in reviews %}
+            <div class="review">
+                <strong>{{ review.user.username }}</strong>
+                <span>{{ review.rating }} ⭐</span>
+                <p>{{ review.comment }}</p>
+                <small>{{ review.created_at|date:"d.m.Y H:i" }}</small>
+            </div>
+        {% empty %}
+            <p>Пока нет отзывов.</p>
+        {% endfor %}
+    </div>
+
+    {% if can_review %}
+    <div id="review-form-wrapper">
+        <h3>Оставить отзыв</h3>
+        <form id="review-form" method="post">
+            {% csrf_token %}
+            {{ review_form.as_p }}
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
 <script>
     const btn = document.getElementById('add-to-cart-btn');
-    const message = document.getElementById('cart-message');
 
-    btn.addEventListener('click', function () {
+    btn?.addEventListener('click', function () {
         const productId = this.dataset.productId;
 
         fetch("{% url 'toggle_cart_item' %}", {
@@ -57,17 +86,39 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                if (data.in_cart) {
-                    btn.textContent = 'Убрать из корзины';
-                } else {
-                    btn.textContent = 'Добавить в корзину';
-                }
-            } else {
-                message.textContent = 'Ошибка: ' + (data.message || 'Попробуйте снова.');
+                btn.textContent = data.in_cart ? 'Убрать из корзины' : 'Добавить в корзину';
             }
+        });
+    });
+
+    const reviewForm = document.getElementById('review-form');
+    reviewForm?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch("{% url 'add-review' product.slug %}", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
         })
-        .catch(error => {
-            message.textContent = 'Ошибка соединения.';
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const reviewsDiv = document.getElementById('reviews');
+                const reviewHTML = `
+                    <div class="review">
+                        <strong>${data.username}</strong>
+                        <span>${data.rating} ⭐</span>
+                        <p>${data.comment}</p>
+                        <small>только что</small>
+                    </div>`;
+                reviewsDiv.insertAdjacentHTML('afterbegin', reviewHTML);
+                reviewForm.remove();  // удалить форму после отправки
+            } else {
+                alert(data.error || 'Ошибка при отправке отзыва');
+            }
         });
     });
 </script>
