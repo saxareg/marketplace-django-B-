@@ -2,7 +2,6 @@
 {% load static %}
 {% block title %}Профиль{% endblock %}
 
-
 {% block content %}
     <div class="profile-container">
         <h1>Мой профиль</h1>
@@ -15,25 +14,30 @@
             <p><strong>Номер телефона:</strong> {{ user_profile.phone }}</p>
         </div>
 
-
         {% if user_profile.role != 'pp_staff' %}
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="hidden" name="form_type" value="user_form">
-                {{ user_form.as_p }}
-                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-            </form>
+            <div class="edit-section">
+                <h3>Редактировать профиль</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="user_form">
+                    {{ user_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </form>
+            </div>
 
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="hidden" name="form_type" value="phone_form">
-                {{ phone_form.as_p }}
-                <button type="submit" class="btn btn-primary">Сохранить номер</button>
-            </form>
+            <div class="edit-section">
+                <h3>Обновить номер телефона</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="phone_form">
+                    {{ phone_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Сохранить номер</button>
+                </form>
+            </div>
         {% endif %}
     </div>
 {% endblock %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
-{% endblock %}}
+{% endblock %}
