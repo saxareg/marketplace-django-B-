@@ -10,6 +10,7 @@
     <p><strong>ПВЗ:</strong> {{ order.pickup_point }}</p>
     <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
     <p><strong>Текущий статус:</strong> {{ order.get_status_display }}</p>
+    <p><strong>Оплачен:</strong> {{ order.is_paid }}</p>
 
     <form method="post">
       {% csrf_token %}
