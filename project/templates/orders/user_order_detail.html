@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/user_order_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="order-detail-wrapper">
+  <h2>Детали заказа #{{ order.id }} — {{ order.created_at|date:"d.m.Y H:i" }}</h2>
+
+  <p><strong>Магазин:</strong> {{ order.shop.name }}</p>
+  <p><strong>Пункт выдачи:</strong> {{ order.pickup_point.name }}</p>
+  <p><strong>Статус:</strong> {{ order.get_status_display }}</p>
+  <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
+  <p><strong>Оплачен:</strong> {{ order.is_paid|yesno:"Да,Нет" }}</p>
+
+  <h3>Товары в заказе:</h3>
+  <ul class="order-items">
+    {% for item in order.items.all %}
+      <li>{{ item.product.name }} — {{ item.quantity }} × {{ item.price }} ₽</li>
+    {% endfor %}
+  </ul>
+
+  <a class="back-link" href="{% url 'my-orders' %}">⬅ Назад к заказам</a>
+</div>
+{% endblock %}
