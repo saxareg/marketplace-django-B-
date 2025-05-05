@@ -63,7 +63,6 @@ def cart_view(request):
     })
 
 
-
 @require_POST
 def cart_update_quantity(request):
     item_id = request.POST.get('item_id')
@@ -205,9 +204,9 @@ def order_create(request):
 
 
 @login_required
-def my_orders_view(request):
-    orders = request.user.orders.all()
-    return render(request, 'orders/my_orders.html', {'orders': orders})
+def user_orders_view(request):
+    orders = request.user.orders.all().order_by('-created_at')
+    return render(request, 'orders/user_orders.html', {'orders': orders})
 
 
 @login_required
