@@ -204,3 +204,9 @@ def order_create(request):
 def my_orders_view(request):
     orders = request.user.orders.all()
     return render(request, 'orders/my_orders.html', {'orders': orders})
+
+
+@login_required
+def user_order_detail_view(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, 'orders/user_order_detail.html', {'order': order})
