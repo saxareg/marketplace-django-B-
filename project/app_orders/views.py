@@ -51,13 +51,17 @@ def cart_remove(request):
 def cart_view(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     items = CartItem.objects.filter(cart=cart)
-    total_price = sum(item.product.price * item.quantity for item in items)
+    for item in items:
+        item.subtotal = item.product.price * item.quantity
+
+    total_price = sum(item.subtotal for item in items)
 
     return render(request, 'orders/cart.html', {
         'cart': cart,
         'items': items,
         'total_price': total_price,
     })
+
 
 
 @require_POST
