@@ -80,3 +80,44 @@
 .search-button:hover {
     background-color: #0056b3;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 30px 0;
+}
+
+.pagination a,
+.pagination span {
+    padding: 8px 14px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #007BFF;
+    background-color: white;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination .current {
+    background-color: #007BFF;
+    color: white;
+    border-color: #007BFF;
+    pointer-events: none;
+    font-weight: bold;
+}
+
+.pagination .dots {
+    padding: 8px 10px;
+    color: #999;
+    border: none;
+    background: none;
+    cursor: default;
+}
+

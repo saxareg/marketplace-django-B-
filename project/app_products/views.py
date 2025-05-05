@@ -6,10 +6,11 @@ from .forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 
 
 def product_list(request):
-    query = request.GET.get('q')  # Приводим запрос к нижнему регистру
+    query = request.GET.get('q')
     products = Product.objects.all()
 
     if query:
@@ -21,7 +22,14 @@ def product_list(request):
             Q(shop__name__icontains=query)
         ).distinct()
 
-    return render(request, 'products/products.html', {'products': products, 'query': query})
+    paginator = Paginator(products, 24)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'products/products.html', {
+        'page_obj': page_obj,
+        'query': query,
+    })
 
 
 def product_detail(request, slug):

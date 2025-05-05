@@ -8,29 +8,56 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Добро пожаловать в наш магазин!</h1>
+<h1>Добро пожаловать в наш магазин!</h1>
 
-    <form method="get" action="" class="search-form">
-        <input type="text" name="q" placeholder="Поиск товаров..." value="{{ request.GET.q }}" class="search-input">
-        <button type="submit" class="search-button">🔍</button>
-    </form>
+<form method="get" action="" class="search-form">
+    <input type="text" name="q" placeholder="Поиск товаров..." value="{{ request.GET.q }}" class="search-input">
+    <button type="submit" class="search-button">🔍</button>
+</form>
 
-    {% if products %}
-    <div class="product-list">
-        {% for product in products %}
-            <div class="product-card">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
-                {% else %}
-                    <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
-                {% endif %}
-                <h2 class="product-name">{{ product.name|slice:":20" }}{% if product.name|length > 20 %}...{% endif %}</h2>
-                <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
-                <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
-            </div>
-        {% endfor %}
-    </div>
-    {% else %}
-        <p>По вашему запросу ничего не найдено.</p>
+{% if page_obj %}
+<div class="product-list">
+    {% for product in page_obj %}
+        <div class="product-card">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
+            {% else %}
+                <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
+            {% endif %}
+            <h2 class="product-name">{{ product.name|slice:":20" }}{% if product.name|length > 20 %}...{% endif %}</h2>
+            <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
+            <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Пагинация -->
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page=1">&laquo;</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}">‹</a>
     {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">{{ num }}</a>
+        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">{{ num }}</a>
+        {% elif forloop.first or forloop.last %}
+            <span class="dots">...</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}">›</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+    {% endif %}
+</div>
+
+
+{% else %}
+    <p>По вашему запросу ничего не найдено.</p>
+{% endif %}
 {% endblock %}
