@@ -82,7 +82,6 @@
 
 .add-to-cart-btn:hover {
     background-color: #218838;
-    transform: translateY(-1px);
 }
 
 #cart-message {

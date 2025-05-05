@@ -92,5 +92,14 @@ form button[type="submit"] {
 }
 
 form button[type="submit"]:hover {
-    background-color: #007BFF; /* Синий при наведении */
+    background-color: #218838;
+}
+
+.edit-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #343a40;
+    border-left: 5px solid #007BFF;
+    padding-left: 10px;
+    margin-top: 30px;
 }
