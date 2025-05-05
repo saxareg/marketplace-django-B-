@@ -102,8 +102,16 @@ def order_detail_view(request, order_id):
     if request.method == 'POST':
         form = OrderStatusUpdateForm(request.POST, instance=order)
         if form.is_valid():
-            form.save()
-            return redirect('order-detail', order_id=order_id)  # правильно
+            updated_order = form.save()
+
+            if updated_order.status in ['delivered', 'returned']:
+                updated_order.is_paid = True
+                updated_order.save()
+            else:
+                updated_order.is_paid = False
+                updated_order.save()
+
+            return redirect('order-detail', order_id=order_id)
     else:
         form = OrderStatusUpdateForm(instance=order)
 
