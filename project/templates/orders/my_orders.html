@@ -11,18 +11,20 @@
 
   {% if orders %}
     {% for order in orders %}
-      <div class="order-card">
-        <h2>Заказ #{{ order.id }} — {{ order.created_at|date:"d.m.Y H:i" }}</h2>
-        <p><strong>Магазин:</strong> {{ order.shop.name }}</p>
-        <p><strong>Пункт выдачи:</strong> {{ order.pickup_point.name }}</p>
-        <ul class="order-items">
-          {% for item in order.items.all %}
-            <li>
-              {{ item.product.name }} — {{ item.quantity }} × {{ item.price }} ₽
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
+      <a href="{% url 'user-order-detail' order.id %}" class="order-card-link">
+        <div class="order-card">
+          <h2>Заказ #{{ order.id }} — {{ order.created_at|date:"d.m.Y H:i" }}</h2>
+          <p><strong>Магазин:</strong> {{ order.shop.name }}</p>
+          <p><strong>Пункт выдачи:</strong> {{ order.pickup_point.name }}</p>
+          <ul class="order-items">
+            {% for item in order.items.all %}
+              <li>
+                {{ item.product.name }} — {{ item.quantity }} × {{ item.price }} ₽
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </a>
     {% endfor %}
   {% else %}
     <p>У вас пока нет заказов.</p>

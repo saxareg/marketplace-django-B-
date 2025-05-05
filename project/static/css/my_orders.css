@@ -44,3 +44,9 @@
     list-style-type: disc;
     color: #333;
 }
+
+.order-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
