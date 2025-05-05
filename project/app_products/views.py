@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product
-from app_orders.models import Cart, CartItem
+from .models import Product, Review
+from app_orders.models import Cart, CartItem, OrderItem
 from app_shops.models import Shop
-from .forms import ProductForm
+from .forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import JsonResponse
 
 
 def product_list(request):
@@ -24,18 +25,38 @@ def product_list(request):
 
 
 def product_detail(request, slug):
-    product = Product.objects.get(slug=slug)
+    product = get_object_or_404(Product, slug=slug)
     in_cart = False
     is_owner = product.shop.owner == request.user
+    can_review = False
+    review_form = None
 
     if request.user.is_authenticated:
         cart, _ = Cart.objects.get_or_create(user=request.user)
         in_cart = CartItem.objects.filter(cart=cart, product=product).exists()
 
+        # может ли пользователь оставить отзыв
+        has_paid = OrderItem.objects.filter(
+            order__user=request.user,
+            order__is_paid=True,
+            product=product
+        ).exists()
+
+        has_reviewed = Review.objects.filter(user=request.user, product=product).exists()
+
+        can_review = has_paid and not has_reviewed
+        if can_review:
+            review_form = ReviewForm()
+
+    reviews = product.reviews.all().order_by('-created_at')
+
     return render(request, 'products/product_detail.html', {
         'product': product,
         'in_cart': in_cart,
         'is_owner': is_owner,
+        'reviews': reviews,
+        'can_review': can_review,
+        'review_form': review_form,
     })
 
 
@@ -92,3 +113,38 @@ def create_product(request):
         form = ProductForm()
 
     return render(request, 'products/product_create.html', {'form': form, 'shop': shop})
+
+
+@login_required
+def add_review(request, slug):
+    if request.method == "POST" and request.user.is_authenticated:
+        product = get_object_or_404(Product, slug=slug)
+        form = ReviewForm(request.POST)
+
+        has_paid_order = OrderItem.objects.filter(
+            order__user=request.user,
+            order__is_paid=True,
+            product=product
+        ).exists()
+
+        if not has_paid_order:
+            return JsonResponse({'success': False, 'error': 'Вы можете оставить отзыв только после оплаты товара.'})
+
+        if Review.objects.filter(user=request.user, product=product).exists():
+            return JsonResponse({'success': False, 'error': 'Вы уже оставили отзыв.'})
+
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.product = product
+            review.save()
+            return JsonResponse({
+                'success': True,
+                'username': request.user.username,
+                'rating': review.rating,
+                'comment': review.comment,
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Некорректные данные формы.'})
+
+    return JsonResponse({'success': False, 'error': 'Недопустимый метод запроса.'})
