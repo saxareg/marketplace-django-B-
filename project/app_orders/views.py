@@ -100,7 +100,7 @@ def cart_update_quantity(request):
         return JsonResponse({'success': False, 'error': 'Item not found'})
 
 
-def order_detail_view(request, order_id):
+def pp_order_detail_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
     if request.method == 'POST':
