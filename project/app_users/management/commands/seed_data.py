@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # Очистка данных (кроме суперпользователей)
-        self.stdout.write('1/9: Clearing existing data')
+        self.stdout.write('Step 0/8: Clearing existing data')
         User.objects.exclude(is_superuser=True).delete()
         UserProfile.objects.all().delete()
         PickupPoints.objects.all().delete()
@@ -24,7 +24,7 @@ class Command(BaseCommand):
         Review.objects.all().delete()
 
         # 1. PickupPoints (10 штук, в ТЦ Беларуси)
-        self.stdout.write('2/9: Creating Pickup Points')
+        self.stdout.write('Step 1/8: Creating Pickup Points')
         pickup_points = [
             {"city": "Минск", "street": "пр-т Победителей, 9", "postal_code": "220004", "description": "ТЦ Galleria Minsk, 10:00-22:00", "is_active": True, "name": "Минск - ПВЗ #1"},
             {"city": "Минск", "street": "пр-т Дзержинского, 106", "postal_code": "220116", "description": "ТЦ Magnit, 10:00-21:00", "is_active": True, "name": "Минск - ПВЗ #2"},
@@ -37,12 +37,15 @@ class Command(BaseCommand):
             {"city": "Могилёв", "street": "ул. Ленинская, 83", "postal_code": "212030", "description": "ТЦ Панорама, 10:00-20:00", "is_active": True, "name": "Могилёв - ПВЗ #9"},
             {"city": "Бобруйск", "street": "ул. Минская, 133", "postal_code": "213809", "description": "ТЦ Корона, 09:00-21:00", "is_active": True, "name": "Бобруйск - ПВЗ #10"},
         ]
-        pvz_objects = []
+        
+        pp_objects = []
         for i, point in enumerate(pickup_points, 1):
-            pvz_username = f"pvz_worker_{point['name'].lower().replace(' ', '_').replace('#', '')}"
-            pvz_user = User.objects.create_user(
-                username=pvz_username,
-                email=f"mktplc-pvz_{i}@mailinator.com",
+            # Извлекаем номер PP из названия (ищем число после #)
+            pp_number = ''.join(filter(str.isdigit, point['name'].split('#')[-1]))
+            pp_username = f"pp_worker_{pp_number}"
+            pp_user = User.objects.create_user(
+                username=pp_username,
+                email=f"mktplc-pp_{pp_number}@mailinator.com",
                 password="12345"
             )
             point_obj = PickupPoints.objects.create(
@@ -54,14 +57,14 @@ class Command(BaseCommand):
                 name=point["name"]
             )
             UserProfile.objects.create(
-                user=pvz_user,
+                user=pp_user,
                 role="pp_staff",
                 pickup_point=point_obj
             )
-            pvz_objects.append(point_obj)
+            pp_objects.append(point_obj)
 
         # 2. Categories (8 штук)
-        self.stdout.write('3/9: Creating Categories')
+        self.stdout.write('Step 2/8: Creating Categories')
         categories = [
             {"name": "Электроника", "slug": "electronics", "description": "Смартфоны, ноутбуки, аксессуары"},
             {"name": "Одежда", "slug": "clothing", "description": "Мужская, женская и детская одежда"},
@@ -78,7 +81,7 @@ class Command(BaseCommand):
             category_objects.append(category_obj)
 
         # 3. Users and Profiles (10 покупателей, 5 продавцов)
-        self.stdout.write('4/9: Creating Users and Profiles')
+        self.stdout.write('Step 3/8: Creating Users and Profiles')
         buyers = []
         for i in range(1, 11):
             user = User.objects.create_user(
@@ -100,7 +103,7 @@ class Command(BaseCommand):
             sellers.append(user)
 
         # 4. Shops (5 штук: 2 общих, 3 узких)
-        self.stdout.write('5/9: Creating Shops')
+        self.stdout.write('Step 4/8: Creating Shops')
         shops = [
             {
                 "name": "Минск Маркет",
@@ -144,7 +147,7 @@ class Command(BaseCommand):
             shop_objects.append(shop_obj)
 
         # 5. Products (40 штук, распределены по магазинам и категориям)
-        self.stdout.write('6/9: Creating Products')
+        self.stdout.write('Step 5/8: Creating Products')
         products = [
             {"shop": shop_objects[0], "category": category_objects[0], "name": "Смартфон Samsung - Galaxy A54", "slug": "samsung-galaxy-a54", "description": "Samsung Galaxy A54, 128 ГБ, 5G", "price": 1200, "stock": 15, "is_active": True},
             {"shop": shop_objects[0], "category": category_objects[0], "name": "Ноутбук Lenovo - IdeaPad 3", "slug": "lenovo-ideapad-3", "description": "Lenovo IdeaPad 3, 16 ГБ RAM, SSD 512 ГБ", "price": 2500, "stock": 8, "is_active": True},
@@ -193,7 +196,7 @@ class Command(BaseCommand):
             product_objects.append(product_obj)
 
         # 6. Carts and CartItems (для buyer1–buyer5)
-        self.stdout.write('7/9: Creating Carts and CartItems')
+        self.stdout.write('Step 6/8: Creating Carts and CartItems')
         carts = [
             {
                 "user": buyers[0],
@@ -246,12 +249,12 @@ class Command(BaseCommand):
                 )
 
         # 7. Orders and OrderItems (для buyer1–buyer6, 15 заказов)
-        self.stdout.write('8/9: Creating Orders and OrderItems')
+        self.stdout.write('Step 7/8: Creating Orders and OrderItems')
         orders = [
             {
                 "user": buyers[0],
                 "shop": shop_objects[0],
-                "pickup_point": pvz_objects[0],
+                "pickup_point": pp_objects[0],
                 "status": "delivered",
                 "is_paid": True,
                 "created_at": timezone.now() - timedelta(days=13),
@@ -264,7 +267,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[0],
                 "shop": shop_objects[1],
-                "pickup_point": pvz_objects[1],
+                "pickup_point": pp_objects[1],
                 "status": "ready_for_pickup",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=8),
@@ -276,7 +279,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[0],
                 "shop": shop_objects[0],
-                "pickup_point": pvz_objects[2],
+                "pickup_point": pp_objects[2],
                 "status": "pending",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=1),
@@ -289,7 +292,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[1],
                 "shop": shop_objects[2],
-                "pickup_point": pvz_objects[3],
+                "pickup_point": pp_objects[3],
                 "status": "returned",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=12),
@@ -301,7 +304,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[1],
                 "shop": shop_objects[1],
-                "pickup_point": pvz_objects[4],
+                "pickup_point": pp_objects[4],
                 "status": "confirmed",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=3),
@@ -314,7 +317,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[2],
                 "shop": shop_objects[2],
-                "pickup_point": pvz_objects[5],
+                "pickup_point": pp_objects[5],
                 "status": "delivered",
                 "is_paid": True,
                 "created_at": timezone.now() - timedelta(days=14),
@@ -326,7 +329,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[2],
                 "shop": shop_objects[2],
-                "pickup_point": pvz_objects[6],
+                "pickup_point": pp_objects[6],
                 "status": "ready_for_pickup",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=9),
@@ -339,7 +342,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[2],
                 "shop": shop_objects[0],
-                "pickup_point": pvz_objects[0],
+                "pickup_point": pp_objects[0],
                 "status": "shipped",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=5),
@@ -351,7 +354,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[3],
                 "shop": shop_objects[3],
-                "pickup_point": pvz_objects[7],
+                "pickup_point": pp_objects[7],
                 "status": "delivered",
                 "is_paid": True,
                 "created_at": timezone.now() - timedelta(days=15),
@@ -364,7 +367,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[3],
                 "shop": shop_objects[3],
-                "pickup_point": pvz_objects[8],
+                "pickup_point": pp_objects[8],
                 "status": "confirmed",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=4),
@@ -376,7 +379,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[4],
                 "shop": shop_objects[4],
-                "pickup_point": pvz_objects[9],
+                "pickup_point": pp_objects[9],
                 "status": "ready_for_pickup",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=11),
@@ -389,7 +392,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[4],
                 "shop": shop_objects[0],
-                "pickup_point": pvz_objects[1],
+                "pickup_point": pp_objects[1],
                 "status": "returned",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=13),
@@ -401,7 +404,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[4],
                 "shop": shop_objects[1],
-                "pickup_point": pvz_objects[2],
+                "pickup_point": pp_objects[2],
                 "status": "shipped",
                 "is_paid": False,
                 "created_at": timezone.now() - timedelta(days=6),
@@ -413,7 +416,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[5],
                 "shop": shop_objects[4],
-                "pickup_point": pvz_objects[3],
+                "pickup_point": pp_objects[3],
                 "status": "delivered",
                 "is_paid": True,
                 "created_at": timezone.now() - timedelta(days=16),
@@ -425,7 +428,7 @@ class Command(BaseCommand):
             {
                 "user": buyers[5],
                 "shop": shop_objects[2],
-                "pickup_point": pvz_objects[4],
+                "pickup_point": pp_objects[4],
                 "status": "pending",
                 "is_paid": False,
                 "created_at": timezone.now(),
@@ -457,7 +460,7 @@ class Command(BaseCommand):
                 )
 
         # 8. Reviews (10 отзывов от buyer1–buyer6 на товары из заказов)
-        self.stdout.write('9/9: Creating Reviews')
+        self.stdout.write('Step 8/8: Creating Reviews')
         reviews = [
             {
                 "user": buyers[0],
