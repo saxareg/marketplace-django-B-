@@ -19,11 +19,7 @@
 <div class="product-list">
     {% for product in page_obj %}
         <div class="product-card">
-            {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
-            {% else %}
-                <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
-            {% endif %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
             <h2 class="product-name">{{ product.name|slice:":20" }}{% if product.name|length > 20 %}...{% endif %}</h2>
             <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
             <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
