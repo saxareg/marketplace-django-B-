@@ -20,7 +20,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)  # Описание товара
     price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)  # Цена
     stock = models.PositiveIntegerField(default=0)  # Количество
-    image = models.ImageField(upload_to='products/images/', default='products/images/default.jpg', blank=True, null=True)
+    image = models.ImageField(upload_to='products/', default='products/default_product_image.jpg', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)  # Время создания
     is_active = models.BooleanField(default=True, db_index=True)  # Активность товара
     def __str__(self): return self.name

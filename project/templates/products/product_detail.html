@@ -12,7 +12,7 @@
     {% if product.image %}
         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
     {% else %}
-        <img src="/media/products/images/default.jpg" alt="{{ product.name }}" class="product-image">
+        <img src="/media/products/default_product_image.jpg" alt="{{ product.name }}" class="product-image">
     {% endif %}
 
     <p><strong>Категория:</strong> {{ product.category.name }}</p>
