@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from app_users.models import UserProfile, PickupPoints
-from app_shops.models import Shop
+from app_shops.models import Shop, ShopCreationRequest
 from app_products.models import Category, Product, Review
 from app_orders.models import Cart, CartItem, Order, OrderItem
 
@@ -12,19 +12,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # Очистка данных (кроме суперпользователей)
-        self.stdout.write('Step 0/8: Clearing existing data')
+        self.stdout.write('Step 0/9: Clearing existing data')
         User.objects.exclude(is_superuser=True).delete()
         UserProfile.objects.all().delete()
         PickupPoints.objects.all().delete()
         Category.objects.all().delete()
         Shop.objects.all().delete()
+        ShopCreationRequest.objects.all().delete()
         Product.objects.all().delete()
         Cart.objects.all().delete()
         Order.objects.all().delete()
         Review.objects.all().delete()
 
         # 1. PickupPoints (10 штук, в ТЦ Беларуси)
-        self.stdout.write('Step 1/8: Creating Pickup Points')
+        self.stdout.write('Step 1/9: Creating Pickup Points')
         pickup_points = [
             {"city": "Минск", "street": "пр-т Победителей, 9", "postal_code": "220004", "description": "ТЦ Galleria Minsk, 10:00-22:00", "is_active": True, "name": "Минск - ПВЗ #1"},
             {"city": "Минск", "street": "пр-т Дзержинского, 106", "postal_code": "220116", "description": "ТЦ Magnit, 10:00-21:00", "is_active": True, "name": "Минск - ПВЗ #2"},
@@ -64,7 +65,7 @@ class Command(BaseCommand):
             pp_objects.append(point_obj)
 
         # 2. Categories (8 штук)
-        self.stdout.write('Step 2/8: Creating Categories')
+        self.stdout.write('Step 2/9: Creating Categories')
         categories = [
             {"name": "Электроника", "slug": "electronics", "description": "Смартфоны, ноутбуки, аксессуары"},
             {"name": "Одежда", "slug": "clothing", "description": "Мужская, женская и детская одежда"},
@@ -81,7 +82,7 @@ class Command(BaseCommand):
             category_objects.append(category_obj)
 
         # 3. Users and Profiles (10 покупателей, 5 продавцов)
-        self.stdout.write('Step 3/8: Creating Users and Profiles')
+        self.stdout.write('Step 3/9: Creating Users and Profiles')
         buyers = []
         for i in range(1, 11):
             user = User.objects.create_user(
@@ -103,7 +104,7 @@ class Command(BaseCommand):
             sellers.append(user)
 
         # 4. Shops (5 штук: 2 общих, 3 узких)
-        self.stdout.write('Step 4/8: Creating Shops')
+        self.stdout.write('Step 4/9: Creating Shops')
         shops = [
             {
                 "name": "Минск Маркет",
@@ -146,8 +147,42 @@ class Command(BaseCommand):
             shop_obj = Shop.objects.create(**shop)
             shop_objects.append(shop_obj)
 
-        # 5. Products (40 штук, распределены по магазинам и категориям)
-        self.stdout.write('Step 5/8: Creating Products')
+        # 5. ShopCreationRequests (3 заявки от buyer1, buyer2, buyer3)
+        self.stdout.write('Step 5/9: Creating Shop Creation Requests')
+        shop_requests = [
+            {
+                "name": "ЭкоМагазин",
+                "slug": "eco-shop",
+                "user": buyers[0],  # buyer1
+                "description": "Магазин экологичных товаров: продукты, косметика. Работает Пн-Сб 09:00-20:00.",
+                "is_active": True,
+                "status": "pending",
+                "response_time": None,
+            },
+            {
+                "name": "ГаджетПлюс",
+                "slug": "gadget-plus",
+                "user": buyers[1],  # buyer2
+                "description": "Магазин гаджетов и аксессуаров. Работает Пн-Вс 10:00-21:00.",
+                "is_active": True,
+                "status": "pending",
+                "response_time": None,
+            },
+            {
+                "name": "Детский Мир",
+                "slug": "kids-world",
+                "user": buyers[2],  # buyer3
+                "description": "Товары для детей: игрушки, одежда. Работает Пн-Пт 09:00-18:00.",
+                "is_active": True,
+                "status": "rejected",
+                "response_time": timezone.now() - timedelta(days=3),
+            },
+        ]
+        for request in shop_requests:
+            ShopCreationRequest.objects.create(**request)
+
+        # 6. Products (40 штук, распределены по магазинам и категориям)
+        self.stdout.write('Step 6/9: Creating Products')
         products = [
             {"shop": shop_objects[0], "category": category_objects[0], "name": "Смартфон Samsung - Galaxy A54", "slug": "samsung-galaxy-a54", "description": "Samsung Galaxy A54, 128 ГБ, 5G", "price": 1200, "stock": 15, "is_active": True},
             {"shop": shop_objects[0], "category": category_objects[0], "name": "Ноутбук Lenovo - IdeaPad 3", "slug": "lenovo-ideapad-3", "description": "Lenovo IdeaPad 3, 16 ГБ RAM, SSD 512 ГБ", "price": 2500, "stock": 8, "is_active": True},
@@ -195,8 +230,8 @@ class Command(BaseCommand):
             product_obj = Product.objects.create(**prod)
             product_objects.append(product_obj)
 
-        # 6. Carts and CartItems (для buyer1–buyer5)
-        self.stdout.write('Step 6/8: Creating Carts and CartItems')
+        # 7. Carts and CartItems (для buyer1–buyer5)
+        self.stdout.write('Step 7/9: Creating Carts and CartItems')
         carts = [
             {
                 "user": buyers[0],
@@ -248,8 +283,8 @@ class Command(BaseCommand):
                     quantity=item["quantity"]
                 )
 
-        # 7. Orders and OrderItems (для buyer1–buyer6, 15 заказов)
-        self.stdout.write('Step 7/8: Creating Orders and OrderItems')
+        # 8. Orders and OrderItems (для buyer1–buyer6, 15 заказов)
+        self.stdout.write('Step 8/9: Creating Orders and OrderItems')
         orders = [
             {
                 "user": buyers[0],
@@ -459,8 +494,8 @@ class Command(BaseCommand):
                     price=item["price"]
                 )
 
-        # 8. Reviews (10 отзывов от buyer1–buyer6 на товары из заказов)
-        self.stdout.write('Step 8/8: Creating Reviews')
+        # 9. Reviews (10 отзывов от buyer1–buyer6 на товары из заказов)
+        self.stdout.write('Step 9/9: Creating Reviews')
         reviews = [
             {
                 "user": buyers[0],
