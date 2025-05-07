@@ -32,7 +32,7 @@ class OrderCreate(forms.Form):
         choices=[('online', 'Онлайн'), ('offline', 'На месте')],
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=True,
-        error_messages={'required': ''},  # пустая строка = ничего не выводится
+        error_messages={'required': ''},
     )
 
     pickup_point = forms.ModelChoiceField(

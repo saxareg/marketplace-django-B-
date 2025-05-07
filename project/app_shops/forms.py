@@ -40,7 +40,7 @@ class ShopCreationRequestForm(BaseShopForm):
         fields = BaseShopForm.Meta.fields
 
     def clean_slug(self):
-        slug = super().clean_slug()  # Получаем слаг из базовой формы
+        slug = super().clean_slug()
         if ShopCreationRequest.objects.filter(slug=slug).exists():
             raise forms.ValidationError("Этот URL-идентификатор уже занят.")
         return slug

@@ -43,7 +43,6 @@ def product_detail(request, slug):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         in_cart = CartItem.objects.filter(cart=cart, product=product).exists()
 
-        # может ли пользователь оставить отзыв
         has_paid = OrderItem.objects.filter(
             order__user=request.user,
             order__is_paid=True,
@@ -51,8 +50,8 @@ def product_detail(request, slug):
         ).exists()
 
         has_reviewed = Review.objects.filter(user=request.user, product=product).exists()
-
         can_review = has_paid and not has_reviewed
+
         if can_review:
             review_form = ReviewForm()
 

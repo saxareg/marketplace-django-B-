@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.core.mail import send_mail
 from .models import Order
 
+
 @shared_task
 def notify_ready_orders():
     orders = Order.objects.filter(status='ready_for_pickup')
@@ -14,6 +15,7 @@ def notify_ready_orders():
             'your_email@gmail.com',
             [order.user.email],
         )
+
 
 @shared_task
 def mark_unclaimed_orders():

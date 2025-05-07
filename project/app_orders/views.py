@@ -16,13 +16,11 @@ def toggle_cart_item(request):
     data = json.loads(request.body)
     product_id = data.get("product_id")
     user = request.user
-
     if not user.is_authenticated:
         return JsonResponse({"success": False, "message": "Вы не авторизованы."})
 
     product = Product.objects.get(id=product_id)
     cart, _ = Cart.objects.get_or_create(user=user)
-
     cart_item = CartItem.objects.filter(cart=cart, product=product).first()
 
     if cart_item:
@@ -55,7 +53,6 @@ def cart_view(request):
         item.subtotal = item.product.price * item.quantity
 
     total_price = sum(item.subtotal for item in items)
-
     return render(request, 'orders/cart.html', {
         'cart': cart,
         'items': items,
@@ -127,13 +124,10 @@ def pp_order_detail_view(request, order_id):
 @login_required
 @transaction.atomic
 def order_create(request):
-    print("Order create view accessed")
-
     cart = Cart.objects.get(user=request.user)
 
-    # Если это GET-запрос, отображаем форму оформления
     if request.method == 'GET':
-        selected_ids = request.GET.getlist('selected_items')  # Список выбранных товаров
+        selected_ids = request.GET.getlist('selected_items')
         selected_items = cart.items.filter(id__in=selected_ids) if selected_ids else cart.items.all()
 
         form = OrderCreate()
@@ -142,23 +136,17 @@ def order_create(request):
             'items': selected_items,
         })
 
-    # Если это POST-запрос, создаем заказ
     elif request.method == 'POST':
-        print("POST request received")
-
         selected_ids = request.POST.getlist('selected_items')
         form = OrderCreate(request.POST)
 
         if not selected_ids:
-            print("No items selected")
             return redirect('cart')
 
         selected_items = cart.items.filter(id__in=selected_ids)
 
         if form.is_valid():
-            print(f"Form is valid: {form.cleaned_data}")
             orders_by_shop = {}
-
             payment_method = form.cleaned_data['payment_method']
             pickup_point = form.cleaned_data['pickup_point']
             is_paid = payment_method == 'online'
@@ -192,7 +180,6 @@ def order_create(request):
                     )
 
             selected_items.delete()
-
             return redirect('my-orders')
 
         else:
