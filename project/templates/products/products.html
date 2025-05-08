@@ -56,27 +56,6 @@
         <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.paginator.num_pages }}">&raquo;</a>
     {% endif %}
 </div>
-
-
-{% else %}
-    <p>По вашему запросу ничего не найдено.</p>
 {% endif %}
-    {% if products %}
-    <div class="product-list">
-        {% for product in products %}
-            <div class="product-card">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
-                    <img src="/media/products/default_product_image.jpg" alt="{{ product.name }}" class="product-image">
-                {% endif %}
-                <h2 class="product-name">{{ product.name|slice:":20" }}{% if product.name|length > 20 %}...{% endif %}</h2>
-                <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
-                <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
-            </div>
-        {% endfor %}
-    </div>
-    {% else %}
-        <p>По вашему запросу ничего не найдено.</p>
-    {% endif %}
+
 {% endblock %}
