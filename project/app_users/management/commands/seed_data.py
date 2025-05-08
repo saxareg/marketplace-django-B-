@@ -10,12 +10,15 @@ from django.core.files import File
 import os
 from django.conf import settings
 
+
 class Command(BaseCommand):
     help = 'Seeds the database with test data for Belarus marketplace'
 
     def handle(self, *args, **kwargs):
-        # Очистка данных (кроме суперпользователей)
+        # Step 0/9: Clearing existing data
         self.stdout.write('Step 0/9: Clearing existing data')
+
+        # Очистка базы данных
         User.objects.exclude(is_superuser=True).delete()
         UserProfile.objects.all().delete()
         PickupPoints.objects.all().delete()
@@ -26,6 +29,26 @@ class Command(BaseCommand):
         Cart.objects.all().delete()
         Order.objects.all().delete()
         Review.objects.all().delete()
+
+        # Очистка папки media/, удаляя только файлы с префиксами shop_ и product_
+        media_root = settings.MEDIA_ROOT  # Используем путь из settings.py
+        shops_dir = os.path.join(media_root, 'shops')
+        products_dir = os.path.join(media_root, 'products')
+
+        # Очистка файлов только если папки существуют
+        if os.path.exists(shops_dir):
+            for filename in os.listdir(shops_dir):
+                if filename.startswith('shop_'):  # Учитываем возможные суффиксы
+                    file_path = os.path.join(shops_dir, filename)
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+
+        if os.path.exists(products_dir):
+            for filename in os.listdir(products_dir):
+                if filename.startswith('product_'):  # Учитываем возможные суффиксы
+                    file_path = os.path.join(products_dir, filename)
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
 
         # 1. PickupPoints (10 штук, в ТЦ Беларуси)
         self.stdout.write('Step 1/9: Creating Pickup Points')

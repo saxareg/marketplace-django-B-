@@ -173,3 +173,15 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# PROJECT RELATED
+
+# Игнорировать все файлы и папки в media/
+project/media/*
+
+# Исключить файлы, начинающиеся с default_ в media/
+!project/media/default_*
+
+# Убедиться, что вложенные файлы тоже игнорируются, но исключения применяются
+project/media/**/*
+!project/media/**/*default_*
