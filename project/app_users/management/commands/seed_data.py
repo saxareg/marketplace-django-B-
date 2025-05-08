@@ -6,6 +6,9 @@ from app_users.models import UserProfile, PickupPoints
 from app_shops.models import Shop, ShopCreationRequest
 from app_products.models import Category, Product, Review
 from app_orders.models import Cart, CartItem, Order, OrderItem
+from django.core.files import File
+import os
+from django.conf import settings
 
 class Command(BaseCommand):
     help = 'Seeds the database with test data for Belarus marketplace'
@@ -41,7 +44,6 @@ class Command(BaseCommand):
         
         pp_objects = []
         for i, point in enumerate(pickup_points, 1):
-            # Извлекаем номер PP из названия (ищем число после #)
             pp_number = ''.join(filter(str.isdigit, point['name'].split('#')[-1]))
             pp_username = f"pp_worker_{pp_number}"
             pp_user = User.objects.create_user(
@@ -105,6 +107,7 @@ class Command(BaseCommand):
 
         # 4. Shops (5 штук: 2 общих, 3 узких)
         self.stdout.write('Step 4/9: Creating Shops')
+        base_dir = os.path.dirname(os.path.abspath(__file__))
         shops = [
             {
                 "name": "Минск Маркет",
@@ -144,6 +147,12 @@ class Command(BaseCommand):
         ]
         shop_objects = []
         for shop in shops:
+            source_path = os.path.join(base_dir, 'images', f'shop_{shop["slug"]}.jpg')
+            if os.path.exists(source_path):
+                file_name = os.path.basename(source_path)
+                shop["logo"] = File(open(source_path, 'rb'), name=file_name)
+            else:
+                shop["logo"] = None
             shop_obj = Shop.objects.create(**shop)
             shop_objects.append(shop_obj)
 
@@ -153,7 +162,7 @@ class Command(BaseCommand):
             {
                 "name": "ЭкоМагазин",
                 "slug": "eco-shop",
-                "user": buyers[0],  # buyer1
+                "user": buyers[0],
                 "description": "Магазин экологичных товаров: продукты, косметика. Работает Пн-Сб 09:00-20:00.",
                 "is_active": True,
                 "status": "pending",
@@ -162,7 +171,7 @@ class Command(BaseCommand):
             {
                 "name": "ГаджетПлюс",
                 "slug": "gadget-plus",
-                "user": buyers[1],  # buyer2
+                "user": buyers[1],
                 "description": "Магазин гаджетов и аксессуаров. Работает Пн-Вс 10:00-21:00.",
                 "is_active": True,
                 "status": "pending",
@@ -171,18 +180,27 @@ class Command(BaseCommand):
             {
                 "name": "Детский Мир",
                 "slug": "kids-world",
-                "user": buyers[2],  # buyer3
+                "user": buyers[2],
                 "description": "Товары для детей: игрушки, одежда. Работает Пн-Пт 09:00-18:00.",
                 "is_active": True,
                 "status": "rejected",
                 "response_time": timezone.now() - timedelta(days=3),
             },
         ]
+        request_objects = []
         for request in shop_requests:
-            ShopCreationRequest.objects.create(**request)
+            source_path = os.path.join(base_dir, 'images', f'shop_{request["slug"]}.jpg')
+            if os.path.exists(source_path):
+                file_name = os.path.basename(source_path)
+                request["logo"] = File(open(source_path, 'rb'), name=file_name)
+            else:
+                request["logo"] = None
+            request_obj = ShopCreationRequest.objects.create(**request)
+            request_objects.append(request_obj)
 
         # 6. Products (40 штук, распределены по магазинам и категориям)
         self.stdout.write('Step 6/9: Creating Products')
+        base_dir = os.path.dirname(os.path.abspath(__file__))
         products = [
             {"shop": shop_objects[0], "category": category_objects[0], "name": "Смартфон Samsung - Galaxy A54", "slug": "samsung-galaxy-a54", "description": "Samsung Galaxy A54, 128 ГБ, 5G", "price": 1200, "stock": 15, "is_active": True},
             {"shop": shop_objects[0], "category": category_objects[0], "name": "Ноутбук Lenovo - IdeaPad 3", "slug": "lenovo-ideapad-3", "description": "Lenovo IdeaPad 3, 16 ГБ RAM, SSD 512 ГБ", "price": 2500, "stock": 8, "is_active": True},
@@ -227,6 +245,12 @@ class Command(BaseCommand):
         ]
         product_objects = []
         for prod in products:
+            source_path = os.path.join(base_dir, 'images', f'product_{prod["slug"]}.jpg')
+            if os.path.exists(source_path):
+                file_name = os.path.basename(source_path)
+                prod["image"] = File(open(source_path, 'rb'), name=file_name)
+            else:
+                prod["image"] = None
             product_obj = Product.objects.create(**prod)
             product_objects.append(product_obj)
 

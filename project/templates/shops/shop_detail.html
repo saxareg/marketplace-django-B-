@@ -10,7 +10,11 @@
 {% block content %}
 <div class="shop-detail-container">
     <div class="shop-header">
-        <img src="{{ shop.logo.url }}" alt="{{ shop.name }}" class="shop-logo" onerror="this.onerror=null; this.src='{% static '/images/default-logo.jpg' %}'">
+        {% if shop.logo %}
+            <img src="{{ shop.logo.url }}" alt="{{ shop.name }}" class="shop-logo">
+        {% else %}
+            <img src=src="/media/shops/default_shop_logo.jpg" alt="{{ shop.name }}" class="shop-logo">
+        {% endif %}
         <div class="shop-info">
             <h1>{{ shop.name }}</h1>
             <p class="shop-meta">
@@ -42,7 +46,11 @@
         <div class="product-grid">
             {% for product in products %}
                 <div class="product-card">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                        <img src="/media/products/default_product_image.jpg" alt="{{ product.name }}" class="product-image">
+                    {% endif %}
                     <h2 class="product-name">{{ product.name|slice:":15" }}{% if product.name|length > 15 %}...{% endif %}</h2>
                     <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
                     <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>

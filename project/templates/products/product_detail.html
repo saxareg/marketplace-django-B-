@@ -8,7 +8,13 @@
 {% block content %}
 <div class="product-detail">
     <h1>{{ product.name }}</h1>
-    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
+
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static '/images/default-preview.jpg' %}'">
+    {% else %}
+        <img src="/media/products/default_product_image.jpg" alt="{{ product.name }}" class="product-image">
+    {% endif %}
+
     <p><strong>Категория:</strong> {{ product.category.name }}</p>
     <p><strong>Магазин:</strong>
         <a class='shop-ref' href="{% url 'shop-detail' product.shop.slug %}">{{ product.shop.name }}</a>
