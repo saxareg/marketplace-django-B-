@@ -20,9 +20,9 @@
             </label>
 
             {% if item.product.image %}
-                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image" onerror="this.onerror=null; this.src='{% static 'images/default-preview.jpg' %}'">
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
             {% else %}
-                <img src="{% static 'images/default-preview.jpg' %}" alt="{{ item.product.name }}" class="product-image">
+                <img src="/media/products/default_product_image.jpg" alt="{{ item.product.name }}" class="product-image">
             {% endif %}
 
             <div class="card-details">
