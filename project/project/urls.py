@@ -4,12 +4,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # path('custom-admin/', include('app_admin.urls')),
     path('products/', include('app_products.urls')),
     path('users/', include('app_users.urls')),
     path('cart/', include('app_orders.urls')),
     path('shops/', include('app_shops.urls')),
-    path('admin/', include('app_admin.urls')),  # Кастомная админка
+    path('custom_admin/', include('app_admin.urls')),  # Кастомная админка
     path('', lambda request: redirect('products/')),
 ]
 

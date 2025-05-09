@@ -1,8 +1,18 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
 from app_shops.models import Shop
 from app_orders.models import Order
 from app_products.models import Product, Category
 from app_users.models import PickupPoints
+from django.contrib.auth.forms import AuthenticationForm
+
+
+User = get_user_model()
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
 class ShopForm(forms.ModelForm):
     class Meta:
@@ -26,5 +36,5 @@ class CategoryForm(forms.ModelForm):
 
 class PickupPointForm(forms.ModelForm):
     class Meta:
-        model = PickupPoint
+        model = PickupPoints
         fields = '__all__'
