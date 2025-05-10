@@ -1,17 +1,25 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.utils.timezone import now
-from .forms import *
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
-from .forms import LoginForm
-from django.contrib.auth import logout
+
+from .forms import (
+    LoginForm, ShopForm, OrderForm,
+    ProductForm, CategoryForm, PickupPointForm, UserProfileUpdateForm
+)
+from app_orders.models import Order, Cart
+from app_products.models import Product, Category, Review
+from app_shops.models import Shop, ShopCreationRequest
+from app_users.models import PickupPoints
 
 User = get_user_model()
 
+# --- Access control ---
 def is_superuser(user):
     return user.is_authenticated and user.is_superuser
 
+# --- Login/Logout ---
 def admin_login(request):
     form = LoginForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -31,7 +39,8 @@ def admin_logout(request):
     logout(request)
     return redirect('app_admin:login')
 
-@user_passes_test(is_superuser, login_url='/custom_admin/login/')
+# --- Dashboard ---
+@user_passes_test(is_superuser, login_url='/custom-admin/login/')
 def dashboard(request):
     sections = [
         {"name": "Магазины", "url": reverse('app_admin:shop_list'), "icon": "bi-shop"},
@@ -46,30 +55,35 @@ def dashboard(request):
     ]
     return render(request, 'admin/dashboard.html', {"sections": sections})
 
+# --- Generic CRUD Generator ---
 def generate_crud(model, form_class, model_name):
-    @user_passes_test(is_superuser, login_url='/custom_admin/login/')
+    @user_passes_test(is_superuser, login_url='/custom-admin/login/')
     def list_view(request):
         items = model.objects.all()
         return render(request, 'admin/model_list.html', {'items': items, 'model': model_name})
 
-    @user_passes_test(is_superuser, login_url='/custom_admin/login/')
+    @user_passes_test(is_superuser, login_url='/custom-admin/login/')
     def create_view(request):
+        if form_class is None:
+            return redirect(f'app_admin:{model_name.lower()}_list')
         form = form_class(request.POST or None)
         if form.is_valid():
             form.save()
             return redirect(f'app_admin:{model_name.lower()}_list')
         return render(request, 'admin/model_create.html', {'form': form, 'model': model_name})
 
-    @user_passes_test(is_superuser, login_url='/custom_admin/login/')
+    @user_passes_test(is_superuser, login_url='/custom-admin/login/')
     def update_view(request, pk):
         obj = get_object_or_404(model, pk=pk)
+        if form_class is None:
+            return redirect(f'app_admin:{model_name.lower()}_list')
         form = form_class(request.POST or None, instance=obj)
         if form.is_valid():
             form.save()
             return redirect(f'app_admin:{model_name.lower()}_list')
         return render(request, 'admin/model_update.html', {'form': form, 'model': model_name})
 
-    @user_passes_test(is_superuser, login_url='/custom_admin/login/')
+    @user_passes_test(is_superuser, login_url='/custom-admin/login/')
     def delete_view(request, pk):
         obj = get_object_or_404(model, pk=pk)
         obj.delete()
@@ -77,13 +91,7 @@ def generate_crud(model, form_class, model_name):
 
     return list_view, create_view, update_view, delete_view
 
-# CRUD
-from app_orders.models import Order, Cart
-from app_products.models import Product, Category, Review
-from app_shops.models import Shop, ShopCreationRequest
-from app_users.models import PickupPoints
-from app_users.forms import UserProfileUpdateForm
-
+# --- CRUD Bindings ---
 shop_list, shop_create, shop_update, shop_delete = generate_crud(Shop, ShopForm, "Shop")
 shoprequest_list, _, _, shoprequest_delete = generate_crud(ShopCreationRequest, None, "ShopRequest")
 pickup_list, pickup_create, pickup_update, pickup_delete = generate_crud(PickupPoints, PickupPointForm, "PickupPoint")
@@ -93,12 +101,13 @@ category_list, category_create, category_update, category_delete = generate_crud
 cart_list, _, _, cart_delete = generate_crud(Cart, None, "Cart")
 review_list, _, _, review_delete = generate_crud(Review, None, "Review")
 
-@user_passes_test(is_superuser, login_url='/custom_admin/login/')
+# --- User admin ---
+@user_passes_test(is_superuser, login_url='/custom-admin/login/')
 def user_list(request):
     users = User.objects.all()
     return render(request, 'admin/model_list.html', {'items': users, 'model': 'User'})
 
-@user_passes_test(is_superuser, login_url='/custom_admin/login/')
+@user_passes_test(is_superuser, login_url='/custom-admin/login/')
 def user_update(request, pk):
     user = get_object_or_404(User, pk=pk)
     form = UserProfileUpdateForm(request.POST or None, instance=user)
@@ -107,7 +116,8 @@ def user_update(request, pk):
         return redirect('app_admin:user_list')
     return render(request, 'admin/model_update.html', {'form': form, 'model': 'User'})
 
-@user_passes_test(is_superuser, login_url='/custom_admin/login/')
+# --- Shop request approve/reject ---
+@user_passes_test(is_superuser, login_url='/custom-admin/login/')
 def approve_shop_request(request, pk):
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
     if request_obj.status != 'pending':
@@ -120,13 +130,12 @@ def approve_shop_request(request, pk):
         phone=request_obj.phone,
         user=request_obj.user
     )
-
     request_obj.status = 'approved'
     request_obj.response_time = now()
     request_obj.save()
     return redirect('app_admin:shoprequest_list')
 
-@user_passes_test(is_superuser, login_url='/custom_admin/login/')
+@user_passes_test(is_superuser, login_url='/custom-admin/login/')
 def reject_shop_request(request, pk):
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
     if request_obj.status != 'pending':
@@ -136,4 +145,5 @@ def reject_shop_request(request, pk):
     request_obj.response_time = now()
     request_obj.save()
     return redirect('app_admin:shoprequest_list')
+
 
