@@ -149,10 +149,10 @@ def approve_shop_request(request, pk):
 
     Shop.objects.create(
         name=request_obj.name,
+        slug=request_obj.slug,
         description=request_obj.description,
-        address=request_obj.address,
-        phone=request_obj.phone,
-        user=request_obj.user
+        logo=request_obj.logo,
+        owner=request_obj.user
     )
     request_obj.status = 'approved'
     request_obj.response_time = now()
