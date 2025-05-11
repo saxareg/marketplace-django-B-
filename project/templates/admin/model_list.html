@@ -4,11 +4,9 @@
 <h2 class="mb-4">Список {{ model_name }}</h2>
 
 <div class="mb-3">
-   {% if can_create %}
-  <a href="{% url 'app_admin:'|add:model_slug|add:'_create' %}" class="btn btn-success">Добавить</a>
-{% endif %}
-
-
+    {% if can_create %}
+        <a href="{% url 'app_admin:'|add:model_slug|add:'_create' %}" class="btn btn-success">Добавить</a>
+    {% endif %}
     <a href="{% url 'app_admin:dashboard' %}" class="btn btn-secondary">Назад</a>
 </div>
 
@@ -41,6 +39,10 @@
                 {% else %}
                     <a href="{% url 'app_admin:'|add:model_slug|add:'_update' item.pk %}" class="btn btn-sm btn-primary">Редактировать</a>
                     <a href="{% url 'app_admin:'|add:model_slug|add:'_delete' item.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+
+                    {% if model_slug == "cart" %}
+                        <a href="{% url 'app_admin:cart_detail' item.pk %}" class="btn btn-sm btn-info">Содержимое</a>
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>
@@ -48,4 +50,5 @@
     </tbody>
 </table>
 {% endblock %}
+
 

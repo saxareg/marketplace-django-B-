@@ -21,6 +21,15 @@ User = get_user_model()
 def is_superuser(user):
     return user.is_authenticated and user.is_superuser
 
+@user_passes_test(is_superuser, login_url='/custom_admin/login/')
+def cart_detail(request, pk):
+    cart = get_object_or_404(Cart, pk=pk)
+    items = cart.items.select_related('product')
+    return render(request, 'admin/cart_detail.html', {
+        'cart': cart,
+        'items': items,
+        'model': 'Cart'
+    })
 # Login/Logout
 def admin_login(request):
     form = LoginForm(request, data=request.POST or None)
