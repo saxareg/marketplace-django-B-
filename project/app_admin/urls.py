@@ -20,13 +20,15 @@ urlpatterns = [
     path('shoprequests/<int:pk>/reject/', views.reject_shop_request, name='shoprequest_reject'),
 
     path('pickups/', views.pickup_list, name='pickup_list'),
-    path('pickups/create/', views.pickup_create, name='pickup_create'),
+    path('pickups/create/', views.pickup_create, name='pickuppoint_create'),
     path('pickups/<int:pk>/edit/', views.pickup_update, name='pickuppoint_update'),
     path('pickups/<int:pk>/delete/', views.pickup_delete, name='pickuppoint_delete'),
 
     path('orders/', views.order_list, name='order_list'),
     path('orders/<int:pk>/edit/', views.order_update, name='order_update'),
     path('orders/<int:pk>/delete/', views.order_delete, name='order_delete'),
+
+
 
     path('products/', views.product_list, name='product_list'),
     path('products/create/', views.product_create, name='product_create'),

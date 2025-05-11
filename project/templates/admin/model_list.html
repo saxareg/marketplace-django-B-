@@ -4,9 +4,11 @@
 <h2 class="mb-4">Список {{ model_name }}</h2>
 
 <div class="mb-3">
-    {% if model_slug != "shoprequest" and model_slug != "user" %}
-        <a href="{% url 'app_admin:'|add:model_slug|add:'_create' %}" class="btn btn-success">Добавить</a>
-    {% endif %}
+   {% if can_create %}
+  <a href="{% url 'app_admin:'|add:model_slug|add:'_create' %}" class="btn btn-success">Добавить</a>
+{% endif %}
+
+
     <a href="{% url 'app_admin:dashboard' %}" class="btn btn-secondary">Назад</a>
 </div>
 
