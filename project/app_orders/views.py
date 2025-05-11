@@ -8,6 +8,7 @@ from .models import Cart, CartItem, Order, OrderItem
 from app_products.models import Product
 from .forms import OrderStatusUpdateForm, OrderCreate
 from django.db import transaction
+from django.db.models import Sum
 
 
 @require_POST
@@ -16,19 +17,32 @@ def toggle_cart_item(request):
     data = json.loads(request.body)
     product_id = data.get("product_id")
     user = request.user
+
     if not user.is_authenticated:
         return JsonResponse({"success": False, "message": "Вы не авторизованы."})
 
-    product = Product.objects.get(id=product_id)
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Товар не найден."})
+
     cart, _ = Cart.objects.get_or_create(user=user)
     cart_item = CartItem.objects.filter(cart=cart, product=product).first()
 
     if cart_item:
         cart_item.delete()
-        return JsonResponse({"success": True, "in_cart": False})
+        in_cart = False
     else:
         CartItem.objects.create(cart=cart, product=product, quantity=1)
-        return JsonResponse({"success": True, "in_cart": True})
+        in_cart = True
+
+    total_count = CartItem.objects.filter(cart=cart).aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    return JsonResponse({
+        "success": True,
+        "in_cart": in_cart,
+        "cart_item_count": total_count
+    })
 
 
 @require_POST
