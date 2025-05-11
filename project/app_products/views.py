@@ -1,35 +1,52 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Review
+from .models import Product, Review, Category
 from app_orders.models import Cart, CartItem, OrderItem
 from app_shops.models import Shop
 from .forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 
 
 def product_list(request):
-    query = request.GET.get('q')
     products = Product.objects.all()
+    categories = Category.objects.all()
+
+    query = request.GET.get("q", "")
+    category_id = request.GET.get("category")
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
+
+    price_min_limit = Product.objects.all().order_by("price").first().price if products else 0
+    price_max_limit = Product.objects.all().order_by("-price").first().price if products else 0
 
     if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query) |
-            Q(slug__icontains=query) |
-            Q(category__name__icontains=query) |
-            Q(shop__name__icontains=query)
-        ).distinct()
+        products = products.filter(name__icontains=query)
 
-    paginator = Paginator(products, 24)
-    page_number = request.GET.get('page')
+    if category_id:
+        products = products.filter(category_id=category_id)
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'products/products.html', {
-        'page_obj': page_obj,
-        'query': query,
-    })
+    context = {
+        "page_obj": page_obj,
+        "categories": categories,
+        "selected_category": category_id or "",
+        "min_price": min_price or price_min_limit,
+        "max_price": max_price or price_max_limit,
+        "price_min_limit": price_min_limit,
+        "price_max_limit": price_max_limit,
+    }
+    return render(request, "products.html", context)
 
 
 def product_detail(request, slug):

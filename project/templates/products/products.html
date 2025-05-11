@@ -8,10 +8,37 @@
 {% endblock %}
 
 {% block content %}
+<form method="get" action="" class="search-form d-flex flex-column align-items-center gap-3">
 
-<form method="get" action="" class="search-form">
-    <input type="text" name="q" placeholder="Поиск товаров..." value="{{ request.GET.q }}" class="search-input">
-    <button type="submit" class="search-button">🔍</button>
+    <div class="d-flex gap-2 flex-wrap justify-content-center">
+        <input type="text" name="q" placeholder="Поиск товаров..." value="{{ request.GET.q }}" class="search-input">
+
+        <select name="category" class="search-select">
+            <option value="">Все категории</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="price-slider">
+        <label>Цена:</label>
+        <input type="range" id="min_price" name="min_price"
+               min="{{ price_min_limit }}" max="{{ price_max_limit }}"
+               value="{{ min_price }}">
+        <input type="range" id="max_price" name="max_price"
+               min="{{ price_min_limit }}" max="{{ price_max_limit }}"
+               value="{{ max_price }}">
+
+        <div class="range-labels">
+            <span>От: <span id="min_price_value">{{ min_price }}</span> ₽</span>
+            <span>До: <span id="max_price_value">{{ max_price }}</span> ₽</span>
+        </div>
+    </div>
+
+    <button type="submit" class="search-button">🔍 Найти</button>
 </form>
 
 {% if page_obj %}
@@ -34,27 +61,66 @@
 <!-- Пагинация -->
 <div class="pagination">
     {% if page_obj.has_previous %}
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page=1">&laquo;</a>
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}">‹</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+                 {% if selected_category %}category={{ selected_category }}&{% endif %}
+                 {% if min_price %}min_price={{ min_price }}&{% endif %}
+                 {% if max_price %}max_price={{ max_price }}&{% endif %}
+                 page=1">&laquo;</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+                 {% if selected_category %}category={{ selected_category }}&{% endif %}
+                 {% if min_price %}min_price={{ min_price }}&{% endif %}
+                 {% if max_price %}max_price={{ max_price }}&{% endif %}
+                 page={{ page_obj.previous_page_number }}">‹</a>
     {% endif %}
 
     {% for num in page_obj.paginator.page_range %}
         {% if page_obj.number == num %}
             <span class="current">{{ num }}</span>
         {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">{{ num }}</a>
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+                     {% if selected_category %}category={{ selected_category }}&{% endif %}
+                     {% if min_price %}min_price={{ min_price }}&{% endif %}
+                     {% if max_price %}max_price={{ max_price }}&{% endif %}
+                     page={{ num }}">{{ num }}</a>
         {% elif num == 1 or num == page_obj.paginator.num_pages %}
-            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">{{ num }}</a>
+            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+                     {% if selected_category %}category={{ selected_category }}&{% endif %}
+                     {% if min_price %}min_price={{ min_price }}&{% endif %}
+                     {% if max_price %}max_price={{ max_price }}&{% endif %}
+                     page={{ num }}">{{ num }}</a>
         {% elif forloop.first or forloop.last %}
             <span class="dots">...</span>
         {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}">›</a>
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+                 {% if selected_category %}category={{ selected_category }}&{% endif %}
+                 {% if min_price %}min_price={{ min_price }}&{% endif %}
+                 {% if max_price %}max_price={{ max_price }}&{% endif %}
+                 page={{ page_obj.next_page_number }}">›</a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+                 {% if selected_category %}category={{ selected_category }}&{% endif %}
+                 {% if min_price %}min_price={{ min_price }}&{% endif %}
+                 {% if max_price %}max_price={{ max_price }}&{% endif %}
+                 page={{ page_obj.paginator.num_pages }}">&raquo;</a>
     {% endif %}
 </div>
 {% endif %}
+
+<script>
+    const minRange = document.getElementById('min_price');
+    const maxRange = document.getElementById('max_price');
+    const minValue = document.getElementById('min_price_value');
+    const maxValue = document.getElementById('max_price_value');
+
+    function updateRangeValues() {
+        minValue.textContent = minRange.value;
+        maxValue.textContent = maxRange.value;
+    }
+
+    minRange.addEventListener('input', updateRangeValues);
+    maxRange.addEventListener('input', updateRangeValues);
+</script>
 
 {% endblock %}
