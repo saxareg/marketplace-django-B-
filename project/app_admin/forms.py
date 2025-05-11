@@ -6,9 +6,21 @@ from app_orders.models import Order
 from app_products.models import Product, Category
 from app_users.models import PickupPoints
 from django.contrib.auth.forms import AuthenticationForm
+from app_orders.models import Cart
+from app_products.models import Review
 
 
 User = get_user_model()
+
+class CartForm(forms.ModelForm):
+    class Meta:
+        model = Cart
+        fields = '__all__'
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = '__all__'
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))

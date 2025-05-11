@@ -13,7 +13,7 @@ from app_products.models import Product, Category, Review
 from app_shops.models import Shop, ShopCreationRequest
 from app_users.models import PickupPoints
 from app_users.forms import UserProfileUpdateForm
-
+from .forms import CartForm, ReviewForm
 
 User = get_user_model()
 
@@ -62,7 +62,7 @@ def generate_crud(model, form_class, model_name):
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def list_view(request):
         items = model.objects.all()
-        model_slug = model_name.lower()  # Можно использовать имя модели в качестве slug
+        model_slug = model_name.lower()
         can_create = form_class is not None
         return render(request, 'admin/model_list.html', {
             'items': items,
@@ -107,8 +107,8 @@ pickup_list, pickup_create, pickup_update, pickup_delete = generate_crud(PickupP
 order_list, _, order_update, order_delete = generate_crud(Order, None, "Order")
 product_list, product_create, product_update, product_delete = generate_crud(Product, ProductForm, "Product")
 category_list, category_create, category_update, category_delete = generate_crud(Category, CategoryForm, "Category")
-cart_list, _, _, cart_delete = generate_crud(Cart, None, "Cart")
-review_list, _, _, review_delete = generate_crud(Review, None, "Review")
+cart_list, cart_create, cart_update, cart_delete = generate_crud(Cart, CartForm, "Cart")
+review_list, review_create, review_update, review_delete = generate_crud(Review, ReviewForm, "Review")
 
 # User admin
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
