@@ -4,7 +4,6 @@ from . import views
 app_name = 'app_admin'
 
 urlpatterns = [
-
     path('login/', views.admin_login, name='login'),
     path('', views.dashboard, name='dashboard'),
     path('logout/', views.admin_logout, name='logout'),
@@ -27,8 +26,6 @@ urlpatterns = [
     path('orders/', views.order_list, name='order_list'),
     path('orders/<int:pk>/edit/', views.order_update, name='order_update'),
     path('orders/<int:pk>/delete/', views.order_delete, name='order_delete'),
-
-
 
     path('products/', views.product_list, name='product_list'),
     path('products/create/', views.product_create, name='product_create'),
