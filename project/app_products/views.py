@@ -1,35 +1,62 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Review
+from .models import Product, Review, Category
 from app_orders.models import Cart, CartItem, OrderItem
 from app_shops.models import Shop
 from .forms import ProductForm, ReviewForm
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from django.http import JsonResponse
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Min, Max
+from urllib.parse import urlencode
 
 
 def product_list(request):
-    query = request.GET.get('q')
-    products = Product.objects.all()
+    categories = Category.objects.all()
+    price_min_limit = Product.objects.aggregate(Min('price'))['price__min'] or 0
+    price_max_limit = Product.objects.aggregate(Max('price'))['price__max'] or 10000
 
+    query = request.GET.get('q', '')
+    selected_category = request.GET.get('category', '')
+    try:
+        min_price = float(request.GET.get('min_price', price_min_limit))
+        max_price = float(request.GET.get('max_price', price_max_limit))
+    except ValueError:
+        min_price = price_min_limit
+        max_price = price_max_limit
+
+    products = Product.objects.all().order_by('id')
     if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query) |
-            Q(slug__icontains=query) |
-            Q(category__name__icontains=query) |
-            Q(shop__name__icontains=query)
-        ).distinct()
+        products = products.filter(name__icontains=query)
+    if selected_category:
+        products = products.filter(category_id=selected_category)
+    products = products.filter(price__gte=min_price, price__lte=max_price)
 
-    paginator = Paginator(products, 24)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    paginator = Paginator(products, 20)
+    page_number = request.GET.get('page', 1)
+    try:
+        page_obj = paginator.page(page_number)
+    except (PageNotAnInteger, EmptyPage):
+        page_obj = paginator.page(1)
 
-    return render(request, 'products/products.html', {
-        'page_obj': page_obj,
-        'query': query,
+    query_params = urlencode({
+        'q': query,
+        'category': selected_category,
+        'min_price': min_price,
+        'max_price': max_price,
     })
+
+    context = {
+        'categories': categories,
+        'page_obj': page_obj,
+        'price_min_limit': price_min_limit,
+        'price_max_limit': price_max_limit,
+        'min_price': min_price,
+        'max_price': max_price,
+        'selected_category': selected_category,
+        'query_params': query_params,
+    }
+
+    return render(request, 'products/products.html', context)
 
 
 def product_detail(request, slug):

@@ -87,6 +87,14 @@
         .then(data => {
             if (data.success) {
                 btn.textContent = data.in_cart ? 'Убрать из корзины' : 'Добавить в корзину';
+
+                // Обновляем количество товаров в корзине
+                const cartCountSpan = document.getElementById('cart-count');
+                if (data.cart_item_count > 0) {
+                    cartCountSpan.textContent = `(${data.cart_item_count})`;
+                } else {
+                    cartCountSpan.textContent = '';
+                }
             }
         });
     });

@@ -5,13 +5,36 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'css/products.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-
 <form method="get" action="" class="search-form">
-    <input type="text" name="q" placeholder="Поиск товаров..." value="{{ request.GET.q }}" class="search-input">
-    <button type="submit" class="search-button">🔍</button>
+    <div class="search-container">
+        <div class="search-row">
+            <input type="text" name="q" placeholder="Поиск товаров..." value="{{ request.GET.q }}" class="search-input">
+            <select name="category" class="search-select">
+                <option value="">Все категории</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="search-button">🔍 Найти</button>
+        </div>
+        <div class="price-filter">
+            <label class="price-label">Цена:</label>
+            <div id="price-range" class="price-range"></div>
+            <div class="range-labels">
+                <span>От: <span id="min_price_value">{{ min_price }}</span></span>
+                <span>До: <span id="max_price_value">{{ max_price }}</span></span>
+            </div>
+            <!-- Скрытые поля для значений минимальной и максимальной цены -->
+            <input type="hidden" name="min_price" value="{{ min_price }}">
+            <input type="hidden" name="max_price" value="{{ max_price }}">
+        </div>
+    </div>
 </form>
 
 {% if page_obj %}
@@ -34,27 +57,61 @@
 <!-- Пагинация -->
 <div class="pagination">
     {% if page_obj.has_previous %}
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page=1">&laquo;</a>
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}">‹</a>
+        <a href="?{{ query_params }}&page=1">«</a>
+        <a href="?{{ query_params }}&page={{ page_obj.previous_page_number }}">‹</a>
     {% endif %}
 
     {% for num in page_obj.paginator.page_range %}
         {% if page_obj.number == num %}
             <span class="current">{{ num }}</span>
         {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">{{ num }}</a>
+            <a href="?{{ query_params }}&page={{ num }}">{{ num }}</a>
         {% elif num == 1 or num == page_obj.paginator.num_pages %}
-            <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">{{ num }}</a>
+            <a href="?{{ query_params }}&page={{ num }}">{{ num }}</a>
         {% elif forloop.first or forloop.last %}
             <span class="dots">...</span>
         {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}">›</a>
-        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+        <a href="?{{ query_params }}&page={{ page_obj.next_page_number }}">›</a>
+        <a href="?{{ query_params }}&page={{ page_obj.paginator.num_pages }}">»</a>
     {% endif %}
 </div>
+
 {% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js"></script>
+<script>
+    var priceSlider = document.getElementById('price-range');
+
+    noUiSlider.create(priceSlider, {
+        start: [{{ min_price }}, {{ max_price }}],
+        connect: true,
+        range: {
+            'min': {{ price_min_limit }},
+            'max': {{ price_max_limit }}
+        },
+        format: {
+            to: function (value) {
+                return Math.round(value);
+            },
+            from: function (value) {
+                return Number(value);
+            }
+        }
+    });
+
+    priceSlider.noUiSlider.on('update', function(values, handle) {
+        var minValue = document.getElementById('min_price_value');
+        var maxValue = document.getElementById('max_price_value');
+
+        minValue.textContent = values[0] + ' ₽';
+        maxValue.textContent = values[1] + ' ₽';
+
+        document.querySelector('input[name="min_price"]').value = values[0];
+        document.querySelector('input[name="max_price"]').value = values[1];
+    });
+</script>
 
 {% endblock %}

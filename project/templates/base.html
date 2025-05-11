@@ -20,7 +20,13 @@
                         <li><a href="{% url 'my-pp' %}">Мой ПВЗ</a></li>
                     {% else %}
                         <li><a href="{% url 'my-orders' %}">Мои заказы</a></li>
-                        <li><a href="{% url 'cart' %}">Корзина</a></li>
+                        <li>
+                            <a href="{% url 'cart' %}">Корзина
+                                <span id="cart-count">
+                                    {% if cart_item_count > 0 %}({{ cart_item_count }}){% endif %}
+                                </span>
+                            </a>
+                        </li>
                     {% endif %}
                     <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
                     <li><a href="{% url 'logout' %}">Выход</a></li>
