@@ -10,7 +10,7 @@
     <div class="container mt-4">
         <h1 class="mb-4">Cтраница администратора</h1>
 
-        {% if request.user.is_authenticated %}
+        {% if request.user.is_superuser %}
         <nav class="mb-3 d-flex flex-wrap align-items-center gap-2">
             <a class="btn btn-outline-primary" href="{% url 'app_admin:dashboard' %}">Главная</a>
             <a class="btn btn-outline-secondary" href="{% url 'app_admin:shop_list' %}">Магазины</a>
