@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.utils.timezone import now
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
+from django.core.mail import send_mail
 
 from .forms import (
     LoginForm, ShopForm, OrderForm,
@@ -83,31 +84,32 @@ def generate_crud(model, form_class, model_name):
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def create_view(request):
         if form_class is None:
-            return redirect(f'app_admin:{model_name.lower()}_list')
-        form = form_class(request.POST or None)
+            return redirect(request.path.replace('/create/', '/'))
+        form = form_class(request.POST or None, request.FILES or None)
         if form.is_valid():
             form.save()
-            return redirect(f'app_admin:{model_name.lower()}_list')
+            return redirect(request.path.replace('/create/', '/'))
         return render(request, 'admin/model_create.html', {'form': form, 'model': model_name})
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def update_view(request, pk):
         obj = get_object_or_404(model, pk=pk)
         if form_class is None:
-            return redirect(f'app_admin:{model_name.lower()}_list')
-        form = form_class(request.POST or None, instance=obj)
+            return redirect(request.path.replace(f'/{pk}/update/', '/'))
+        form = form_class(request.POST or None, request.FILES or None, instance=obj)
         if form.is_valid():
             form.save()
-            return redirect(f'app_admin:{model_name.lower()}_list')
+            return redirect(request.path.replace(f'/{pk}/update/', '/'))
         return render(request, 'admin/model_update.html', {'form': form, 'model': model_name})
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def delete_view(request, pk):
         obj = get_object_or_404(model, pk=pk)
         obj.delete()
-        return redirect(f'app_admin:{model_name.lower()}_list')
+        return redirect(request.path.replace(f'/{pk}/delete/', '/'))
 
     return list_view, create_view, update_view, delete_view
+
 
 # CRUD Bindings
 shop_list, shop_create, shop_update, shop_delete = generate_crud(Shop, ShopForm, "Shop")
@@ -147,6 +149,7 @@ def approve_shop_request(request, pk):
     if request_obj.status != 'pending':
         return redirect('app_admin:shoprequest_list')
 
+    # Создаем магазин
     Shop.objects.create(
         name=request_obj.name,
         slug=request_obj.slug,
@@ -154,9 +157,26 @@ def approve_shop_request(request, pk):
         logo=request_obj.logo,
         owner=request_obj.user
     )
+
+    # Обновляем заявку
     request_obj.status = 'approved'
     request_obj.response_time = now()
     request_obj.save()
+
+    # Отправляем уведомление по email
+    send_mail(
+        subject='Ваш магазин одобрен!',
+        message=(
+            f'Здравствуйте, {request_obj.user.username}!\n\n'
+            f'Ваша заявка на создание магазина "{request_obj.name}" была одобрена. '
+            f'Теперь вы можете управлять своим магазином в системе.\n\n'
+            'С уважением,\nАдминистрация Marketplace'
+        ),
+        from_email=None,
+        recipient_list=[request_obj.user.email],
+        fail_silently=False,
+    )
+
     return redirect('app_admin:shoprequest_list')
 
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
@@ -165,9 +185,25 @@ def reject_shop_request(request, pk):
     if request_obj.status != 'pending':
         return redirect('app_admin:shoprequest_list')
 
+    # Обновляем заявку
     request_obj.status = 'rejected'
     request_obj.response_time = now()
     request_obj.save()
+
+    # Отправляем письмо пользователю
+    send_mail(
+        subject='Заявка на создание магазина отклонена',
+        message=(
+            f'Здравствуйте, {request_obj.user.username}!\n\n'
+            f'К сожалению, ваша заявка на создание магазина "{request_obj.name}" была отклонена.\n'
+            f'Вы можете связаться с администрацией для уточнения причин.\n\n'
+            'С уважением,\nАдминистрация Marketplace'
+        ),
+        from_email=None,
+        recipient_list=[request_obj.user.email],
+        fail_silently=False,
+    )
+
     return redirect('app_admin:shoprequest_list')
 
 
