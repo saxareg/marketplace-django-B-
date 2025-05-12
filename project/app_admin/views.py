@@ -4,23 +4,21 @@ from django.utils.timezone import now
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 from django.core.mail import send_mail
-
-from .forms import (
-    LoginForm, ShopForm, OrderForm,
-    ProductForm, CategoryForm, PickupPointForm
-)
+from .forms import LoginForm, ShopForm, ProductForm, CategoryForm, PickupPointForm
 from app_orders.models import Order, Cart
 from app_products.models import Product, Category, Review
 from app_shops.models import Shop, ShopCreationRequest
 from app_users.models import PickupPoints
 from app_users.forms import UserProfileUpdateForm
-from .forms import CartForm, ReviewForm
+from .forms import ReviewForm
+
 
 User = get_user_model()
 
-# Access control
+
 def is_superuser(user):
     return user.is_authenticated and user.is_superuser
+
 
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def cart_detail(request, pk):
@@ -31,7 +29,8 @@ def cart_detail(request, pk):
         'items': items,
         'model': 'Cart'
     })
-# Login/Logout
+
+
 def admin_login(request):
     form = LoginForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -47,9 +46,11 @@ def admin_login(request):
             form.add_error(None, 'Доступ разрешён только суперпользователям.')
     return render(request, 'admin/login.html', {'form': form})
 
+
 def admin_logout(request):
     logout(request)
     return redirect('app_admin:login')
+
 
 # Dashboard
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
@@ -66,8 +67,9 @@ def dashboard(request):
     ]
     return render(request, 'admin/dashboard.html', {"sections": sections})
 
-# Generic CRUD Generator
+
 def generate_crud(model, form_class, model_name):
+
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def list_view(request):
         items = model.objects.all()
@@ -110,7 +112,6 @@ def generate_crud(model, form_class, model_name):
     return list_view, create_view, update_view, delete_view
 
 
-# CRUD Bindings
 shop_list, shop_create, shop_update, shop_delete = generate_crud(Shop, ShopForm, "Shop")
 shoprequest_list, _, _, shoprequest_delete = generate_crud(ShopCreationRequest, None, "ShopRequest")
 pickup_list, pickup_create, pickup_update, pickup_delete = generate_crud(PickupPoints, PickupPointForm, "PickupPoint")
@@ -118,6 +119,7 @@ order_list, _, order_update, order_delete = generate_crud(Order, None, "Order")
 product_list, product_create, product_update, product_delete = generate_crud(Product, ProductForm, "Product")
 category_list, category_create, category_update, category_delete = generate_crud(Category, CategoryForm, "Category")
 review_list, review_create, review_update, review_delete = generate_crud(Review, ReviewForm, "Review")
+
 
 # User admin
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
@@ -140,14 +142,13 @@ def user_update(request, pk):
         return redirect('app_admin:user_list')
     return render(request, 'admin/model_update.html', {'form': form, 'model': 'User'})
 
-# Shop request approve/reject
+
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def approve_shop_request(request, pk):
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
     if request_obj.status != 'pending':
         return redirect('app_admin:shoprequest_list')
 
-    # Создаем магазин
     Shop.objects.create(
         name=request_obj.name,
         slug=request_obj.slug,
@@ -156,12 +157,10 @@ def approve_shop_request(request, pk):
         owner=request_obj.user
     )
 
-    # Обновляем заявку
     request_obj.status = 'approved'
     request_obj.response_time = now()
     request_obj.save()
 
-    # Отправляем уведомление по email
     send_mail(
         subject='Ваш магазин одобрен!',
         message=(
@@ -177,18 +176,17 @@ def approve_shop_request(request, pk):
 
     return redirect('app_admin:shoprequest_list')
 
+
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def reject_shop_request(request, pk):
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
     if request_obj.status != 'pending':
         return redirect('app_admin:shoprequest_list')
 
-    # Обновляем заявку
     request_obj.status = 'rejected'
     request_obj.response_time = now()
     request_obj.save()
 
-    # Отправляем письмо пользователю
     send_mail(
         subject='Заявка на создание магазина отклонена',
         message=(
@@ -203,5 +201,3 @@ def reject_shop_request(request, pk):
     )
 
     return redirect('app_admin:shoprequest_list')
-
-
