@@ -117,7 +117,6 @@ pickup_list, pickup_create, pickup_update, pickup_delete = generate_crud(PickupP
 order_list, _, order_update, order_delete = generate_crud(Order, None, "Order")
 product_list, product_create, product_update, product_delete = generate_crud(Product, ProductForm, "Product")
 category_list, category_create, category_update, category_delete = generate_crud(Category, CategoryForm, "Category")
-cart_list, cart_create, cart_update, cart_delete = generate_crud(Cart, CartForm, "Cart")
 review_list, review_create, review_update, review_delete = generate_crud(Review, ReviewForm, "Review")
 
 # User admin
