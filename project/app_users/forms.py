@@ -29,7 +29,6 @@ class UserProfileUpdateForm(forms.ModelForm):
         self.user = kwargs.get('instance')
         super().__init__(*args, **kwargs)
 
-        # Предзаполнение роли из профиля
         if self.user and hasattr(self.user, 'profile'):
             self.fields['role'].initial = self.user.profile.role
 
@@ -55,7 +54,6 @@ class UserProfileUpdateForm(forms.ModelForm):
         user_profile.role = self.cleaned_data['role']
         user_profile.save()
         return user
-
 
 
 class PickupPointForm(forms.ModelForm):
