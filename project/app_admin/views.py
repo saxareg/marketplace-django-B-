@@ -61,7 +61,6 @@ def dashboard(request):
         {"name": "Заказы", "url": reverse('app_admin:order_list'), "icon": "bi-basket"},
         {"name": "Товары", "url": reverse('app_admin:product_list'), "icon": "bi-box-seam"},
         {"name": "Категории", "url": reverse('app_admin:category_list'), "icon": "bi-tags"},
-        {"name": "Корзины", "url": reverse('app_admin:cart_list'), "icon": "bi-cart"},
         {"name": "Отзывы", "url": reverse('app_admin:review_list'), "icon": "bi-chat-dots"},
         {"name": "Пользователи", "url": reverse('app_admin:user_list'), "icon": "bi-people"},
     ]
