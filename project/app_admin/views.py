@@ -11,7 +11,7 @@ from app_shops.models import Shop, ShopCreationRequest
 from app_users.models import PickupPoints
 from app_users.forms import UserProfileUpdateForm
 from .forms import ReviewForm
-
+from .tasks import send_reject_email, send_approve_email
 
 User = get_user_model()
 
@@ -161,18 +161,7 @@ def approve_shop_request(request, pk):
     request_obj.response_time = now()
     request_obj.save()
 
-    send_mail(
-        subject='Ваш магазин одобрен!',
-        message=(
-            f'Здравствуйте, {request_obj.user.username}!\n\n'
-            f'Ваша заявка на создание магазина "{request_obj.name}" была одобрена. '
-            f'Теперь вы можете управлять своим магазином в системе.\n\n'
-            'С уважением,\nАдминистрация Marketplace'
-        ),
-        from_email=None,
-        recipient_list=[request_obj.user.email],
-        fail_silently=False,
-    )
+    send_approve_email.delay(request_obj.user.username, request_obj.name, request_obj.user.email)
 
     return redirect('app_admin:shoprequest_list')
 
@@ -187,16 +176,6 @@ def reject_shop_request(request, pk):
     request_obj.response_time = now()
     request_obj.save()
 
-    send_mail(
-        subject='Заявка на создание магазина отклонена',
-        message=(
-            f'Здравствуйте, {request_obj.user.username}!\n\n'
-            f'К сожалению, ваша заявка на создание магазина "{request_obj.name}" была отклонена.\n'
-            f'Вы можете связаться с администрацией для уточнения причин.\n\n'
-            'С уважением,\nАдминистрация Marketplace'
-        ),
-        recipient_list=[request_obj.user.email],
-        fail_silently=False,
-    )
+    send_reject_email.delay(request_obj.user.username, request_obj.name, request_obj.user.email)
 
     return redirect('app_admin:shoprequest_list')
