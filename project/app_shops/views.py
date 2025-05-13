@@ -3,7 +3,6 @@ from .models import Shop
 from django.contrib.auth.decorators import login_required
 from .forms import ShopCreationRequestForm
 import os
-from django.contrib import messages
 
 
 def my_shops_view(request):
