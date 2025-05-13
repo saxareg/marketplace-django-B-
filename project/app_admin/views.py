@@ -195,7 +195,6 @@ def reject_shop_request(request, pk):
             f'Вы можете связаться с администрацией для уточнения причин.\n\n'
             'С уважением,\nАдминистрация Marketplace'
         ),
-        from_email=None,
         recipient_list=[request_obj.user.email],
         fail_silently=False,
     )
