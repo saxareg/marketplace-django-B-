@@ -19,7 +19,6 @@ env = environ.Env(
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
     EMAIL_USE_TLS=(bool, False),
-    DEFAULT_FROM_EMAIL=(str, 'webmaster@localhost'),
 )
 
 # Читаем .env файл, если он существует
