@@ -129,7 +129,7 @@ def pp_order_detail_view(request, order_id):
     else:
         form = OrderStatusUpdateForm(instance=order)
 
-    return render(request, 'orders/order_detail.html', {
+    return render(request, 'orders/pp_order_detail.html', {
         'order': order,
         'form': form
     })
