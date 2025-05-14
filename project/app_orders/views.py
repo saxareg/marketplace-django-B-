@@ -9,6 +9,7 @@ from app_products.models import Product
 from .forms import OrderStatusUpdateForm, OrderCreate
 from django.db import transaction
 from django.db.models import Sum
+from .tasks import notify_ready_order
 
 
 @require_POST
@@ -116,15 +117,21 @@ def pp_order_detail_view(request, order_id):
     if request.method == 'POST':
         form = OrderStatusUpdateForm(request.POST, instance=order)
         if form.is_valid():
-            updated_order = form.save()
+            updated_order = form.save(commit=False)
 
             if updated_order.status in ['delivered', 'returned']:
                 updated_order.is_paid = True
-                updated_order.save()
+            elif updated_order.status == 'ready_for_pickup':
+                notify_ready_order.delay(
+                    order_id=updated_order.id,
+                    username=updated_order.user.username,
+                    email=updated_order.user.email,
+                    pickup_point=str(updated_order.pickup_point)
+                )
             else:
                 updated_order.is_paid = False
-                updated_order.save()
 
+            updated_order.save()
             return redirect('order-detail', order_id=order_id)
     else:
         form = OrderStatusUpdateForm(instance=order)
