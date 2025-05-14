@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.mail import send_mail
 from celery import shared_task
 
@@ -12,6 +13,7 @@ def send_approve_email(username, shop_name, email):
             f'Вы можете связаться с администрацией для уточнения причин.\n\n'
             'С уважением,\nАдминистрация Marketplace'
         ),
+        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[email],
         fail_silently=False,
     )
@@ -27,6 +29,7 @@ def send_reject_email(username, shop_name, email):
             f'Вы можете связаться с администрацией для уточнения причин.\n\n'
             'С уважением,\nАдминистрация Marketplace'
         ),
+        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[email],
         fail_silently=False,
     )
