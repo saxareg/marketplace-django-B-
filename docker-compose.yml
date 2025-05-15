@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build: .
@@ -14,6 +12,9 @@ services:
       - redis
     networks:
       - app-network
+    profiles:
+      - default
+      - seed
 
   celery:
     build: .
@@ -23,7 +24,6 @@ services:
     env_file:
       - .env
     depends_on:
-      - web
       - redis
     networks:
       - app-network
@@ -38,3 +38,4 @@ services:
 networks:
   app-network:
     driver: bridge
+    

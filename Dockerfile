@@ -2,7 +2,7 @@
 FROM python:3.9-slim
 
 # Устанавливаем рабочую директорию
-WORKDIR /app
+WORKDIR /app/project
 
 # Копируем requirements.txt и устанавливаем зависимости
 COPY requirements.txt .
