@@ -2,12 +2,14 @@ import os
 from pathlib import Path
 import environ
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 
-# Инициализация environ
+# Intialize environ
 env = environ.Env(
     DEBUG=(bool, False),
     SECRET_KEY=(str, ''),
@@ -19,14 +21,22 @@ env = environ.Env(
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
     EMAIL_USE_TLS=(bool, False),
+    DEFAULT_FROM_EMAIL=(str, 'webmaster@localhost'),
+    # settings for sqlite
+    DB_ENGINE=(str, 'django.db.backends.sqlite3'),
+    DB_NAME=(str, 'db.sqlite3'),
+    # settings for postgres
+    # DB_ENGINE=(str, 'django.db.backends.postgresql'),
+    # DB_NAME=(str, ''),
+    # DB_USER=(str, ''),
+    # DB_PASSWORD=(str, ''),
+    # DB_HOST=(str, 'localhost'),
+    # DB_PORT=(str, '5432'),
 )
 
 # Читаем .env файл, если он существует
 env_file = os.path.join(PROJECT_ROOT, '.env')  # Ищем .env в корне проекта
 environ.Env.read_env(env_file)
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
@@ -35,6 +45,26 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+
+# Database settings for sqlite
+DATABASES = {
+    'default': {
+        'ENGINE': env('DB_ENGINE'),
+        'NAME': BASE_DIR / env('DB_NAME'),  # Для SQLite используем BASE_DIR
+    }
+}
+
+# Database settings for Postgres
+# DATABASES = {
+#     'default': {
+#         'ENGINE': env('DB_ENGINE'),
+#         'NAME': env('DB_NAME'),
+#         'USER': env('DB_USER'),
+#         'PASSWORD': env('DB_PASSWORD'),
+#         'HOST': env('DB_HOST'),
+#         'PORT': env('DB_PORT'),
+#     }
+# }
 
 # Celery settings
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
@@ -54,12 +84,12 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Application definition
 
