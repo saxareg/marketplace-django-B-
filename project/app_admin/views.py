@@ -3,12 +3,14 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.utils.timezone import now
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
-from .forms import LoginForm
+from django.core.mail import send_mail
+from .forms import LoginForm, ShopForm, ProductForm, CategoryForm, PickupPointForm
 from app_orders.models import Order, Cart
 from app_products.models import Product, Category, Review
 from app_shops.models import Shop, ShopCreationRequest
 from app_users.models import PickupPoints
 from app_users.forms import UserProfileUpdateForm
+from .forms import ReviewForm
 from .tasks import send_reject_email, send_approve_email
 
 User = get_user_model()
@@ -16,6 +18,7 @@ User = get_user_model()
 
 def is_superuser(user):
     """Check if the user is authenticated and has superuser privileges."""
+
     return user.is_authenticated and user.is_superuser
 
 
@@ -101,7 +104,6 @@ def generate_crud(model, form_class, model_name):
         if form.is_valid():
             form.save()
             return redirect(request.path.replace('/create/', '/'))
-
         return render(request, 'admin/model_create.html', {'form': form, 'model': model_name})
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
@@ -126,6 +128,15 @@ def generate_crud(model, form_class, model_name):
         return redirect(request.path.replace(f'/{pk}/delete/', '/'))
 
     return list_view, create_view, update_view, delete_view
+
+
+shop_list, shop_create, shop_update, shop_delete = generate_crud(Shop, ShopForm, "Shop")
+shoprequest_list, _, _, shoprequest_delete = generate_crud(ShopCreationRequest, None, "ShopRequest")
+pickup_list, pickup_create, pickup_update, pickup_delete = generate_crud(PickupPoints, PickupPointForm, "PickupPoint")
+order_list, _, order_update, order_delete = generate_crud(Order, None, "Order")
+product_list, product_create, product_update, product_delete = generate_crud(Product, ProductForm, "Product")
+category_list, category_create, category_update, category_delete = generate_crud(Category, CategoryForm, "Category")
+review_list, review_create, review_update, review_delete = generate_crud(Review, ReviewForm, "Review")
 
 
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
@@ -175,7 +186,9 @@ def approve_shop_request(request, pk):
     request_obj.status = 'approved'
     request_obj.response_time = now()
     request_obj.save()
+
     send_approve_email.delay(request_obj.user.username, request_obj.name, request_obj.user.email)
+
     return redirect('app_admin:shoprequest_list')
 
 
@@ -190,5 +203,7 @@ def reject_shop_request(request, pk):
     request_obj.status = 'rejected'
     request_obj.response_time = now()
     request_obj.save()
+
     send_reject_email.delay(request_obj.user.username, request_obj.name, request_obj.user.email)
+
     return redirect('app_admin:shoprequest_list')
