@@ -1,0 +1,28 @@
+[
+    {
+        "model": "django_celery_beat.crontabschedule",
+        "pk": 1,
+        "fields": {
+            "minute": "0",
+            "hour": "0",
+            "day_of_week": "*",
+            "day_of_month": "*",
+            "month_of_year": "*",
+            "timezone": "UTC"
+        }
+    },
+    {
+        "model": "django_celery_beat.periodictask",
+        "pk": 1,
+        "fields": {
+            "name": "mark_unclaimed_orders_every_day",
+            "task": "app_orders.tasks.mark_unclaimed_orders",
+            "crontab": 1,
+            "enabled": true,
+            "args": "[]",
+            "kwargs": "{}",
+            "date_changed": "2025-05-16T16:22:00Z",
+            "last_run_at": null
+        }
+    }
+]

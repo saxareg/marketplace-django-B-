@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python project/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
@@ -14,17 +14,45 @@ services:
       - app-network
     profiles:
       - default
-      - seed
 
-  celery:
+  seed:
     build: .
-    command: celery -A project worker -l info
+    command: /bin/sh -c "python /app/project/manage.py migrate && python /app/project/manage.py seed_data"
     volumes:
       - .:/app
     env_file:
       - .env
     depends_on:
       - redis
+    networks:
+      - app-network
+    profiles:
+      - seed
+
+  celery:
+    build: .
+    command: celery -A project worker -l info
+    working_dir: /app/project
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  celery-beat:
+    build: .
+    command: celery -A project beat -l info
+    working_dir: /app/project
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - celery
     networks:
       - app-network
 
@@ -38,4 +66,3 @@ services:
 networks:
   app-network:
     driver: bridge
-    

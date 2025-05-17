@@ -2,7 +2,13 @@
 FROM python:3.9-slim
 
 # Устанавливаем рабочую директорию
-WORKDIR /app/project
+WORKDIR /app
+
+# Устанавливаем зависимости системы (для psycopg2, если используешь PostgreSQL)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Копируем requirements.txt и устанавливаем зависимости
 COPY requirements.txt .
@@ -18,4 +24,4 @@ EXPOSE 8000
 ENV PYTHONUNBUFFERED=1
 
 # Команда по умолчанию (переопределяется в docker-compose.yml)
-CMD ["python", "manage.py"]
+CMD ["python", "project/manage.py", "runserver", "0.0.0.0:8000"]

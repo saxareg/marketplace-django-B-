@@ -36,6 +36,8 @@ env = environ.Env(
 
 # Читаем .env файл, если он существует
 env_file = os.path.join(PROJECT_ROOT, '.env')  # Ищем .env в корне проекта
+# Отключаем URL-декодирование
+env.url_encoded = False
 environ.Env.read_env(env_file)
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -67,11 +69,13 @@ DATABASES = {
 # }
 
 # Celery settings
-CELERY_BROKER_URL = env('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
+CELERY_BROKER_URL = env('CELERY_BROKER_URL').replace(r'\x3a', ':')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND').replace(r'\x3a', ':')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # Email settings (прямое чтение из .env)
 EMAIL_HOST = env('EMAIL_HOST')
@@ -90,6 +94,10 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'fixtures'),
+]
 
 # Application definition
 
