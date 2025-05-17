@@ -62,3 +62,4 @@ def mark_unclaimed_orders():
             recipient_list=[order.user.email],
             fail_silently=False,
         )
+    return f"{orders.count()} orders marked unclaimed"

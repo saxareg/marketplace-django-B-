@@ -95,10 +95,6 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 #     }
 # }
 
-FIXTURE_DIRS = [
-    os.path.join(BASE_DIR, 'fixtures'),
-]
-
 # Application definition
 
 INSTALLED_APPS = [

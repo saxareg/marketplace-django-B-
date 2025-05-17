@@ -4,6 +4,7 @@ services:
     command: >
       /bin/sh -c "
       python /app/project/manage.py migrate &&
+      python /app/project/manage.py register_periodic_tasks &&
       python /app/project/manage.py create_admin && 
       python /app/project/manage.py runserver 0.0.0.0:8000
       "
