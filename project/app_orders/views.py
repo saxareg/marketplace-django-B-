@@ -15,17 +15,19 @@ from .tasks import notify_ready_order
 @require_POST
 @csrf_exempt
 def toggle_cart_item(request):
+    """Add or remove a product from the cart (toggle behavior)."""
+
     data = json.loads(request.body)
     product_id = data.get("product_id")
     user = request.user
 
     if not user.is_authenticated:
-        return JsonResponse({"success": False, "message": "Вы не авторизованы."})
+        return JsonResponse({"success": False, "message": "You are not authenticated."})
 
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Товар не найден."})
+        return JsonResponse({"success": False, "message": "Product not found."})
 
     cart, _ = Cart.objects.get_or_create(user=user)
     cart_item = CartItem.objects.filter(cart=cart, product=product).first()
@@ -48,6 +50,8 @@ def toggle_cart_item(request):
 
 @require_POST
 def cart_remove(request):
+    """Remove a cart item by its ID."""
+
     item_id = request.POST.get('item_id')
     try:
         item = CartItem.objects.get(id=item_id, cart__user=request.user)
@@ -62,6 +66,8 @@ def cart_remove(request):
 
 @login_required
 def cart_view(request):
+    """Display the user's shopping cart."""
+
     cart, created = Cart.objects.get_or_create(user=request.user)
     items = CartItem.objects.filter(cart=cart)
     for item in items:
@@ -77,6 +83,8 @@ def cart_view(request):
 
 @require_POST
 def cart_update_quantity(request):
+    """Increase or decrease the quantity of a cart item."""
+
     item_id = request.POST.get('item_id')
     action = request.POST.get('action')
 
@@ -112,6 +120,8 @@ def cart_update_quantity(request):
 
 
 def pp_order_detail_view(request, order_id):
+    """Admin or pickup point worker updates order status and optionally notifies the user."""
+
     order = get_object_or_404(Order, id=order_id)
 
     if request.method == 'POST':
@@ -145,12 +155,13 @@ def pp_order_detail_view(request, order_id):
 @login_required
 @transaction.atomic
 def order_create(request):
+    """Creates one or more orders from selected cart items, grouped by shop."""
+
     cart = Cart.objects.get(user=request.user)
 
     if request.method == 'GET':
         selected_ids = request.GET.getlist('selected_items')
         selected_items = cart.items.filter(id__in=selected_ids) if selected_ids else cart.items.all()
-
         form = OrderCreate()
         return render(request, 'orders/order_create.html', {
             'form': form,
@@ -160,11 +171,10 @@ def order_create(request):
     elif request.method == 'POST':
         selected_ids = request.POST.getlist('selected_items')
         form = OrderCreate(request.POST)
+        selected_items = cart.items.filter(id__in=selected_ids)
 
         if not selected_ids:
             return redirect('cart')
-
-        selected_items = cart.items.filter(id__in=selected_ids)
 
         if form.is_valid():
             orders_by_shop = {}
@@ -213,11 +223,15 @@ def order_create(request):
 
 @login_required
 def user_orders_view(request):
+    """Displays a list of the current user's orders."""
+
     orders = request.user.orders.all().order_by('-created_at')
     return render(request, 'orders/user_orders.html', {'orders': orders})
 
 
 @login_required
 def user_order_detail_view(request, order_id):
+    """Displays the details of a specific order for the current user."""
+
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'orders/user_order_detail.html', {'order': order})

@@ -6,6 +6,8 @@ from app_shops.models import Shop
 
 
 class Cart(models.Model):
+    """Represents a shopping cart associated with a single user."""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
@@ -14,6 +16,8 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
+    """Represents a product and its quantity in a user's cart."""
+
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_items')
     quantity = models.PositiveIntegerField(default=1)
@@ -26,19 +30,29 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    """
+    Represents a finalized order created from the shopping cart.
+    Includes references to the user, the shop, and the pickup point.
+    """
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='orders')
     pickup_point = models.ForeignKey(PickupPoints, on_delete=models.SET_NULL, null=True, related_name='orders')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
-    status = models.CharField(max_length=20, choices=[
-        ('pending', 'Ожидает'),
-        ('confirmed', 'Подтверждён'),
-        ('shipped', 'В пути'),
-        ('ready_for_pickup', 'Готов к выдаче'),
-        ('delivered', 'Доставлен'),
-        ('returned', 'Возвращён'),
-        ('unclaimed', 'Невостребован'),
-    ], default='shipped', db_index=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('confirmed', 'Confirmed'),
+            ('shipped', 'Shipped'),
+            ('ready_for_pickup', 'Ready for pickup'),
+            ('delivered', 'Delivered'),
+            ('returned', 'Returned'),
+            ('unclaimed', 'Unclaimed'),
+        ],
+        default='shipped',
+        db_index=True
+    )
     is_paid = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     status_updated_at = models.DateTimeField(null=True, blank=True)
@@ -55,6 +69,8 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    """Represents a product included in a specific order with its quantity and price."""
+
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items')
     quantity = models.PositiveIntegerField()

@@ -17,11 +17,15 @@ User = get_user_model()
 
 
 def is_superuser(user):
+    """Check if the user is authenticated and has superuser privileges."""
+
     return user.is_authenticated and user.is_superuser
 
 
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def cart_detail(request, pk):
+    """Display detailed information about a specific cart and its items for admin."""
+
     cart = get_object_or_404(Cart, pk=pk)
     items = cart.items.select_related('product')
     return render(request, 'admin/cart_detail.html', {
@@ -32,6 +36,8 @@ def cart_detail(request, pk):
 
 
 def admin_login(request):
+    """Handle admin login. Only superusers are allowed."""
+
     form = LoginForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
         user = authenticate(
@@ -48,13 +54,16 @@ def admin_login(request):
 
 
 def admin_logout(request):
+    """Log out the current admin user."""
+
     logout(request)
     return redirect('app_admin:login')
 
 
-# Dashboard
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def dashboard(request):
+    """Render the admin dashboard with quick access to various sections."""
+
     sections = [
         {"name": "Магазины", "url": reverse('app_admin:shop_list'), "icon": "bi-shop"},
         {"name": "Заявки", "url": reverse('app_admin:shoprequest_list'), "icon": "bi-journal-text"},
@@ -69,9 +78,12 @@ def dashboard(request):
 
 
 def generate_crud(model, form_class, model_name):
+    """Generate CRUD views (list, create, update, delete) for the specified model."""
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def list_view(request):
+        """List all objects of the model."""
+
         items = model.objects.all()
         model_slug = model_name.lower()
         can_create = form_class is not None
@@ -84,6 +96,8 @@ def generate_crud(model, form_class, model_name):
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def create_view(request):
+        """Create a new instance of the model using the provided form."""
+
         if form_class is None:
             return redirect(request.path.replace('/create/', '/'))
         form = form_class(request.POST or None, request.FILES or None)
@@ -94,6 +108,8 @@ def generate_crud(model, form_class, model_name):
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def update_view(request, pk):
+        """Update an existing model instance."""
+
         obj = get_object_or_404(model, pk=pk)
         if form_class is None:
             return redirect(request.path.replace(f'/{pk}/update/', '/'))
@@ -105,6 +121,8 @@ def generate_crud(model, form_class, model_name):
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def delete_view(request, pk):
+        """Delete the specified model instance."""
+
         obj = get_object_or_404(model, pk=pk)
         obj.delete()
         return redirect(request.path.replace(f'/{pk}/delete/', '/'))
@@ -121,9 +139,10 @@ category_list, category_create, category_update, category_delete = generate_crud
 review_list, review_create, review_update, review_delete = generate_crud(Review, ReviewForm, "Review")
 
 
-# User admin
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def user_list(request):
+    """List all users in the system for admin."""
+
     users = User.objects.all()
     return render(request, 'admin/model_list.html', {
         'items': users,
@@ -135,6 +154,8 @@ def user_list(request):
 
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def user_update(request, pk):
+    """Update a user's profile information."""
+
     user = get_object_or_404(User, pk=pk)
     form = UserProfileUpdateForm(request.POST or None, instance=user)
     if form.is_valid():
@@ -145,6 +166,11 @@ def user_update(request, pk):
 
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def approve_shop_request(request, pk):
+    """
+    Approve a pending shop creation request and create a Shop instance.
+    Also sends approval email to the requester.
+    """
+
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
     if request_obj.status != 'pending':
         return redirect('app_admin:shoprequest_list')
@@ -168,6 +194,8 @@ def approve_shop_request(request, pk):
 
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def reject_shop_request(request, pk):
+    """Reject a pending shop creation request and notify the user via email."""
+
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
     if request_obj.status != 'pending':
         return redirect('app_admin:shoprequest_list')
