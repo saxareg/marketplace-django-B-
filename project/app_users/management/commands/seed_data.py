@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         # Очистка базы данных
         User.objects.exclude(is_superuser=True).delete()
-        UserProfile.objects.all().delete()
+        UserProfile.objects.exclude(user__is_superuser=True).delete()
         PickupPoints.objects.all().delete()
         Category.objects.all().delete()
         Shop.objects.all().delete()

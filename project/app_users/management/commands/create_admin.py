@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User = get_user_model()
         username = os.getenv('DJANGO_SUPERUSER_USERNAME', 'admin')
-        email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'marketplace.diplom@gmail.com')
+        email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@domain.com')
         password = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'admin')
 
         user, created = User.objects.get_or_create(username=username, defaults={'email': email})
