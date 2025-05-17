@@ -6,22 +6,33 @@
 {% endblock %}
 
 {% block content %}
-<div class="order-detail-wrapper">
-  <h2>Детали заказа #{{ order.id }} — {{ order.created_at|date:"d.m.Y H:i" }}</h2>
+<h1 class="order-title">Детали заказа №{{ order.id }}</h1>
 
-  <p><strong>Магазин:</strong> {{ order.shop.name }}</p>
-  <p><strong>Пункт выдачи:</strong> {{ order.pickup_point.name }}</p>
-  <p><strong>Статус:</strong> {{ order.get_status_display }}</p>
-  <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
-  <p><strong>Оплачен:</strong> {{ order.is_paid|yesno:"Да,Нет" }}</p>
-
-  <h3>Товары в заказе:</h3>
-  <ul class="order-items">
-    {% for item in order.items.all %}
-      <li>{{ item.product.name }} — {{ item.quantity }} × {{ item.price }} ₽</li>
-    {% endfor %}
-  </ul>
-
-  <a class="back-link" href="{% url 'my-orders' %}">⬅ Назад к заказам</a>
+<div class="order-info">
+    <p><strong>Дата заказа:</strong> {{ order.created_at|date:"d.m.Y H:i" }}</p>
+    <p><strong>Статус:</strong> {{ order.status }}</p>
+    <p><strong>Общая сумма:</strong> {{ order.total_price }} ₽</p>
+    <p><strong>Пункт выдачи:</strong> {{ order.pickup_point }} ₽</p>
 </div>
+
+<div class="order-items">
+    {% for item in order.items.all %}
+    <a href="{% url 'product_detail' item.product.slug %}" class="order-card-link">
+        <div class="order-card">
+            {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
+            {% else %}
+                <img src="/media/products/default_product_image.jpg" alt="{{ item.product.name }}" class="product-image">
+            {% endif %}
+
+            <div class="card-details">
+                <h2>{{ item.product.name|slice:":24" }}{% if item.product.name|length > 24 %}...{% endif %}</h2>
+                <p>Цена: {{ item.price }} ₽</p>
+                <p>Количество: {{ item.quantity }}</p>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
 {% endblock %}
