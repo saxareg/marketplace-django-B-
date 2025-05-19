@@ -1,7 +1,12 @@
 services:
   web:
     build: .
-    command: /bin/sh -c "python /app/project/manage.py create_admin && python /app/project/manage.py runserver 0.0.0.0:8000"
+    command: >
+      /bin/sh -c "
+      python /app/project/manage.py migrate &&
+      python /app/project/manage.py create_admin &&
+      python /app/project/manage.py runserver 0.0.0.0:8000
+      "
     volumes:
       - .:/app
     ports:
