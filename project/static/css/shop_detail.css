@@ -8,42 +8,54 @@
     background-color: #ffffff;
 }
 
-/* Заголовок и логотип магазина */
+/* Заголовок и информация о магазине */
 .shop-header {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 160px 1fr;
     gap: 2rem;
+    padding: 2rem;
     margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e0e0e0;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
 }
 
 .shop-logo {
-    width: 150px;
-    height: 150px;
-    object-fit: contain;
-    border-radius: 12px;
-    background-color: #f9f9f9;
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 16px;
     border: 1px solid #ddd;
+    background-color: #ffffff;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+    transition: transform 0.3s ease;
+}
+
+.shop-logo:hover {
+    transform: scale(1.02);
 }
 
 .shop-info h1 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: #007BFF;
+    font-weight: 700;
 }
 
 .shop-meta {
-    font-size: 0.95rem;
-    color: #555;
-    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #6c757d;
+    margin: 0.75rem 0;
 }
 
 .shop-description {
-    margin-top: 0.5rem;
-    font-size: 1rem;
-    color: #333;
+    margin-top: 1rem;
+    font-size: 1.05rem;
+    color: #343a40;
+    line-height: 1.6;
 }
+
 
 .status-active {
     color: #28a745;
@@ -152,4 +164,47 @@
     .btn-add-product {
         margin-top: 1rem;
     }
+}
+
+/* Стилизация переключателя */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    margin-right: 0.5rem;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0;
+    right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 26px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px; width: 20px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #28a745;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
 }
