@@ -44,14 +44,14 @@ The project follows a modular domain-driven architecture, with foreign key relat
 ## 🛠️ Installation
 
 Setup instructions (virtual environment, `.env`, dependencies, Docker, etc.):  
-📄 [`docs/installation_manual.md`](docs/installation_manual.md)
+📄 [`docs/installation_manual.md`](project/docs/installation_manual.md)
 
 ---
 
 ## 🌱 Database Seeding
 
 Command to populate the database with test data (users, products, shops, orders):  
-📄 [`docs/seed_data.md`](docs/seed_data.md)
+📄 [`docs/seed_data.md`](project/docs/seed_data.md)
 
 Usage example:
 
@@ -91,16 +91,16 @@ Default superuser credentials:
 
 | Topic                    | File                                    |
 |--------------------------|-----------------------------------------|
-| Installation Guide       | [`installation_manual.md`](docs/installation_manual.md) |
-| Seed Data (Users, Orders)| [`seed_data.md`](docs/seed_data.md)     |
-| Data Model Diagram       | [`models.png`](docs/models.png)         |
-| Known Limitations        | [`known_limitations.md`](docs/known_limitations.md)     |
+| Installation Guide       | [`installation_manual.md`](project/docs/installation_manual.md) |
+| Seed Data (Users, Orders)| [`seed_data.md`](project/docs/seed_data.md)     |
+| Data Model Diagram       | [`models.png`](project/docs/models.png)         |
+| Known Limitations        | [`known_limitations.md`](project/docs/known_limitations.md)     |
 
 ---
 
 ## 🚧 Known Limitations
 
-See [`docs/known_limitations.md`](docs/known_limitations.md) for a list of current limitations and open points during MVP development.
+See [`docs/known_limitations.md`](project/docs/known_limitations.md) for a list of current limitations and open points during MVP development.
 
 ---
 
