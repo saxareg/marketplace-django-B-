@@ -2,10 +2,13 @@
 website-marketplace for team diplom project
 
 ## Setup
-# go to folder to place the marketplace project
+-  go to a folder to place the marketplace project
+```bash
 git clone https://github.com/BogdanMalashuk/marketplace-django.git
 cd marketplace-django
-# git switch develop
+
+git switch develop
+
 python -m venv venv
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
@@ -15,9 +18,10 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 touch .env
-# --------------------------
-put define following in it
+```
+- put following in it
 
+```bash
 # Django settings
 SECRET_KEY='{your_django_key_here}'
 DEBUG=True
@@ -51,35 +55,51 @@ DB_NAME=db.sqlite3
 # DB_PASSWORD=your_db_password
 # DB_HOST=localhost
 # DB_PORT=5432
-# ------------------------------------
+```
 
-# check docker
+- check docker
+```
 docker --version
-# Docker version 28.1.1, build 4eba377
+```
+> Docker version 28.1.1, build 4eba377```
 
-# build images
+- build images
+```bash
 docker-compose build
+```
 
-# run containers
+- run containers
+```
 docker-compose up -d
+```
 
-# prefill database with demo items 
+- prefill database with demo items 
+```
 docker-compose exec web python project/manage.py seed_data
+```
 
-# for non docker usage:
+- for non docker usage:
+```
 cd project
+```
 
-# prefill database with demo items 
+- prefill database with demo items 
+```
 manage.py seed_data
+```
 
-# create superuser
+- create superuser
+```
 python manage.py create_admin
-# Superuser "admin" has been created.
-# => User profile for superuser "admin" has been created.
+```
+> Superuser "admin" has been created.
+> User profile for superuser "admin" has been created.
 
-# register periodic task(s)
+- register periodic task(s)
+```
 python manage.py register_periodic_tasks
-# => Periodic task "mark_unclaimed_orders_every_day" registered successfully.
+```
+> Periodic task "mark_unclaimed_orders_every_day" registered successfully.
 
 
 ## Database Seeding Script
