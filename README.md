@@ -35,7 +35,7 @@ marketplace-django/
 
 ## 🖼️ Data Model Overview
 
-![Marketplace Data Model](docs/models.png)
+![Marketplace Data Model](project/docs/models.png)
 
 The project follows a modular domain-driven architecture, with foreign key relationships connecting shops, users, products, and orders.
 
