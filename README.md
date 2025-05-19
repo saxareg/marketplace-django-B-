@@ -66,7 +66,6 @@ The project includes a full Docker-based setup for local development and testing
 | `celery`       | Celery worker processing background jobs    |
 | `celery-beat`  | Celery Beat scheduler for periodic tasks    |
 | `redis`        | Redis as Celery broker and result backend   |
-| `seed`         | One-time initializer: seeds database, creates superuser, registers periodic jobs |
 
 ### Common Commands:
 
