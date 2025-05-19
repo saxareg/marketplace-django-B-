@@ -78,9 +78,13 @@ docker-compose down
 
 # View logs
 docker-compose logs -f
-```
 
+# Seed database with data 
+docker-compose exec web python manage.py seed_data
+
+```
 > ⚠️ Make sure `.env` is properly configured before running Docker services.
+
 
 ---
 
