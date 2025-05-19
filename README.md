@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 touch .env
 ```
-- put following in it
+- put following in the .env file
 
 ```bash
 # Django settings
