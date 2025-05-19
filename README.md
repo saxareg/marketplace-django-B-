@@ -102,6 +102,7 @@ python manage.py register_periodic_tasks
 > Periodic task "mark_unclaimed_orders_every_day" registered successfully.
 
 
+
 ## Database Seeding Script
 The `seed_database` Django command fills a marketplace database with test data to enable testing, development, and feature demonstration.
 
