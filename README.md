@@ -44,14 +44,14 @@ The project follows a modular domain-driven architecture, with foreign key relat
 ## 🛠️ Installation
 
 Setup instructions (virtual environment, `.env`, dependencies, Docker, etc.):  
-📄 [`docs/installation_manual.md`](project/docs/installation_manual.md)
+📄 [`project/docs/installation_manual.md`](project/docs/installation_manual.md)
 
 ---
 
 ## 🌱 Database Seeding
 
 Command to populate the database with test data (users, products, shops, orders):  
-📄 [`docs/seed_data.md`](project/docs/seed_data.md)
+📄 [`project/docs/seed_data.md`](project/docs/seed_data.md)
 
 Usage example:
 
@@ -100,7 +100,7 @@ Default superuser credentials:
 
 ## 🚧 Known Limitations
 
-See [`docs/known_limitations.md`](project/docs/known_limitations.md) for a list of current limitations and open points during MVP development.
+See [`project/docs/known_limitations.md`](project/docs/known_limitations.md) for a list of current limitations and open points during MVP development.
 
 ---
 
