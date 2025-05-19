@@ -91,7 +91,7 @@ docker-compose exec web python manage.py seed_data
 ## 🌱 Database Seeding
 
 Command to populate the database with test data (users, products, shops, orders):  
-📄 [`project/docs/seed_data.md`](project/docs/seed_data.md)
+📄 [`project/docs/seed_data_manual.md`](project/docs/seed_data_manual.md)
 
 Usage example:
 
@@ -141,7 +141,7 @@ Default superuser credentials:
 | Topic                    | File                                        |
 |--------------------------|---------------------------------------------|
 | Installation Guide       | [`installation_manual.md`](project/docs/installation_manual.md) |
-| Seed Data (Users, Orders)| [`seed_data.md`](project/docs/seed_data.md)     |
+| Seed Data (Users, Orders)| [`seed_data_manual.md`](project/docs/seed_data_manual.md)     |
 | Data Model Diagram       | [`models.png`](project/docs/models.png)         |
 | Known Limitations        | [`known_limitations.md`](project/docs/known_limitations.md)     |
 | Celery Tasks             | [`celery_tasks.md`](project/docs/celery_tasks.md) |
