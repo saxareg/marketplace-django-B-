@@ -17,8 +17,6 @@ services:
       - redis
     networks:
       - app-network
-    profiles:
-      - default
 
   seed:
     build: .
@@ -27,6 +25,7 @@ services:
       python /app/project/manage.py migrate &&
       python /app/project/manage.py seed_data &&
       python /app/project/manage.py create_admin &&
+      python /app/project/manage.py register_periodic_tasks &&
       python /app/project/manage.py runserver 0.0.0.0:8000
       "
     volumes:
@@ -37,8 +36,6 @@ services:
       - redis
     networks:
       - app-network
-    profiles:
-      - seed
 
   celery:
     build: .

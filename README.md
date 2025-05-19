@@ -18,6 +18,12 @@ A full-featured web marketplace platform built with Django for a university dipl
 
 ---
 
+## 🚧 Known Limitations
+
+See [`project/docs/known_limitations.md`](project/docs/known_limitations.md) for a list of current limitations and open points during MVP development.
+
+---
+
 ## 🧭 Project Structure
 
 ```
@@ -28,7 +34,7 @@ marketplace-django/
 ├── app_orders/          # Carts, orders, order items
 ├── project/             # Main Django project config
 ├── media/               # Uploaded media files
-└── docs/                # Documentation and data model
+└── project/docs/        # Documentation and data model
 ```
 
 ---
@@ -48,6 +54,37 @@ Setup instructions (virtual environment, `.env`, dependencies, Docker, etc.):
 
 ---
 
+## 🐳 Docker Support
+
+The project includes a full Docker-based setup for local development and testing.
+
+### Services:
+
+| Service        | Description                                 |
+|----------------|---------------------------------------------|
+| `web`          | Django application running on port `8000`   |
+| `celery`       | Celery worker processing background jobs    |
+| `celery-beat`  | Celery Beat scheduler for periodic tasks    |
+| `redis`        | Redis as Celery broker and result backend   |
+| `seed`         | One-time initializer: seeds database, creates superuser, registers periodic jobs |
+
+### Common Commands:
+
+```bash
+# Build and start all services
+docker-compose up -d --build
+
+# Stop all containers
+docker-compose down
+
+# View logs
+docker-compose logs -f
+```
+
+> ⚠️ Make sure `.env` is properly configured before running Docker services.
+
+---
+
 ## 🌱 Database Seeding
 
 Command to populate the database with test data (users, products, shops, orders):  
@@ -61,16 +98,25 @@ python manage.py seed_data
 
 ---
 
-## ⚙️ Periodic Tasks
+## ⚙️ Celery & Periodic Tasks
 
-Background jobs (e.g., marking unclaimed orders) are scheduled using Celery Beat.  
-To register them:
+This project uses **Celery** with **Redis** for background task processing, and **Celery Beat** for scheduling periodic jobs.
+
+📄 See all tasks in [`project/docs/celery_tasks.md`](project/docs/celery_tasks.md)
+
+### Active Scheduled Task:
+
+| Task Name                             | Description                                        |
+|--------------------------------------|----------------------------------------------------|
+| `app_orders.tasks.mark_unclaimed_orders` | Marks unpaid orders as "unclaimed" after 7 days |
+
+To register the periodic task:
 
 ```bash
 python manage.py register_periodic_tasks
 ```
 
-> ✅ Periodic task "mark_unclaimed_orders_every_day" registered successfully.
+> ✅ Periodic task `mark_unclaimed_orders_every_day` will be registered successfully.
 
 ---
 
@@ -89,18 +135,13 @@ Default superuser credentials:
 
 ## 📚 Additional Docs
 
-| Topic                    | File                                    |
-|--------------------------|-----------------------------------------|
+| Topic                    | File                                        |
+|--------------------------|---------------------------------------------|
 | Installation Guide       | [`installation_manual.md`](project/docs/installation_manual.md) |
 | Seed Data (Users, Orders)| [`seed_data.md`](project/docs/seed_data.md)     |
 | Data Model Diagram       | [`models.png`](project/docs/models.png)         |
 | Known Limitations        | [`known_limitations.md`](project/docs/known_limitations.md)     |
-
----
-
-## 🚧 Known Limitations
-
-See [`project/docs/known_limitations.md`](project/docs/known_limitations.md) for a list of current limitations and open points during MVP development.
+| Celery Tasks             | [`celery_tasks.md`](project/docs/celery_tasks.md) |
 
 ---
 
