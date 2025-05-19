@@ -51,7 +51,7 @@ Setup instructions (virtual environment, `.env`, dependencies, Docker, etc.):
 ## 🌱 Database Seeding
 
 Command to populate the database with test data (users, products, shops, orders):  
-📄 [`docs/SEED_DATA.md`](docs/SEED_DATA.md)
+📄 [`docs/seed_data.md`](docs/seed_data.md)
 
 Usage example:
 
@@ -92,7 +92,7 @@ Default superuser credentials:
 | Topic                    | File                                    |
 |--------------------------|-----------------------------------------|
 | Installation Guide       | [`installation_manual.md`](docs/installation_manual.md) |
-| Seed Data (Users, Orders)| [`SEED_DATA.md`](docs/SEED_DATA.md)     |
+| Seed Data (Users, Orders)| [`seed_data.md`](docs/seed_data.md)     |
 | Data Model Diagram       | [`models.png`](docs/models.png)         |
 | Known Limitations        | [`known_limitations.md`](docs/known_limitations.md)     |
 
