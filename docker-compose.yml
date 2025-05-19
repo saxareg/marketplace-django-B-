@@ -18,25 +18,6 @@ services:
     networks:
       - app-network
 
-  seed:
-    build: .
-    command: >
-      /bin/sh -c "
-      python /app/project/manage.py migrate &&
-      python /app/project/manage.py seed_data &&
-      python /app/project/manage.py create_admin &&
-      python /app/project/manage.py register_periodic_tasks &&
-      python /app/project/manage.py runserver 0.0.0.0:8000
-      "
-    volumes:
-      - .:/app
-    env_file:
-      - .env
-    depends_on:
-      - redis
-    networks:
-      - app-network
-
   celery:
     build: .
     command: celery -A project worker -l info
