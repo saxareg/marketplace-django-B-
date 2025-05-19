@@ -22,21 +22,24 @@
     <p><strong>Описание:</strong> {{ product.description }}</p>
     <p><strong>Цена:</strong> {{ product.price }} ₽</p>
 
-    {% if is_owner %}
-        <a href="{% url 'edit_product' product.slug %}" class="btn btn-primary">Редактировать</a>
-        <form action="{% url 'delete_product' product.slug %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Удалить</button>
-        </form>
-    {% else %}
-        <button id="add-to-cart-btn" class="add-to-cart-btn" data-product-id="{{ product.id }}">
-            {% if in_cart %}
-                Убрать из корзины
-            {% else %}
-                Добавить в корзину
-            {% endif %}
-        </button>
-    {% endif %}
+    <div class="button-group">
+        {% if is_owner %}
+            <a href="{% url 'edit_product' product.slug %}" class="btn btn-primary">Редактировать</a>
+            <form action="{% url 'delete_product' product.slug %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        {% else %}
+            <button id="add-to-cart-btn" class="btn btn-success" data-product-id="{{ product.id }}">
+                {% if in_cart %}
+                    Убрать из корзины
+                {% else %}
+                    Добавить в корзину
+                {% endif %}
+            </button>
+        {% endif %}
+    </div>
+
 </div>
 
 <hr>
