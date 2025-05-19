@@ -53,13 +53,13 @@ CELERY_RESULT_BACKEND='redis://localhost:6379/0'
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
-EMAIL_HOST_USER='marketplace.diplom@gmail.com'
-EMAIL_HOST_PASSWORD='aatnutopvxyukzqr'
-DEFAULT_FROM_EMAIL='marketplace.diplom@gmail.com'
+EMAIL_HOST_USER='{your_email}'
+EMAIL_HOST_PASSWORD='{your_email_password}'
+DEFAULT_FROM_EMAIL='admin@domain.com'
 
 # Superuser
 DJANGO_SUPERUSER_USERNAME=admin
-DJANGO_SUPERUSER_EMAIL=marketplace.diplom@gmail.com
+DJANGO_SUPERUSER_EMAIL=admin@domain.com
 DJANGO_SUPERUSER_PASSWORD=admin
 
 # Database settings (SQLite)
