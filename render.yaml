@@ -4,7 +4,8 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
+    buildCommand: ""
     preDeployCommand: |
-      python manage.py migrate
+      cd project && python manage.py migrate
     startCommand: |
-      python manage.py runserver 0.0.0.0:8000
+      cd project && python manage.py runserver 0.0.0.0:8000
