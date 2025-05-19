@@ -20,7 +20,7 @@
         <a class='shop-ref' href="{% url 'shop-detail' product.shop.slug %}">{{ product.shop.name }}</a>
     </p>
     <p><strong>Описание:</strong> {{ product.description }}</p>
-    <p><strong>Цена:</strong> {{ product.price }} ₽</p>
+    <p><strong>Цена:</strong> {{ product.price }} BYN</p>
 
     <div class="button-group">
         {% if is_owner %}

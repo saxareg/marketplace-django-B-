@@ -47,8 +47,8 @@
                 <img src="/media/products/default_product_image.jpg" alt="{{ product.name }}" class="product-image">
             {% endif %}
 
-            <h2 class="product-name">{{ product.name|slice:":20" }}{% if product.name|length > 20 %}...{% endif %}</h2>
-            <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
+            <h2 class="product-name">{{ product.name|slice:":18" }}{% if product.name|length > 18 %}...{% endif %}</h2>
+            <p class="product-price">{{ product.price|floatformat:2 }} BYN</p>
             <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
         </div>
     {% endfor %}
@@ -106,8 +106,8 @@
         var minValue = document.getElementById('min_price_value');
         var maxValue = document.getElementById('max_price_value');
 
-        minValue.textContent = values[0] + ' ₽';
-        maxValue.textContent = values[1] + ' ₽';
+        minValue.textContent = values[0] + ' BYN';
+        maxValue.textContent = values[1] + ' BYN';
 
         document.querySelector('input[name="min_price"]').value = values[0];
         document.querySelector('input[name="max_price"]').value = values[1];

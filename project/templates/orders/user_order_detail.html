@@ -11,8 +11,8 @@
 <div class="order-info">
     <p><strong>Дата заказа:</strong> {{ order.created_at|date:"d.m.Y H:i" }}</p>
     <p><strong>Статус:</strong> {{ order.status }}</p>
-    <p><strong>Общая сумма:</strong> {{ order.total_price }} ₽</p>
-    <p><strong>Пункт выдачи:</strong> {{ order.pickup_point }} ₽</p>
+    <p><strong>Общая сумма:</strong> {{ order.total_price }} BYN</p>
+    <p><strong>Пункт выдачи:</strong> {{ order.pickup_point }} BYN</p>
 </div>
 
 <div class="order-items">
@@ -27,7 +27,7 @@
 
             <div class="card-details">
                 <h2>{{ item.product.name|slice:":24" }}{% if item.product.name|length > 24 %}...{% endif %}</h2>
-                <p>Цена: {{ item.price }} ₽</p>
+                <p>Цена: {{ item.price }} BYN</p>
                 <p>Количество: {{ item.quantity }}</p>
             </div>
         </div>

@@ -29,9 +29,9 @@
                     <button type="button" class="quantity-btn change-qty" data-action="decrease" data-item-id="{{ item.id }}">−</button>
                     <span class="item-quantity">{{ item.quantity }}</span>
                     <button type="button" class="quantity-btn change-qty" data-action="increase" data-item-id="{{ item.id }}">+</button>
-                    × {{ item.product.price }} ₽
+                    × {{ item.product.price }} BYN
                 </p>
-                <p><strong>Сумма:</strong> <span class="item-subtotal">{{ item.subtotal }}</span> ₽</p>
+                <p><strong>Сумма:</strong> <span class="item-subtotal">{{ item.subtotal }}</span> BYN</p>
             </div>
 
             <button type="button"
@@ -43,7 +43,7 @@
     </div>
 
     <div class="cart-summary">
-        <p><strong>Общая сумма: {{ total_price }} ₽</strong></p>
+        <p><strong>Общая сумма: {{ total_price }} BYN</strong></p>
         <button type="submit" class="btn btn-success" name="checkout">Перейти к оформлению</button>
     </div>
 </form>
@@ -79,7 +79,7 @@
                             document.querySelector('.cart-summary').remove();
                             document.querySelector('h1.cart-title').insertAdjacentHTML('afterend', '<p>Ваша корзина пуста.</p>');
                         } else {
-                            summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;
+                            summaryElement.textContent = `Общая сумма: ${data.total_price} BYN`;
                         }
                     } else {
                         alert("Ошибка при удалении товара.");
@@ -119,7 +119,7 @@
                             quantityElement.textContent = data.quantity;
                             subtotalElement.textContent = data.subtotal;
                         }
-                        summaryElement.textContent = `Общая сумма: ${data.total_price} ₽`;
+                        summaryElement.textContent = `Общая сумма: ${data.total_price} BYN`;
 
                         if (document.querySelectorAll('.cart-card').length === 0) {
                             document.querySelector('.cart-container').remove();
