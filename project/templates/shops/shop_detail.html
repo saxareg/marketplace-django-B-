@@ -20,12 +20,23 @@
             <p class="shop-meta">
                 Владелец: {{ shop.owner.username }}<br>
                 Дата создания: {{ shop.created_at|date:"d.m.Y" }}<br>
-                Статус:
-                {% if shop.is_active %}
-                    <span class="status-active">Активен</span>
-                {% else %}
-                    <span class="status-inactive">Неактивен</span>
-                {% endif %}
+                <form method="post" id="toggle-form" class="toggle-form">
+                    {% csrf_token %}
+                    {% if user.is_authenticated and user == shop.owner %}
+                        <label class="switch">
+                            <input type="checkbox" id="is-active-toggle" {% if shop.is_active %}checked{% endif %}>
+                            <span class="slider round"></span>
+                        </label>
+                        <span id="status-text" class="{% if shop.is_active %}status-active{% else %}status-inactive{% endif %}">
+                            {% if shop.is_active %}Активен{% else %}Неактивен{% endif %}
+                        </span>
+                    {% else %}
+                        <span class="{% if shop.is_active %}status-active{% else %}status-inactive{% endif %}">
+                            {% if shop.is_active %}Активен{% else %}Неактивен{% endif %}
+                        </span>
+                    {% endif %}
+                </form>
+
             </p>
             {% if shop.description %}
                 <p class="shop-description">{{ shop.description }}</p>
@@ -52,7 +63,7 @@
                         <img src="/media/products/default_product_image.jpg" alt="{{ product.name }}" class="product-image">
                     {% endif %}
                     <h2 class="product-name">{{ product.name|slice:":15" }}{% if product.name|length > 15 %}...{% endif %}</h2>
-                    <p class="product-price">{{ product.price|floatformat:2 }} ₽</p>
+                    <p class="product-price">{{ product.price|floatformat:2 }} BYN</p>
                     <a href="{% url 'product_detail' product.slug %}" class="view-details">Подробнее</a>
                 </div>
             {% endfor %}
@@ -61,4 +72,37 @@
         <p>В этом магазине пока нет товаров.</p>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('is-active-toggle');
+    const statusText = document.getElementById('status-text');
+
+    if (toggle) {
+        toggle.addEventListener('change', function() {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const isActive = toggle.checked;
+
+            fetch("{% url 'toggle_shop_status' shop.slug %}", {
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_active: isActive })
+            })
+            .then(response => {
+                if (response.ok) {
+                    statusText.textContent = isActive ? "Активен" : "Неактивен";
+                    statusText.className = isActive ? "status-active" : "status-inactive";
+                } else {
+                    alert("Ошибка при обновлении статуса.");
+                }
+            });
+        });
+    }
+});
+</script>
+
+
 {% endblock %}
