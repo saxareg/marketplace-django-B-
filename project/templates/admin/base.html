@@ -12,6 +12,7 @@
 
         {% if request.user.is_superuser %}
         <nav class="mb-3 d-flex flex-wrap align-items-center gap-2">
+            <a href="/" class=btn btn btn-outline-secondary">Вернуться на сайт</a>
             <a class="btn btn-outline-primary" href="{% url 'app_admin:dashboard' %}">Главная</a>
             <a class="btn btn-outline-secondary" href="{% url 'app_admin:shop_list' %}">Магазины</a>
             <a class="btn btn-outline-secondary" href="{% url 'app_admin:shoprequest_list' %}">Заявки</a>

@@ -3,16 +3,15 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.utils.timezone import now
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
-from django.core.mail import send_mail
 from .forms import LoginForm, ShopForm, ProductForm, CategoryForm, PickupPointForm
 from app_orders.models import Order, Cart
 from app_products.models import Product, Category, Review
 from app_shops.models import Shop, ShopCreationRequest
 from app_users.models import PickupPoints
-from app_users.forms import UserProfileUpdateForm
 from .forms import ReviewForm
 from .tasks import send_reject_email, send_approve_email
-
+from app_users.models import UserProfile
+from .forms import UserForm, UserProfileForm
 User = get_user_model()
 
 
@@ -20,15 +19,7 @@ def is_superuser(user):
     return user.is_authenticated and user.is_superuser
 
 
-@user_passes_test(is_superuser, login_url='/custom_admin/login/')
-def cart_detail(request, pk):
-    cart = get_object_or_404(Cart, pk=pk)
-    items = cart.items.select_related('product')
-    return render(request, 'admin/cart_detail.html', {
-        'cart': cart,
-        'items': items,
-        'model': 'Cart'
-    })
+
 
 
 def admin_login(request):
@@ -68,12 +59,12 @@ def dashboard(request):
     return render(request, 'admin/dashboard.html', {"sections": sections})
 
 
-def generate_crud(model, form_class, model_name):
+def generate_crud(model, form_class, model_name, model_slug=None):
+    model_slug = model_slug or model_name.lower()
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def list_view(request):
         items = model.objects.all()
-        model_slug = model_name.lower()
         can_create = form_class is not None
         return render(request, 'admin/model_list.html', {
             'items': items,
@@ -85,46 +76,45 @@ def generate_crud(model, form_class, model_name):
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def create_view(request):
         if form_class is None:
-            return redirect(request.path.replace('/create/', '/'))
+            return redirect(reverse(f'app_admin:{model_slug}_list'))
         form = form_class(request.POST or None, request.FILES or None)
         if form.is_valid():
             form.save()
-            return redirect(request.path.replace('/create/', '/'))
+            return redirect(reverse(f'app_admin:{model_slug}_list'))
         return render(request, 'admin/model_create.html', {'form': form, 'model': model_name})
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def update_view(request, pk):
         obj = get_object_or_404(model, pk=pk)
         if form_class is None:
-            return redirect(request.path.replace(f'/{pk}/update/', '/'))
+            return redirect(reverse(f'app_admin:{model_slug}_list'))
         form = form_class(request.POST or None, request.FILES or None, instance=obj)
         if form.is_valid():
             form.save()
-            return redirect(request.path.replace(f'/{pk}/update/', '/'))
+            return redirect(reverse(f'app_admin:{model_slug}_list'))
         return render(request, 'admin/model_update.html', {'form': form, 'model': model_name})
 
     @user_passes_test(is_superuser, login_url='/custom_admin/login/')
     def delete_view(request, pk):
         obj = get_object_or_404(model, pk=pk)
         obj.delete()
-        return redirect(request.path.replace(f'/{pk}/delete/', '/'))
+        return redirect(reverse(f'app_admin:{model_slug}_list'))
 
     return list_view, create_view, update_view, delete_view
 
 
 shop_list, shop_create, shop_update, shop_delete = generate_crud(Shop, ShopForm, "Shop")
 shoprequest_list, _, _, shoprequest_delete = generate_crud(ShopCreationRequest, None, "ShopRequest")
-pickup_list, pickup_create, pickup_update, pickup_delete = generate_crud(PickupPoints, PickupPointForm, "PickupPoint")
+pickup_list, pickup_create, pickup_update, pickup_delete = generate_crud(PickupPoints, PickupPointForm, "Pickup")
 order_list, _, order_update, order_delete = generate_crud(Order, None, "Order")
 product_list, product_create, product_update, product_delete = generate_crud(Product, ProductForm, "Product")
 category_list, category_create, category_update, category_delete = generate_crud(Category, CategoryForm, "Category")
 review_list, review_create, review_update, review_delete = generate_crud(Review, ReviewForm, "Review")
 
 
-# User admin
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def user_list(request):
-    users = User.objects.all()
+    users = User.objects.all().select_related('profile')
     return render(request, 'admin/model_list.html', {
         'items': users,
         'model': 'User',
@@ -132,17 +122,30 @@ def user_list(request):
         'can_create': False
     })
 
-
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def user_update(request, pk):
     user = get_object_or_404(User, pk=pk)
-    form = UserProfileUpdateForm(request.POST or None, instance=user)
-    if form.is_valid():
-        form.save()
-        return redirect('app_admin:user_list')
-    return render(request, 'admin/model_update.html', {'form': form, 'model': 'User'})
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=user)
+        profile_form = UserProfileForm(request.POST, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('app_admin:user_list')
 
 
+    else:
+        user_form = UserForm(instance=user)
+        profile_form = UserProfileForm(instance=profile)
+
+    return render(request, 'admin/user_edit.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'user_id': user.id
+    })
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def approve_shop_request(request, pk):
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
@@ -179,3 +182,14 @@ def reject_shop_request(request, pk):
     send_reject_email.delay(request_obj.user.username, request_obj.name, request_obj.user.email)
 
     return redirect('app_admin:shoprequest_list')
+
+@user_passes_test(is_superuser, login_url='/custom_admin/login/')
+def order_detail(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    items = order.items.select_related('product', 'product__shop')
+    return render(request, 'admin/order_detail.html', {
+        'order': order,
+        'items': items,
+        'model': 'Order'
+    })
+

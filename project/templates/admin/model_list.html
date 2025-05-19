@@ -42,6 +42,8 @@
 
                     {% if model_slug == "cart" %}
                         <a href="{% url 'app_admin:cart_detail' item.pk %}" class="btn btn-sm btn-info">Содержимое</a>
+                    {% elif model_slug == "order" %}
+                        <a href="{% url 'app_admin:order_detail' item.pk %}" class="btn btn-sm btn-info">Подробнее</a>
                     {% endif %}
                 {% endif %}
             </td>
@@ -50,5 +52,6 @@
     </tbody>
 </table>
 {% endblock %}
+
 
 
