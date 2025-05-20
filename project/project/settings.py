@@ -110,6 +110,8 @@ INSTALLED_APPS = [
     'app_products',
     'app_orders',
     'app_admin',
+    'rest_framework',
+    'api',
     'django_celery_beat',
 ]
 
@@ -196,3 +198,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
