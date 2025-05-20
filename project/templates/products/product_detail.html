@@ -30,14 +30,21 @@
                 <button type="submit" class="btn btn-danger">Удалить</button>
             </form>
         {% else %}
-            <button id="add-to-cart-btn" class="btn btn-success" data-product-id="{{ product.id }}">
-                {% if in_cart %}
-                    Убрать из корзины
-                {% else %}
+            {% if user.is_authenticated %}
+                <button id="add-to-cart-btn" class="btn btn-success" data-product-id="{{ product.id }}">
+                    {% if in_cart %}
+                        Убрать из корзины
+                    {% else %}
+                        Добавить в корзину
+                    {% endif %}
+                </button>
+            {% else %}
+                <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-success">
                     Добавить в корзину
-                {% endif %}
-            </button>
+                </a>
+            {% endif %}
         {% endif %}
+
     </div>
 
 </div>
