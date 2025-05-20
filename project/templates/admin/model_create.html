@@ -1,5 +1,5 @@
 {% extends 'admin/base.html' %}
-
+{% load static %}
 {% block content %}
 <div class="container mt-5">
     <div class="card shadow-sm border-0 rounded-4">
@@ -12,7 +12,14 @@
                 {% for field in form %}
                     <div class="mb-4">
                         <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
-                        {{ field }}
+
+                        {% if field.name == 'is_active' %}
+                            {{ field }}
+                            <label class="toggle-switch" for="{{ field.id_for_label }}"></label>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+
                         {% if field.help_text %}
                             <div class="form-text">{{ field.help_text }}</div>
                         {% endif %}
@@ -23,10 +30,10 @@
                 {% endfor %}
                 <div class="d-flex justify-content-between mt-4">
                     <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-save me-1"></i>Сохранить
+                        Сохранить
                     </button>
                     <a href="{% url 'app_admin:'|add:model|lower|add:'_list' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Назад
+                        Назад
                     </a>
                 </div>
             </form>
@@ -35,10 +42,6 @@
 </div>
 {% endblock %}
 
-
-
-
-
-
-
-
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/admin_model_create.css' %}">
+{% endblock %}
