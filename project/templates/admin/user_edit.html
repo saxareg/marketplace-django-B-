@@ -1,32 +1,50 @@
 {% extends 'admin/base.html' %}
 
+{% block title %}Редактировать пользователя{% endblock %}
+
 {% block content %}
-<div class="card shadow-sm p-4">
-    <h3 class="text-xl font-semibold mb-4">Редактировать User</h3>
-
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            {{ user_form.username.label_tag }}
-            {{ user_form.username }}
+<div class="container mt-5">
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-info text-white rounded-top-4">
+            <h4 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>Редактировать пользователя</h4>
         </div>
-        <div class="mb-3">
-            {{ user_form.email.label_tag }}
-            {{ user_form.email }}
-        </div>
-        <div class="mb-3">
-            {{ profile_form.role.label_tag }}
-            {{ profile_form.role }}
-        </div>
-        <div class="mb-3">
-            {{ profile_form.pickup_point.label_tag }}
-            {{ profile_form.pickup_point }}
-        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="{{ user_form.username.id_for_label }}" class="form-label fw-semibold">Логин</label>
+                    {{ user_form.username }}
+                    {% for error in user_form.username.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-4">
+                    <label for="{{ user_form.email.id_for_label }}" class="form-label fw-semibold">Email</label>
+                    {{ user_form.email }}
+                    {% for error in user_form.email.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-4">
+                    <label for="{{ profile_form.role.id_for_label }}" class="form-label fw-semibold">Роль</label>
+                    {{ profile_form.role }}
+                    {% for error in profile_form.role.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
 
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a href="{% url 'app_admin:user_list' %}" class="btn btn-outline-secondary">Назад</a>
 
-
-    </form>
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save me-1"></i>Сохранить
+                    </button>
+                    <a href="{% url 'app_admin:user_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
+
