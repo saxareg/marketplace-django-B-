@@ -233,3 +233,25 @@ input#id_is_active:checked + .toggle-switch::before {
         justify-content: center;
     }
 }
+.admin-form-group {
+  font-size: 0;
+  position: relative;
+}
+
+.admin-form-group label.form-label,
+.admin-form-group a,
+.admin-form-group input,
+.admin-form-group label[for^="logo-clear"] {
+  font-size: 1rem;
+  color: initial;
+  position: relative;
+  z-index: 1;
+  user-select: auto;
+}
+
+.admin-form-group input[type="checkbox"][name$="-clear"],
+.admin-form-group label[for$="-clear_id"],
+.admin-form-group br,
+.admin-form-group a[href*="/media/"] {
+  display: none;
+}
