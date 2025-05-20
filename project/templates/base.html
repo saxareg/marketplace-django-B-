@@ -14,7 +14,9 @@
             <ul>
                 <li><a href="{% url 'products' %}">Главная</a></li>
                 {% if user.is_authenticated %}
-                    {% if userprofile.role == 'seller' %}
+                    {% if user.is_superuser %}
+                        <li><a href="/custom_admin/">Админ-панель</a></li>
+                    {% elif userprofile.role == 'seller' %}
                         <li><a href="{% url 'my-shops' %}">Мои магазины</a></li>
                     {% elif userprofile.role == 'pp_staff' %}
                         <li><a href="{% url 'my-pp' %}">Мой ПВЗ</a></li>
@@ -29,7 +31,6 @@
                         </li>
                     {% endif %}
                     <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
-                    <li><a href="{% url 'logout' %}">Выход</a></li>
                 {% else %}
                     <li><a href="{% url 'register' %}">Регистрация</a></li>
                     <li><a href="{% url 'login' %}">Вход</a></li>
