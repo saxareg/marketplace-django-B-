@@ -78,3 +78,7 @@ def pp_view(request):
         'orders': orders,
         'pickup_point': profile.pickup_point,
     })
+
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
