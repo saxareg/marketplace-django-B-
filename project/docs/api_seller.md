@@ -1,62 +1,67 @@
-# 🛍️ Marketplace Seller API Documentation
+# 🛠️ Seller API Documentation
 
-This document describes the **Marketplace Seller API** — a protected, write-enabled API that allows sellers to manage their own shops and products.
+This API allows **authenticated sellers** to manage their own shops and products.
 
-All endpoints are accessible under the `/api/seller/` prefix.
+All endpoints are under `/api/seller/` and require JWT authentication.
 
 ---
 
 ## 🔐 Authentication
 
-All requests to Seller API **require JWT authentication**.
+Get a JWT token:
 
-Obtain token via:
 ```bash
-POST /api/token/
+curl -X POST http://127.0.0.1:8000/api/token/ \
+  -d "username=seller1" \
+  -d "password=12345"
 ```
 
-Use the `access` token in headers:
-```
-Authorization: Bearer <your-token>
+Use the access token in subsequent requests:
+
+```bash
+-H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 ---
 
-## 🧭 Endpoints Overview
+## 🏪 Manage Shops
 
-| Endpoint                            | Method | Description                          |
-|-------------------------------------|--------|--------------------------------------|
-| `/api/seller/`                      | GET    | Get list of seller's own shops       |
-| `/api/seller/<shop_slug>/`         | PATCH  | Update shop info                     |
-| `/api/seller/<shop_slug>/products/`| GET    | List products in the shop            |
-| `/api/seller/<shop_slug>/products/`| POST   | Create a new product in the shop     |
+### 1. Get your shops
 
----
-
-## 🛒 Shop Management
-
-### 🔹 Get list of own shops
 ```bash
-curl -X GET http://127.0.0.1:8000/api/seller/   -H "Authorization: Bearer <token>"
+curl -X GET http://127.0.0.1:8000/api/seller/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
-### 🔹 Update a shop
+### 2. Update a shop by slug
+
 ```bash
-curl -X PATCH http://127.0.0.1:8000/api/seller/minsk-market/   -H "Authorization: Bearer <token>"   -H "Content-Type: application/json"   -d '{"name": "Минск Маркет Обновлённый"}'
+curl -X PATCH http://127.0.0.1:8000/api/seller/minsk-market/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Магазин Обновлён"}'
 ```
 
 ---
 
-## 📦 Product Management
+## 📦 Manage Products (per shop)
 
-### 🔹 Get products in your shop
+All product actions are scoped under the seller's shop:
+
+### 1. List products
+
 ```bash
-curl -X GET http://127.0.0.1:8000/api/seller/minsk-market/products/   -H "Authorization: Bearer <token>"
+curl -X GET http://127.0.0.1:8000/api/seller/minsk-market/products/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
-### 🔹 Create a product in your shop
+### 2. Create a product
+
 ```bash
-curl -X POST http://127.0.0.1:8000/api/seller/minsk-market/products/   -H "Authorization: Bearer <token>"   -H "Content-Type: application/json"   -d '{
+curl -X POST http://127.0.0.1:8000/api/seller/minsk-market/products/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
     "name": "Новый товар от продавца",
     "slug": "new-seller-product",
     "description": "Тестовое описание",
@@ -65,12 +70,41 @@ curl -X POST http://127.0.0.1:8000/api/seller/minsk-market/products/   -H "Autho
   }'
 ```
 
-> Note: You don’t need to provide `shop` explicitly — it is auto-attached from URL path and authenticated user.
+### 3. Retrieve a specific product
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/seller/minsk-market/products/<product_slug>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 4. Update a product (partial)
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/seller/minsk-market/products/<product_slug>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"price": "888.88"}'
+```
+
+### 5. Delete a product
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/api/seller/minsk-market/products/<product_slug>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
 
 ---
 
-## 🛡️ Permissions & Validation
+## 🧾 Notes
 
-- All endpoints require **valid JWT token**.
-- Sellers can access and modify **only their own shops and products**.
-- Attempts to access or modify others' data will return `403 Forbidden`.
+- You can only access and modify **your own shops** and their products.
+- If you try to access or mutate other seller’s resources, you’ll get `403 Forbidden`.
+
+---
+
+## 🛡️ Permissions
+
+All endpoints require:
+
+- JWT token (`Authorization: Bearer ...`)
+- Authenticated user must own the shop they work with.

@@ -32,8 +32,12 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['name']
     ordering_fields = ['price', 'name']
     ordering = ['name']
+    lookup_field = 'slug'
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Product.objects.none()
+        
         q = self.request.query_params
 
         category_slug = q.get("category__slug")

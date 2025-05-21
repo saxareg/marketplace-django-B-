@@ -23,8 +23,8 @@ class SellerShopListView(APIView):
 class SellerShopDetailView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ShopSerializer
-    lookup_field = "slug"
     queryset = Shop.objects.all()
+    lookup_field = "slug"
 
     def get_object(self):
         obj = super().get_object()
@@ -36,8 +36,12 @@ class SellerShopDetailView(RetrieveUpdateAPIView):
 class SellerProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'slug'
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Product.objects.none()
+        
         shop_slug = self.kwargs["shop_slug"]
         shop = Shop.objects.filter(slug=shop_slug, owner=self.request.user).first()
         if not shop:

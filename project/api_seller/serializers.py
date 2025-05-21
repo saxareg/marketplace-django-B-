@@ -20,6 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'name', 'slug', 'description', 'price', 'category', 'shop']
         read_only_fields = ['shop']
+        ref_name = "SellerProduct"
 
     def validate_shop(self, shop):
         user = self.context["request"].user

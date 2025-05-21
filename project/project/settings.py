@@ -116,6 +116,7 @@ INSTALLED_APPS = [
     'api_public',
     'api_seller',
     'django_celery_beat',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

@@ -23,3 +23,4 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'slug', 'description', 'price', 'category', 'shop']
+        ref_name = "PublicProduct"
