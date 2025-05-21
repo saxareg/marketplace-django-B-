@@ -29,7 +29,7 @@ def product_list(request):
         min_price = price_min_limit
         max_price = price_max_limit
 
-    products = Product.objects.all().order_by('id')
+    products = Product.objects.filter(shop__is_active=True).order_by('id')
     if query:
         products = products.filter(name__icontains=query)
     if selected_category:
