@@ -13,14 +13,18 @@
     {% for order in orders %}
       <a href="{% url 'user-order-detail' order.id %}" class="order-card-link">
         <div class="order-card">
-          <h2>Заказ #{{ order.id }} — {{ order.created_at|date:"d.m.Y H:i" }}</h2>
+          <h2>
+              Заказ #{{ order.id }}
+              — <span class="order-status">{{ order.status }}</span>
+              — {{ order.created_at|date:"d.m.Y H:i" }}
+          </h2>
           <p><strong>Магазин:</strong> {{ order.shop.name }}</p>
           <p><strong>Пункт выдачи:</strong> {{ order.pickup_point.name }}</p>
           <ul class="order-items">
-            {% for item in order.items.all %}
-              <li>
-                {{ item.product.name }} — {{ item.quantity }} × {{ item.price }} BYN
-              </li>
+              {% for item in order.items.all %}
+                <li>
+                  {{ item.product.name }} — {{ item.quantity }} × {{ item.price }} BYN
+                </li>
             {% endfor %}
           </ul>
         </div>
