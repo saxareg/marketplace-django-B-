@@ -2,6 +2,10 @@
 
 A full-featured web marketplace platform built with Django for a university diploma team project. It includes product listings, user roles (buyers, sellers, pickup staff), shopping carts, orders, reviews, and periodic tasks.
 
+🌐 **Demo Site:**  
+You can explore a live demo of the site at:  
+🔗 https://marketplacediplom.pythonanywhere.com/
+
 ---
 
 ## 📌 Project Features
@@ -13,14 +17,14 @@ A full-featured web marketplace platform built with Django for a university dipl
 - 💬 Product reviews
 - ⏱️ Scheduled tasks using Celery + Redis
 - 🖼️ Media upload support (images for shops/products)
-- 📊 Admin panel at `/custom_admin/`
-- 🗄️ SQLite/PostgreSQL support (via `.env`)
+- 📊 Admin panel at /custom_admin/
+- 🗄️ SQLite/PostgreSQL support (via .env)
 
 ---
 
 ## 🚧 Known Limitations
 
-See [`project/docs/known_limitations.md`](project/docs/known_limitations.md) for a list of current limitations and open points during MVP development.
+See project/docs/known_limitations.md for a list of current limitations and open points during MVP development.
 
 ---
 
@@ -41,7 +45,7 @@ marketplace-django/
 
 ## 🖼️ Data Model Overview
 
-![Marketplace Data Model](project/docs/models.png)
+Marketplace Data Model
 
 The project follows a modular domain-driven architecture, with foreign key relationships connecting shops, users, products, and orders.
 
@@ -49,8 +53,8 @@ The project follows a modular domain-driven architecture, with foreign key relat
 
 ## 🛠️ Installation
 
-Setup instructions (virtual environment, `.env`, dependencies, Docker, etc.):  
-📄 [`project/docs/installation_manual.md`](project/docs/installation_manual.md)
+Setup instructions (virtual environment, .env, dependencies, Docker, etc.):  
+📄 project/docs/installation_manual.md
 
 ---
 
@@ -58,16 +62,16 @@ Setup instructions (virtual environment, `.env`, dependencies, Docker, etc.):
 
 The project includes a full Docker-based setup for local development and testing.
 
-### Services:
+**Services:**
 
-| Service        | Description                                 |
-|----------------|---------------------------------------------|
-| `web`          | Django application running on port `8000`   |
-| `celery`       | Celery worker processing background jobs    |
-| `celery-beat`  | Celery Beat scheduler for periodic tasks    |
-| `redis`        | Redis as Celery broker and result backend   |
+| Service         | Description                              |
+|-----------------|------------------------------------------|
+| `web`           | Django application running on port 8000  |
+| `celery`        | Celery worker processing background jobs |
+| `celery-beat`   | Celery Beat scheduler for periodic tasks |
+| `redis`         | Redis as Celery broker and result backend|
 
-### Common Commands:
+**Common Commands:**
 
 ```bash
 # Build and start all services
@@ -81,19 +85,16 @@ docker-compose logs -f
 
 # Seed database with data 
 docker-compose exec web python manage.py seed_data
-
 ```
-> ⚠️ Make sure `.env` is properly configured before running Docker services.
 
+> ⚠️ Make sure `.env` is properly configured before running Docker services.
 
 ---
 
 ## 🌱 Database Seeding
 
 Command to populate the database with test data (users, products, shops, orders):  
-📄 [`project/docs/seed_data_manual.md`](project/docs/seed_data_manual.md)
-
-Usage example:
+📄 project/docs/seed_data_manual.md
 
 ```bash
 python manage.py seed_data
@@ -103,14 +104,14 @@ python manage.py seed_data
 
 ## ⚙️ Celery & Periodic Tasks
 
-This project uses **Celery** with **Redis** for background task processing, and **Celery Beat** for scheduling periodic jobs.
+This project uses Celery with Redis for background task processing, and Celery Beat for scheduling periodic jobs.
 
-📄 See all tasks in [`project/docs/celery_tasks.md`](project/docs/celery_tasks.md)
+📄 See all tasks in project/docs/celery_tasks.md
 
-### Active Scheduled Task:
+**Active Scheduled Task:**
 
-| Task Name                             | Description                                        |
-|--------------------------------------|----------------------------------------------------|
+| Task Name                        | Description                                      |
+|----------------------------------|--------------------------------------------------|
 | `app_orders.tasks.mark_unclaimed_orders` | Marks unpaid orders as "unclaimed" after 7 days |
 
 To register the periodic task:
@@ -119,32 +120,70 @@ To register the periodic task:
 python manage.py register_periodic_tasks
 ```
 
-> ✅ Periodic task `mark_unclaimed_orders_every_day` will be registered successfully.
+✅ Periodic task `mark_unclaimed_orders_every_day` will be registered successfully.
 
 ---
 
 ## 📮 Admin Access
 
 The admin interface is available at:  
-🔗 [`https://<your-domain>/custom_admin/`](https://<your-domain>/custom_admin/)
+🔗 https://<your-domain>/custom_admin/
 
-Default superuser credentials:
+**Default superuser credentials:**
 
 | Username | Password |
 |----------|----------|
-| `admin`  | `admin`  |
+| admin    | admin    |
+
+---
+
+### 📡 API Overview
+
+This project provides two external APIs:
+
+#### 🟢 Marketplace Public API
+
+A public, read-only REST API that allows external users to:
+
+- Browse products
+- Filter by category or shop
+- Search and sort products
+- View all categories and shops
+
+📍 Base URL:
+```
+/api/public/
+```
+
+📄 [Full Documentation →](./project/docs/api_public.md)
+
+#### 🔒 Seller API
+
+Authenticated sellers can:
+
+- View and manage their own shops
+- Create and update products in their shop
+
+📍 Base URL:
+```
+/api/seller/
+```
+
+🌐 **Swagger Site:**  
+You can explore API description in swagger at:  
+🔗 http://127.0.0.1:8000/swagger/
 
 ---
 
 ## 📚 Additional Docs
 
-| Topic                    | File                                        |
-|--------------------------|---------------------------------------------|
-| Installation Guide       | [`installation_manual.md`](project/docs/installation_manual.md) |
-| Seed Data (Users, Orders)| [`seed_data_manual.md`](project/docs/seed_data_manual.md)     |
-| Data Model Diagram       | [`models.png`](project/docs/models.png)         |
-| Known Limitations        | [`known_limitations.md`](project/docs/known_limitations.md)     |
-| Celery Tasks             | [`celery_tasks.md`](project/docs/celery_tasks.md) |
+| Topic                    | File                        |
+|--------------------------|-----------------------------|
+| Installation Guide       | installation_manual.md      |
+| Seed Data (Users, Orders)| seed_data_manual.md         |
+| Data Model Diagram       | models.png                  |
+| Known Limitations        | known_limitations.md        |
+| Celery Tasks             | celery_tasks.md             |
 
 ---
 
