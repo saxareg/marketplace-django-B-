@@ -2,65 +2,110 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Мой магазин{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
     {% block styles %}{% endblock %}
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{% url 'products' %}">Главная</a></li>
-                {% if user.is_authenticated %}
-                    {% if user.is_superuser %}
-                        <li><a href="/custom_admin/">Админ-панель</a></li>
-                    {% elif userprofile.role == 'seller' %}
-                        <li><a href="{% url 'my-shops' %}">Мои магазины</a></li>
-                    {% elif userprofile.role == 'pp_staff' %}
-                        <li><a href="{% url 'my-pp' %}">Мой ПВЗ</a></li>
-                    {% else %}
-                        <li><a href="{% url 'my-orders' %}">Мои заказы</a></li>
-                        <li>
-                            <a href="{% url 'cart' %}">Корзина
-                                <span id="cart-count">
-                                    {% if cart_item_count > 0 %}({{ cart_item_count }}){% endif %}
-                                </span>
-                            </a>
-                        </li>
-                    {% endif %}
-                    <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
+<header>
+    <nav>
+        <ul>
+            <li><a href="{% url 'products' %}">Главная</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <li><a href="/custom_admin/">Админ-панель</a></li>
+                {% elif userprofile.role == 'seller' %}
+                    <li><a href="{% url 'my-shops' %}">Мои магазины</a></li>
+                {% elif userprofile.role == 'pp_staff' %}
+                    <li><a href="{% url 'my-pp' %}">Мой ПВЗ</a></li>
                 {% else %}
-                    <li><a href="{% url 'register' %}">Регистрация</a></li>
-                    <li><a href="{% url 'login' %}">Вход</a></li>
+                    <li><a href="{% url 'my-orders' %}">Мои заказы</a></li>
+                    <li>
+                        <a href="{% url 'cart' %}">Корзина
+                            <span id="cart-count">{% if cart_item_count > 0 %}({{ cart_item_count }}){% endif %}</span>
+                        </a>
+                    </li>
                 {% endif %}
-            </ul>
-        </nav>
-    </header>
+                {% if userprofile.role != 'pp_staff' and userprofile.role != 'admin' %}
+                <li>
+                    <a href="#" id="role-switch" class="btn-link">
+                        {% if userprofile.role == 'buyer' %}
+                            Войти как продавец
+                        {% elif userprofile.role == 'seller' %}
+                            Войти как покупатель
+                        {% endif %}
+                    </a>
+                </li>
+                {% endif %}
+                <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
+            {% else %}
+                <li><a href="{% url 'register' %}">Регистрация</a></li>
+                <li><a href="{% url 'login' %}">Вход</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
 
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+<main>
+    {% block content %}{% endblock %}
+</main>
 
-    <footer>
-        <p>&copy; 2025 Мой магазин</p>
-        <div style="margin-top: 0.5rem;">
-            <a href="mailto:marketplace.diplom@gmail.com" style="color: white; margin-right: 1rem; text-decoration: none; display: inline-flex; align-items: center;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.3rem;">
-                    <path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v.217l7 4.2 7-4.2V4a1 1 0 00-1-1H2zm13 2.383l-4.708 2.826L15 11.5v-6.117zM14.8 12l-5.8-3.483L3.2 12H14.8zM1 11.5l4.708-3.29L1 5.883v5.617z"/>
-                </svg>
-                info@myshop.com
-            </a>
-            <a href="tel:+375447348841" style="color: white; text-decoration: none; display: inline-flex; align-items: center;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.3rem;">
-                    <path d="M3.654 1.328a.678.678 0 00-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 008.516 8.516c.6.211 1.286.034 1.77-.45l1.035-1.034a.678.678 0 00-.063-1.015l-2.307-1.794a.678.678 0 00-.58-.122l-2.19.547a12.745 12.745 0 01-3.32-3.32l.548-2.19a.678.678 0 00-.122-.58L3.654 1.328z"/>
-                </svg>
-                +7 (123) 456-78-90
-            </a>
-        </div>
-    </footer>
+<footer>
+    <p>&copy; 2025 Мой магазин</p>
+    <div style="margin-top: 0.5rem;">
+        <!-- твои контакты -->
+    </div>
+</footer>
+
+<script>
+    // Функция для получения CSRF токена из cookie (стандарт Django)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Проверяем начинается ли cookie с имени
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleSwitchBtn = document.getElementById('role-switch');
+        if (roleSwitchBtn) {
+            roleSwitchBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const csrftoken = getCookie('csrftoken');
+
+                fetch("{% url 'switch_role' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({}), // можно передать данные, если нужно
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Перезагрузим страницу, чтобы обновить интерфейс с новой ролью
+                        window.location.reload();
+                    } else {
+                        alert('Ошибка при переключении роли');
+                    }
+                })
+                .catch(() => alert('Ошибка сети'));
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

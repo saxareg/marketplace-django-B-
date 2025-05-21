@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .forms import *
 from app_orders.models import Order
+from django.http import JsonResponse, HttpResponseForbidden
+from django.views.decorators.http import require_POST
 
 
 def register(request):
@@ -70,14 +72,21 @@ def profile_view(request):
 
 
 @login_required
+@require_POST
 def switch_role(request):
-    profile = request.user.profile
-    if profile.role == 'buyer':
-        profile.role = 'seller'
+    userprofile = request.user.profile
+
+    # Логика переключения роли: если покупатель — делаем продавцом, если продавец — покупателем.
+    if userprofile.role == 'buyer':
+        userprofile.role = 'seller'
+    elif userprofile.role == 'seller':
+        userprofile.role = 'buyer'
     else:
-        profile.role = 'buyer'
-    profile.save()
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+        # Для других ролей (например, pp_staff или admin) запрещаем переключение
+        return HttpResponseForbidden("Переключение роли недоступно")
+
+    userprofile.save()
+    return JsonResponse({'status': 'ok', 'new_role': userprofile.role})
 
 
 @login_required
