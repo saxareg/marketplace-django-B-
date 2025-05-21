@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import handler404
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('products/', include('app_products.urls')),
@@ -10,6 +11,10 @@ urlpatterns = [
     path('cart/', include('app_orders.urls')),
     path('shops/', include('app_shops.urls')),
     path('custom_admin/', include('app_admin.urls')),  # Кастомная админка
+    path("api/public/", include("api_public.urls")),
+    path("api/seller/", include("api_seller.urls")),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('', lambda request: redirect('products/')),
 ]
 
