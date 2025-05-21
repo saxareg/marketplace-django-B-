@@ -1,8 +1,8 @@
 # 📘 Marketplace Public API Documentation (Read-Only)
 
-This document describes the **Marketplace Public API** — a public, read-only REST API that allows users to access information about products, categories, and shops. The API supports filtering, searching, sorting, and pagination.
+This document describes the **Marketplace Public API** — a public, read-only REST API that allows users to access information about categories, shops, and products. The API supports filtering, searching, sorting, and pagination.
 
-All endpoints in this API are accessible under the `/public/` prefix to distinguish them from private/internal interfaces.
+All endpoints are accessible under the `/api/public/` prefix.
 
 ---
 
@@ -22,20 +22,44 @@ http://127.0.0.1:8000/api/public/
 
 ## 🔢 Endpoints
 
-| Endpoint              | Method | Description                      |
-| --------------------- | ------ | -------------------------------- |
-| `/public/products/`   | GET    | List all products (with filters) |
+| Endpoint               | Method | Description                      |
+|------------------------|--------|----------------------------------|
 | `/public/categories/` | GET    | List all categories              |
 | `/public/shops/`      | GET    | List all shops                   |
+| `/public/products/`   | GET    | List all products (with filters) |
 
 ---
 
-## ⚖️ Filtering (Query Parameters)
+## 📚 List All Categories
 
-### Supported filters for `/public/products/`:
+```bash
+curl http://127.0.0.1:8000/api/public/categories/ | jq
+```
+
+Returns list of product categories with `id`, `name`, and `slug`.
+
+---
+
+## 🏬 List All Shops
+
+```bash
+curl http://127.0.0.1:8000/api/public/shops/ | jq
+```
+
+Returns list of shops with `id`, `name`, and `slug`.
+
+---
+
+## 📦 List Products (with Filters)
+
+```bash
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics" | jq
+```
+
+### 🔍 Filtering Options
 
 | Parameter            | Type    | Description                                     |
-| -------------------- | ------- | ----------------------------------------------- |
+|----------------------|---------|-------------------------------------------------|
 | `category__slug`     | string  | Filter by category slug (exact)                 |
 | `category__slug__in` | list    | Filter by multiple categories (comma-separated) |
 | `shop__slug`         | string  | Filter by shop slug                             |
@@ -46,61 +70,30 @@ http://127.0.0.1:8000/api/public/
 
 > ⚠️ Note: at least one category filter (`category__slug` or `category__slug__in`) is **required**.
 
----
+### 🔄 Additional Examples
 
-## 📂 Example Requests (with `jq` for pretty-printing)
-
-### 1. List all products in category `electronics`
+**Search by product name**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/ \
-  --data-urlencode "category__slug=electronics" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "search=Samsung" | jq
 ```
 
-### 2. Filter by category and shop
+**Sort by price descending**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/ \
-  --data-urlencode "category__slug=books" \
-  --data-urlencode "shop__slug=bookhaven" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "ordering=-price" | jq
 ```
 
-### 3. Filter by multiple categories
+**Pagination (page 2)**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/ \
-  --data-urlencode "category__slug__in=books,sports" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "page=2" | jq
 ```
 
-### 4. Search by product name
+**Error for unknown category**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/ \
-  --data-urlencode "category__slug=electronics" \
-  --data-urlencode "search=Samsung" | jq
-```
-
-### 5. Sort by price descending
-
-```bash
-curl -G http://127.0.0.1:8000/api/public/products/ \
-  --data-urlencode "category__slug=electronics" \
-  --data-urlencode "ordering=-price" | jq
-```
-
-### 6. Pagination (page 2)
-
-```bash
-curl -G http://127.0.0.1:8000/api/public/products/ \
-  --data-urlencode "category__slug=electronics" \
-  --data-urlencode "page=2" | jq
-```
-
-### 7. Error for unknown category
-
-```bash
-curl -G http://127.0.0.1:8000/api/public/products/ \
-  --data-urlencode "category__slug=notexist" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=notexist" | jq
 ```
 
 Expected response:
@@ -109,18 +102,6 @@ Expected response:
 {
   "detail": "Category with slug 'notexist' does not exist."
 }
-```
-
-### 8. List all categories
-
-```bash
-curl http://127.0.0.1:8000/api/public/categories/ | jq
-```
-
-### 9. List all shops
-
-```bash
-curl http://127.0.0.1:8000/api/public/shops/ | jq
 ```
 
 ---
@@ -143,8 +124,7 @@ Example (paginated):
       "price": "1200.00",
       "category": {"id": 1, "name": "Electronics", "slug": "electronics"},
       "shop": {"id": 2, "name": "TechTrend", "slug": "techtrend"}
-    },
-    ...
+    }
   ]
 }
 ```

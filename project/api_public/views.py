@@ -12,19 +12,19 @@ from api_public.filters import ProductFilter
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by("id")
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]
 
 
 class ShopViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Shop.objects.all()
+    queryset = Shop.objects.all().order_by("id")
     serializer_class = ShopSerializer
     permission_classes = [AllowAny]
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
