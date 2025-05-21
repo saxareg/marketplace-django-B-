@@ -3,6 +3,11 @@ from .models import Product, Review, Category
 
 
 class ProductForm(forms.ModelForm):
+    """
+    Form for creating or updating Product instances.
+    Applies consistent Bootstrap styling and customizes file input labels.
+    """
+
     class Meta:
         model = Product
         fields = ['category', 'name', 'slug', 'description', 'price', 'stock', 'image']
@@ -11,6 +16,11 @@ class ProductForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the form with custom widget attributes.
+        Sets Bootstrap classes and tweaks file input labels.
+        """
+
         super(ProductForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.ClearableFileInput):
@@ -22,6 +32,11 @@ class ProductForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
+    """
+    Form for submitting a product review.
+    Includes a 1-5 star rating and an optional comment.
+    """
+
     rating = forms.ChoiceField(
         choices=[(i, f'{i} ⭐') for i in range(1, 6)],
         label="Оценка",
@@ -39,6 +54,11 @@ class ReviewForm(forms.ModelForm):
 
 
 class CategoryForm(forms.ModelForm):
+    """
+    Form for creating or editing a product category.
+    Includes name, slug, and optional description with custom labels and layout.
+    """
+
     class Meta:
         model = Category
         fields = ['name', 'slug', 'description']
