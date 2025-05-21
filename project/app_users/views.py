@@ -8,6 +8,13 @@ from django.views.decorators.http import require_POST
 
 
 def register(request):
+    """Handle user registration.
+    On POST: validate and create a new user and associated profile, then log the user in.
+    On GET: display the registration form.
+    Returns:
+        HTTP response with registration form or redirect to 'products' on success.
+    """
+
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -22,8 +29,14 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
-# Представление для входа
 def login_view(request):
+    """Handle user login.
+    On POST: validate login form and authenticate user.
+    On GET: display the login form.
+    Returns:
+        HTTP response with login form or redirect to 'products' on success.
+    """
+
     if request.method == 'POST':
         form = UserLoginForm(data=request.POST)
         if form.is_valid():
@@ -37,15 +50,23 @@ def login_view(request):
 
 
 def logout_view(request):
+    """Log out the current user and redirect to 'products' page."""
+
     logout(request)
     return redirect('products')
 
 
 @login_required
 def profile_view(request):
+    """
+    Display and update the profile page for the logged-in user.
+    Supports updating user info (username, email) and phone number via separate forms.
+    Returns:
+        HTTP response rendering profile page with user forms.
+    """
+
     user = request.user
     user_profile = user.profile
-
     user_form = UserProfileUpdateForm(instance=user)
     phone_form = PhoneForm(instance=user_profile)
 
@@ -74,16 +95,22 @@ def profile_view(request):
 @login_required
 @require_POST
 def switch_role(request):
+    """
+    Switch the role of the logged-in user between 'buyer' and 'seller'.
+    If the user role is neither buyer nor seller (e.g. 'admin' or 'pp_staff'),
+    switching is forbidden.
+    Returns:
+        JsonResponse with new role on success or HttpResponseForbidden if switching is not allowed.
+    """
+
     userprofile = request.user.profile
 
-    # Логика переключения роли: если покупатель — делаем продавцом, если продавец — покупателем.
     if userprofile.role == 'buyer':
         userprofile.role = 'seller'
     elif userprofile.role == 'seller':
         userprofile.role = 'buyer'
     else:
-        # Для других ролей (например, pp_staff или admin) запрещаем переключение
-        return HttpResponseForbidden("Переключение роли недоступно")
+        return HttpResponseForbidden("Role switching is not allowed")
 
     userprofile.save()
     return JsonResponse({'status': 'ok', 'new_role': userprofile.role})
@@ -91,6 +118,13 @@ def switch_role(request):
 
 @login_required
 def pp_view(request):
+    """
+    Display orders for the pickup point associated with the logged-in pickup point staff.
+    Orders are sorted by creation date in descending order.
+    Returns:
+        HTTP response rendering the pickup point orders page.
+    """
+
     profile = request.user.profile
     orders = Order.objects.filter(pickup_point=profile.pickup_point).order_by('-created_at')
 
@@ -101,4 +135,9 @@ def pp_view(request):
 
 
 def custom_404(request, exception):
+    """Custom 404 error handler.
+    Returns:
+        HTTP response rendering custom 404 page with status 404.
+    """
+
     return render(request, '404.html', status=404)
