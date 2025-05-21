@@ -8,40 +8,6 @@ You can explore a live demo of the site at:
 
 ---
 
-### 📡 API Overview
-
-This project provides two external APIs:
-
-#### 🟢 Marketplace Public API
-
-A public, read-only REST API that allows external users to:
-
-- Browse products
-- Filter by category or shop
-- Search and sort products
-- View all categories and shops
-
-📍 Base URL:
-```
-/api/public/
-```
-
-📄 [Full Documentation →](./project/docs/api_public.md)
-
-#### 🔒 Seller API *(Work in progress)*
-
-Authenticated sellers can:
-
-- View and manage their own shops
-- Create and update products in their shop
-
-📍 Base URL:
-```
-/api/seller/
-```
-
----
-
 ## 📌 Project Features
 
 - 🔐 Role-based user system (Admin, Buyer, Seller, Pickup Staff)
@@ -168,6 +134,40 @@ The admin interface is available at:
 | Username | Password |
 |----------|----------|
 | admin    | admin    |
+
+---
+
+### 📡 API Overview
+
+This project provides two external APIs:
+
+#### 🟢 Marketplace Public API
+
+A public, read-only REST API that allows external users to:
+
+- Browse products
+- Filter by category or shop
+- Search and sort products
+- View all categories and shops
+
+📍 Base URL:
+```
+/api/public/
+```
+
+📄 [Full Documentation →](./project/docs/api_public.md)
+
+#### 🔒 Seller API *(Work in progress)*
+
+Authenticated sellers can:
+
+- View and manage their own shops
+- Create and update products in their shop
+
+📍 Base URL:
+```
+/api/seller/
+```
 
 ---
 
