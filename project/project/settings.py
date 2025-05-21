@@ -111,7 +111,6 @@ INSTALLED_APPS = [
     'app_orders',
     'app_admin',
     'django_celery_beat',
-    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
