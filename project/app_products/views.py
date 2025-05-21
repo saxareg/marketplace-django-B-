@@ -11,6 +11,11 @@ from urllib.parse import urlencode
 
 
 def product_list(request):
+    """
+    Display a list of products with optional filters: search query, category, and price range.
+    Includes pagination and category display.
+    """
+
     categories = Category.objects.all()
     price_min_limit = Product.objects.aggregate(Min('price'))['price__min'] or 0
     price_max_limit = Product.objects.aggregate(Max('price'))['price__max'] or 10000
@@ -29,8 +34,8 @@ def product_list(request):
         products = products.filter(name__icontains=query)
     if selected_category:
         products = products.filter(category_id=selected_category)
-    products = products.filter(price__gte=min_price, price__lte=max_price)
 
+    products = products.filter(price__gte=min_price, price__lte=max_price)
     paginator = Paginator(products, 20)
     page_number = request.GET.get('page', 1)
     try:
@@ -44,7 +49,6 @@ def product_list(request):
         'min_price': min_price,
         'max_price': max_price,
     })
-
     context = {
         'categories': categories,
         'page_obj': page_obj,
@@ -55,11 +59,15 @@ def product_list(request):
         'selected_category': selected_category,
         'query_params': query_params,
     }
-
     return render(request, 'products/products.html', context)
 
 
 def product_detail(request, slug):
+    """
+    Display the product detail page, including whether it's in the user's cart,
+    if the user is the shop owner, and whether the user can leave a review.
+    """
+
     product = get_object_or_404(Product, slug=slug)
     in_cart = False
     is_owner = product.shop.owner == request.user
@@ -69,7 +77,6 @@ def product_detail(request, slug):
     if request.user.is_authenticated:
         cart, _ = Cart.objects.get_or_create(user=request.user)
         in_cart = CartItem.objects.filter(cart=cart, product=product).exists()
-
         has_paid = OrderItem.objects.filter(
             order__user=request.user,
             order__is_paid=True,
@@ -78,7 +85,6 @@ def product_detail(request, slug):
 
         has_reviewed = Review.objects.filter(user=request.user, product=product).exists()
         can_review = has_paid and not has_reviewed
-
         if can_review:
             review_form = ReviewForm()
 
@@ -96,6 +102,8 @@ def product_detail(request, slug):
 
 @login_required
 def delete_product(request, slug):
+    """Allow shop owner to delete a product. Redirect to shop page after deletion."""
+
     product = get_object_or_404(Product, slug=slug)
 
     if product.shop.owner != request.user:
@@ -111,6 +119,8 @@ def delete_product(request, slug):
 
 @login_required()
 def edit_product(request, slug):
+    """Allow shop owner to edit an existing product."""
+
     product = get_object_or_404(Product, slug=slug)
 
     if product.shop.owner != request.user:
@@ -130,6 +140,8 @@ def edit_product(request, slug):
 
 @login_required
 def create_product(request):
+    """Allow shop owner to create a new product in their shop."""
+
     shop_slug = request.GET.get('shop')
     shop = get_object_or_404(Shop, slug=shop_slug)
 
@@ -151,10 +163,14 @@ def create_product(request):
 
 @login_required
 def add_review(request, slug):
+    """
+    Allow a user to submit a review if they have purchased and paid for the product.
+    Returns JSON response with review data or error message.
+    """
+
     if request.method == "POST" and request.user.is_authenticated:
         product = get_object_or_404(Product, slug=slug)
         form = ReviewForm(request.POST)
-
         has_paid_order = OrderItem.objects.filter(
             order__user=request.user,
             order__is_paid=True,
