@@ -10,6 +10,8 @@
         {{ form.as_p }}
         <button type="submit">Register</button>
     </form>
+
+    <p class="auth-link">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
 {% endblock %}
 
 {% block styles %}
