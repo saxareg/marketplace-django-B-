@@ -12,6 +12,12 @@ app.autodiscover_tasks()
 
 @app.task(bind=True)
 def debug_task(self):
+    """Debug task to test Celery setup.
+    Prints the request information for the current task.
+    Args:
+        self: Task instance, automatically passed when bind=True.
+    """
+
     print(f'Request: {self.request!r}')
 
 
@@ -19,5 +25,6 @@ CELERY_BEAT_SCHEDULE = {
     'mark_unclaimed_orders_every_day': {
         'task': 'app_orders.tasks.mark_unclaimed_orders',
         'schedule': crontab(minute=0, hour=0),
+        # This schedule runs the task daily at midnight (00:00).
     },
 }

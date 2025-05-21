@@ -14,7 +14,8 @@ def notify_ready_order(order_id, username, email, pickup_point):
         order_id (int): The ID of the order.
         username (str): The username of the customer.
         email (str): The email address of the customer.
-        pickup_point (str): The name of the pickup point."""
+        pickup_point (str): The name of the pickup point.
+    """
 
     order = Order.objects.get(pk=order_id)
 

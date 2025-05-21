@@ -2,50 +2,110 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Мой магазин{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
     {% block styles %}{% endblock %}
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{% url 'products' %}">Главная</a></li>
-                {% if user.is_authenticated %}
-                    {% if userprofile.role == 'seller' %}
-                        <li><a href="{% url 'my-shops' %}">Мои магазины</a></li>
-                    {% elif userprofile.role == 'pp_staff' %}
-                        <li><a href="{% url 'my-pp' %}">Мой ПВЗ</a></li>
-                    {% else %}
-                        <li><a href="{% url 'my-orders' %}">Мои заказы</a></li>
-                        <li>
-                            <a href="{% url 'cart' %}">Корзина
-                                <span id="cart-count">
-                                    {% if cart_item_count > 0 %}({{ cart_item_count }}){% endif %}
-                                </span>
-                            </a>
-                        </li>
-                    {% endif %}
-                    <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
-                    <li><a href="{% url 'logout' %}">Выход</a></li>
+<header>
+    <nav>
+        <ul>
+            <li><a href="{% url 'products' %}">Главная</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <li><a href="/custom_admin/">Админ-панель</a></li>
+                {% elif userprofile.role == 'seller' %}
+                    <li><a href="{% url 'my-shops' %}">Мои магазины</a></li>
+                {% elif userprofile.role == 'pp_staff' %}
+                    <li><a href="{% url 'my-pp' %}">Мой ПВЗ</a></li>
                 {% else %}
-                    <li><a href="{% url 'register' %}">Регистрация</a></li>
-                    <li><a href="{% url 'login' %}">Вход</a></li>
+                    <li><a href="{% url 'my-orders' %}">Мои заказы</a></li>
+                    <li>
+                        <a href="{% url 'cart' %}">Корзина
+                            <span id="cart-count">{% if cart_item_count > 0 %}({{ cart_item_count }}){% endif %}</span>
+                        </a>
+                    </li>
                 {% endif %}
-            </ul>
-        </nav>
-    </header>
+                {% if userprofile.role != 'pp_staff' and userprofile.role != 'admin' %}
+                <li>
+                    <a href="#" id="role-switch" class="btn-link">
+                        {% if userprofile.role == 'buyer' %}
+                            Войти как продавец
+                        {% elif userprofile.role == 'seller' %}
+                            Войти как покупатель
+                        {% endif %}
+                    </a>
+                </li>
+                {% endif %}
+                <li><a href="{% url 'me' %}" class="profile-link">{{ user.username }}</a></li>
+            {% else %}
+                <li><a href="{% url 'register' %}">Регистрация</a></li>
+                <li><a href="{% url 'login' %}">Вход</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
 
-    <main>
-        {% block content %}
-        <!-- Контент страницы будет вставляться сюда -->
-        {% endblock %}
-    </main>
+<main>
+    {% block content %}{% endblock %}
+</main>
 
-    <footer>
-        <p>&copy; 2025 Мой магазин</p>
-    </footer>
+<footer>
+    <p>&copy; 2025 Мой магазин</p>
+    <div style="margin-top: 0.5rem;">
+        <!-- твои контакты -->
+    </div>
+</footer>
+
+<script>
+    // Функция для получения CSRF токена из cookie (стандарт Django)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Проверяем начинается ли cookie с имени
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleSwitchBtn = document.getElementById('role-switch');
+        if (roleSwitchBtn) {
+            roleSwitchBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const csrftoken = getCookie('csrftoken');
+
+                fetch("{% url 'switch_role' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({}), // можно передать данные, если нужно
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Перезагрузим страницу, чтобы обновить интерфейс с новой ролью
+                        window.location.reload();
+                    } else {
+                        alert('Ошибка при переключении роли');
+                    }
+                })
+                .catch(() => alert('Ошибка сети'));
+            });
+        }
+    });
+</script>
+
 </body>
 </html>

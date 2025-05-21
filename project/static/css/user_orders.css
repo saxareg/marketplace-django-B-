@@ -50,3 +50,9 @@
     color: inherit;
     display: block;
   }
+
+.order-status {
+    font-weight: bold;
+    color: #007BFF;
+    text-transform: capitalize;
+}

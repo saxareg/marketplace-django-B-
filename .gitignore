@@ -185,3 +185,6 @@ project/media/*
 # Убедиться, что вложенные файлы тоже игнорируются, но исключения применяются
 project/media/**/*
 !project/media/**/*default_*
+
+# исключить статические файлы (cellectstatic)
+**/staticfiles/

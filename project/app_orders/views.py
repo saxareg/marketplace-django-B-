@@ -15,7 +15,11 @@ from .tasks import notify_ready_order
 @require_POST
 @csrf_exempt
 def toggle_cart_item(request):
-    """Add or remove a product from the cart (toggle behavior)."""
+    """
+    Add or remove a product from the user's cart (toggle behavior).
+    Expects JSON with "product_id".
+    Returns a JSON response indicating success, cart status, and total item count.
+    """
 
     data = json.loads(request.body)
     product_id = data.get("product_id")
@@ -40,7 +44,6 @@ def toggle_cart_item(request):
         in_cart = True
 
     total_count = CartItem.objects.filter(cart=cart).aggregate(Sum('quantity'))['quantity__sum'] or 0
-
     return JsonResponse({
         "success": True,
         "in_cart": in_cart,
@@ -50,7 +53,11 @@ def toggle_cart_item(request):
 
 @require_POST
 def cart_remove(request):
-    """Remove a cart item by its ID."""
+    """
+    Remove an item from the cart by its ID.
+    Expects 'item_id' in POST data.
+    Returns updated total price or error if not found.
+    """
 
     item_id = request.POST.get('item_id')
     try:
@@ -66,7 +73,10 @@ def cart_remove(request):
 
 @login_required
 def cart_view(request):
-    """Display the user's shopping cart."""
+    """
+    Display the current user's shopping cart.
+    Calculates subtotal and total price for each item.
+    """
 
     cart, created = Cart.objects.get_or_create(user=request.user)
     items = CartItem.objects.filter(cart=cart)
@@ -83,7 +93,11 @@ def cart_view(request):
 
 @require_POST
 def cart_update_quantity(request):
-    """Increase or decrease the quantity of a cart item."""
+    """
+    Update the quantity of an item in the cart (increase or decrease).
+    Expects 'item_id' and 'action' in POST data.
+    Returns updated quantity, subtotal, and total cart price.
+    """
 
     item_id = request.POST.get('item_id')
     action = request.POST.get('action')
@@ -120,7 +134,10 @@ def cart_update_quantity(request):
 
 
 def pp_order_detail_view(request, order_id):
-    """Admin or pickup point worker updates order status and optionally notifies the user."""
+    """
+    View for pickup point staff or admin to update an order status.
+    Sends email notification if status is 'ready_for_pickup'.
+    """
 
     order = get_object_or_404(Order, id=order_id)
 
@@ -155,10 +172,13 @@ def pp_order_detail_view(request, order_id):
 @login_required
 @transaction.atomic
 def order_create(request):
-    """Creates one or more orders from selected cart items, grouped by shop."""
+    """
+    Create one or more orders grouped by shop from selected cart items.
+    On GET: displays order creation form with selected items.
+    On POST: creates orders and related OrderItems, deletes selected cart items.
+    """
 
     cart = Cart.objects.get(user=request.user)
-
     if request.method == 'GET':
         selected_ids = request.GET.getlist('selected_items')
         selected_items = cart.items.filter(id__in=selected_ids) if selected_ids else cart.items.all()
@@ -181,7 +201,6 @@ def order_create(request):
             payment_method = form.cleaned_data['payment_method']
             pickup_point = form.cleaned_data['pickup_point']
             is_paid = payment_method == 'online'
-
             for item in selected_items:
                 shop = item.product.shop
                 if shop not in orders_by_shop:
@@ -189,7 +208,6 @@ def order_create(request):
                         'items': [],
                         'total_price': 0
                     }
-
                 orders_by_shop[shop]['items'].append(item)
                 orders_by_shop[shop]['total_price'] += item.product.price * item.quantity
 
@@ -209,7 +227,6 @@ def order_create(request):
                         quantity=item.quantity,
                         price=item.product.price,
                     )
-
             selected_items.delete()
             return redirect('my-orders')
 
@@ -223,7 +240,7 @@ def order_create(request):
 
 @login_required
 def user_orders_view(request):
-    """Displays a list of the current user's orders."""
+    """Display a list of all orders placed by the current user."""
 
     orders = request.user.orders.all().order_by('-created_at')
     return render(request, 'orders/user_orders.html', {'orders': orders})
@@ -231,7 +248,7 @@ def user_orders_view(request):
 
 @login_required
 def user_order_detail_view(request, order_id):
-    """Displays the details of a specific order for the current user."""
+    """Display details of a specific order belonging to the current user."""
 
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'orders/user_order_detail.html', {'order': order})

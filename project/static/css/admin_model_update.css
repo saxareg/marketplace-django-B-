@@ -1,0 +1,257 @@
+:root {
+    --admin-primary-color: #004d40;
+    --admin-primary-hover: #00332e;
+    --admin-danger-color: #e74c3c;
+    --admin-border-radius: 12px;
+    --admin-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    --admin-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Сброс базовых отступов */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--admin-font-family);
+    background-color: #f9f9f9;
+    color: #222;
+}
+
+/* Контейнер страницы */
+.admin-container {
+    max-width: 900px;
+    margin: 3rem auto 0 auto;
+    padding: 1rem 1.5rem;
+}
+
+/* Карточка */
+.admin-card {
+    background-color: #fff;
+    border-radius: var(--admin-border-radius);
+    box-shadow: var(--admin-shadow);
+    border: none;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Заголовок карточки */
+.admin-header {
+    background-color: var(--admin-primary-color);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.3rem;
+    border-top-left-radius: var(--admin-border-radius);
+    border-top-right-radius: var(--admin-border-radius);
+    display: flex;
+    align-items: center;
+}
+
+.admin-header i {
+    margin-right: 0.5rem;
+    font-size: 1.4rem;
+}
+
+/* Тело карточки */
+.admin-body {
+    padding: 1.5rem;
+}
+
+/* Группа поля формы */
+.admin-form-group {
+    margin-bottom: 1.2rem;
+}
+
+/* Лейблы */
+label.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--admin-primary-color);
+}
+
+/* Поля формы (input, select, textarea) */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    font-size: 1rem;
+    border-radius: var(--admin-border-radius);
+    border: 1.5px solid #ccc;
+    background-color: #fafafa;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    font-family: var(--admin-font-family);
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+textarea {
+    min-height: 100px;
+    max-height: 150px;
+    height: 120px;
+    resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--admin-primary-color);
+    background-color: #fff;
+}
+
+/* Помощь и ошибки */
+.form-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.text-danger.small {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    color: var(--admin-danger-color);
+}
+
+/* Тумблер для is_active */
+input#id_is_active {
+    display: none;
+}
+
+.admin-toggle-container {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    background-color: #ccc;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    vertical-align: middle;
+}
+
+.toggle-switch::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+input#id_is_active:checked + .toggle-switch {
+    background-color: var(--admin-primary-color);
+}
+
+input#id_is_active:checked + .toggle-switch::before {
+    transform: translateX(22px);
+}
+
+/* Группа кнопок */
+.admin-button-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* Кнопки */
+.btn-success,
+.btn-outline-secondary {
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    border-radius: var(--admin-border-radius);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: 2px solid transparent;
+    text-decoration: none;
+    user-select: none;
+}
+
+.btn-success i,
+.btn-outline-secondary i {
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* Зеленая кнопка "Сохранить" */
+.btn-success {
+    background-color: var(--admin-primary-color);
+    color: #fff;
+    border-color: var(--admin-primary-color);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: var(--admin-primary-hover);
+    border-color: var(--admin-primary-hover);
+    outline: none;
+}
+
+/* Серая кнопка "Назад" с обводкой */
+.btn-outline-secondary {
+    background-color: transparent;
+    color: var(--admin-primary-color);
+    border: 2px solid var(--admin-primary-color);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    background-color: var(--admin-primary-color);
+    color: #fff;
+    border-color: var(--admin-primary-color);
+    outline: none;
+}
+
+/* Адаптив для маленьких экранов */
+@media (max-width: 480px) {
+    .admin-button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .btn-success,
+    .btn-outline-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+.admin-form-group {
+  font-size: 0;
+  position: relative;
+}
+
+.admin-form-group label.form-label,
+.admin-form-group a,
+.admin-form-group input,
+.admin-form-group label[for^="logo-clear"] {
+  font-size: 1rem;
+  color: initial;
+  position: relative;
+  z-index: 1;
+  user-select: auto;
+}
+
+.admin-form-group input[type="checkbox"][name$="-clear"],
+.admin-form-group label[for$="-clear_id"],
+.admin-form-group br,
+.admin-form-group a[href*="/media/"] {
+  display: none;
+}
