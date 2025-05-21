@@ -19,9 +19,6 @@ def is_superuser(user):
     return user.is_authenticated and user.is_superuser
 
 
-
-
-
 def admin_login(request):
     form = LoginForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -122,6 +119,7 @@ def user_list(request):
         'can_create': False
     })
 
+
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def user_update(request, pk):
     user = get_object_or_404(User, pk=pk)
@@ -135,8 +133,6 @@ def user_update(request, pk):
             user_form.save()
             profile_form.save()
             return redirect('app_admin:user_list')
-
-
     else:
         user_form = UserForm(instance=user)
         profile_form = UserProfileForm(instance=profile)
@@ -146,6 +142,8 @@ def user_update(request, pk):
         'profile_form': profile_form,
         'user_id': user.id
     })
+
+
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def approve_shop_request(request, pk):
     request_obj = get_object_or_404(ShopCreationRequest, pk=pk)
@@ -183,6 +181,7 @@ def reject_shop_request(request, pk):
 
     return redirect('app_admin:shoprequest_list')
 
+
 @user_passes_test(is_superuser, login_url='/custom_admin/login/')
 def order_detail(request, pk):
     order = get_object_or_404(Order, pk=pk)
@@ -192,4 +191,3 @@ def order_detail(request, pk):
         'items': items,
         'model': 'Order'
     })
-
