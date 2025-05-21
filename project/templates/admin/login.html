@@ -1,18 +1,18 @@
 {% extends 'admin/base.html' %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5" style="max-width: 400px;">
-    <h3 class="mb-4 text-center">Вход для администратора</h3>
+<div class="custom-container">
+    <h3 class="custom-title">Вход для администратора</h3>
     <form method="post" novalidate>
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}">
 
         {% for field in form %}
-            <div class="mb-3">
+            <div class="custom-form-group">
                 {{ field.label_tag }}
                 {{ field }}
                 {% if field.errors %}
-                    <div class="text-danger small">
+                    <div class="custom-error-text">
                         {{ field.errors|striptags }}
                     </div>
                 {% endif %}
@@ -20,14 +20,18 @@
         {% endfor %}
 
         {% if form.non_field_errors %}
-            <div class="alert alert-danger">
+            <div class="custom-alert-error">
                 {{ form.non_field_errors|striptags }}
             </div>
         {% endif %}
 
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Войти</button>
+        <div class="custom-button-wrapper">
+            <button type="submit" class="custom-button">Войти</button>
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/admin_login.css' %}">
 {% endblock %}

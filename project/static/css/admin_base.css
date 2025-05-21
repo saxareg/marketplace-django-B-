@@ -1,0 +1,71 @@
+:root {
+    --admin-base-bg-color: #f9f9f9;
+    --admin-base-text-color: #222;
+    --admin-base-primary-color: #004d40;
+    --admin-base-secondary-color: #666;
+    --admin-base-danger-color: #e74c3c;
+    --admin-base-border-radius: 8px;
+    --admin-base-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: var(--admin-base-bg-color);
+    color: var(--admin-base-text-color);
+}
+
+.admin-base-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.admin-base-page-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.admin-base-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.admin-base-nav .admin-base-btn {
+    padding: 10px 16px;
+    background-color: #fff;
+    border: 1px solid var(--admin-base-primary-color);
+    border-radius: var(--admin-base-border-radius);
+    color: var(--admin-base-primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+.admin-base-nav .admin-base-btn:hover {
+    background-color: var(--admin-base-primary-color);
+    color: white;
+}
+
+.admin-base-nav .admin-base-btn.danger {
+    border-color: var(--admin-base-danger-color);
+    color: var(--admin-base-danger-color);
+}
+
+.admin-base-nav .admin-base-btn.danger:hover {
+    background-color: var(--admin-base-danger-color);
+    color: white;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+.admin-base-hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}

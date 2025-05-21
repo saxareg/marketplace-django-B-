@@ -1,0 +1,23 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Детали заказа #{{ order.pk }}</h2>
+    <hr>
+    <p><strong>Получатель:</strong> {{ order.user.username }} ({{ order.user.email }})</p>
+    <p><strong>Статус:</strong> {{ order.status }}</p>
+    <p><strong>Дата заказа:</strong> {{ order.created_at }}</p>
+
+    <h4 class="mt-4">Товары:</h4>
+    <ul class="list-group">
+        {% for item in items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ item.product.name }} – {{ item.quantity }} шт.
+                <span class="text-muted">{{ item.product.shop.name }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'app_admin:order_list' %}" class="btn btn-secondary mt-4">Назад к списку</a>
+</div>
+{% endblock %}

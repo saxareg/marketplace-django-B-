@@ -1,0 +1,132 @@
+:root {
+    --primary-color: #004d40;
+    --primary-hover: #00332e;
+    --danger-color: #e74c3c;
+    --border-radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+    background-color: #f9f9f9;
+    color: #222;
+}
+
+.custom-container {
+    background-color: #fff;
+    max-width: 400px;
+    margin: 4rem auto 2rem auto;
+    padding: 2.5rem 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 24px rgba(0, 77, 64, 0.25); /* более выраженная тень, цвет из основной палитры */
+    border: 1.5px solid rgba(0, 77, 64, 0.2); /* тонкая прозрачная обводка */
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease;
+}
+
+.custom-container:hover {
+    box-shadow: 0 10px 30px rgba(0, 77, 64, 0.35);
+}
+
+
+.custom-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-form-group {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-form-group label {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.4rem;
+    cursor: pointer;
+}
+
+.custom-form-group input[type="text"],
+.custom-form-group input[type="email"],
+.custom-form-group input[type="password"] {
+    padding: 0.6rem 0.8rem;
+    font-size: 1rem;
+    border: 1.5px solid #ccc;
+    border-radius: var(--border-radius);
+    background-color: #fafafa;
+    font-family: var(--font-family);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.custom-form-group input[type="text"]:focus,
+.custom-form-group input[type="email"]:focus,
+.custom-form-group input[type="password"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: #fff;
+}
+
+.custom-error-text {
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.custom-alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.8rem 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.custom-button-wrapper {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.custom-button {
+    background-color: var(--primary-color);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.7rem 2rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+    user-select: none;
+}
+
+.custom-button:hover,
+.custom-button:focus {
+    background-color: var(--primary-hover);
+    outline: none;
+}
+
+@media (max-width: 480px) {
+    .custom-container {
+        margin: 2rem 1rem;
+        padding: 1.5rem 1.5rem;
+    }
+    .custom-button {
+        width: 100%;
+        padding: 0.7rem;
+    }
+}
