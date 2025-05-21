@@ -169,6 +169,10 @@ Authenticated sellers can:
 /api/seller/
 ```
 
+🌐 **Swagger Site:**  
+You can explore API description in swagger at:  
+🔗 http://127.0.0.1:8000/swagger/
+
 ---
 
 ## 📚 Additional Docs
