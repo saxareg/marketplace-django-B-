@@ -33,27 +33,23 @@ http://127.0.0.1:8000/api/public/
 ## 📚 List All Categories
 
 ```bash
-curl http://127.0.0.1:8000/api/public/categories/ | jq
+curl http://127.0.0.1:8000/api/public/categories/
 ```
-
-Returns list of product categories with `id`, `name`, and `slug`.
 
 ---
 
 ## 🏬 List All Shops
 
 ```bash
-curl http://127.0.0.1:8000/api/public/shops/ | jq
+curl http://127.0.0.1:8000/api/public/shops/
 ```
-
-Returns list of shops with `id`, `name`, and `slug`.
 
 ---
 
 ## 📦 List Products (with Filters)
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"
 ```
 
 ### 🔍 Filtering Options
@@ -70,30 +66,42 @@ curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category_
 
 > ⚠️ Note: at least one category filter (`category__slug` or `category__slug__in`) is **required**.
 
-### 🔄 Additional Examples
+### 🔄 Example Requests
 
 **Search by product name**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "search=Samsung" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "search=Samsung"
 ```
 
 **Sort by price descending**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "ordering=-price" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "ordering=-price"
 ```
 
 **Pagination (page 2)**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "page=2" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "page=2"
+```
+
+**Multiple categories via `category__slug__in`**
+
+```bash
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug__in=electronics,books"
+```
+
+**Multiple shops via `shop__slug__in`**
+
+```bash
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=electronics"   --data-urlencode "shop__slug__in=techtrend,minsk-market"
 ```
 
 **Error for unknown category**
 
 ```bash
-curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=notexist" | jq
+curl -G http://127.0.0.1:8000/api/public/products/   --data-urlencode "category__slug=notexist"
 ```
 
 Expected response:
