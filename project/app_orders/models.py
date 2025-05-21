@@ -44,11 +44,11 @@ class Order(models.Model):
         choices=[
             ('pending', 'Pending'),
             ('confirmed', 'Confirmed'),
-            ('shipped', 'Shipped'),
-            ('ready_for_pickup', 'Ready for pickup'),
-            ('delivered', 'Delivered'),
-            ('returned', 'Returned'),
-            ('unclaimed', 'Unclaimed'),
+            ('shipped', 'В пути'),
+            ('ready_for_pickup', 'Готов к выдаче'),
+            ('delivered', 'Доставлен'),
+            ('returned', 'Возвращен'),
+            ('unclaimed', 'Просрочен'),
         ],
         default='shipped',
         db_index=True
