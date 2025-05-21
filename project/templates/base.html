@@ -41,12 +41,26 @@
 
     <main>
         {% block content %}
-        <!-- Контент страницы будет вставляться сюда -->
         {% endblock %}
     </main>
 
     <footer>
         <p>&copy; 2025 Мой магазин</p>
+        <div style="margin-top: 0.5rem;">
+            <a href="mailto:marketplace.diplom@gmail.com" style="color: white; margin-right: 1rem; text-decoration: none; display: inline-flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.3rem;">
+                    <path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v.217l7 4.2 7-4.2V4a1 1 0 00-1-1H2zm13 2.383l-4.708 2.826L15 11.5v-6.117zM14.8 12l-5.8-3.483L3.2 12H14.8zM1 11.5l4.708-3.29L1 5.883v5.617z"/>
+                </svg>
+                info@myshop.com
+            </a>
+            <a href="tel:+375447348841" style="color: white; text-decoration: none; display: inline-flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.3rem;">
+                    <path d="M3.654 1.328a.678.678 0 00-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 008.516 8.516c.6.211 1.286.034 1.77-.45l1.035-1.034a.678.678 0 00-.063-1.015l-2.307-1.794a.678.678 0 00-.58-.122l-2.19.547a12.745 12.745 0 01-3.32-3.32l.548-2.19a.678.678 0 00-.122-.58L3.654 1.328z"/>
+                </svg>
+                +7 (123) 456-78-90
+            </a>
+        </div>
     </footer>
+
 </body>
 </html>
