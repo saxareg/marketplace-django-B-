@@ -70,6 +70,17 @@ def profile_view(request):
 
 
 @login_required
+def switch_role(request):
+    profile = request.user.profile
+    if profile.role == 'buyer':
+        profile.role = 'seller'
+    else:
+        profile.role = 'buyer'
+    profile.save()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
 def pp_view(request):
     profile = request.user.profile
     orders = Order.objects.filter(pickup_point=profile.pickup_point).order_by('-created_at')
