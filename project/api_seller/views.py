@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -44,8 +45,9 @@ class SellerProductViewSet(viewsets.ModelViewSet):
         return Product.objects.filter(shop=shop).order_by("id")
 
     def perform_create(self, serializer):
-        shop_slug = self.kwargs["shop_slug"]
-        shop = Shop.objects.filter(slug=shop_slug, owner=self.request.user).first()
+        shop_slug = self.kwargs['shop_slug']
+        user = self.request.user
+        shop = get_object_or_404(Shop, slug=shop_slug, owner=user)
         if not shop:
             raise PermissionDenied("Нельзя создать товар для чужого магазина.")
         serializer.save(shop=shop)

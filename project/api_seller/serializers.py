@@ -18,7 +18,8 @@ class ShopSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ["id", "name", "slug", "description", "price", "shop", "category"]
+        fields = ['id', 'name', 'slug', 'description', 'price', 'category', 'shop']
+        read_only_fields = ['shop']
 
     def validate_shop(self, shop):
         user = self.context["request"].user
