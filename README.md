@@ -157,7 +157,7 @@ A public, read-only REST API that allows external users to:
 
 📄 [Full Documentation →](./project/docs/api_public.md)
 
-#### 🔒 Seller API *(Work in progress)*
+#### 🔒 Seller API
 
 Authenticated sellers can:
 
