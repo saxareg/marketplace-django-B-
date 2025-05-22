@@ -137,7 +137,11 @@ The admin interface is available at:
 
 ---
 
-### 📡 API Overview
+### 📡 Project API
+
+🌐 **API interactive Documentation (Swagger) site:**  
+You can explore API description at:  
+🔗 http://127.0.0.1:8000/api/docs/
 
 This project provides two external APIs:
 
@@ -169,9 +173,7 @@ Authenticated sellers can:
 /api/seller/
 ```
 
-🌐 **Swagger Site:**  
-You can explore API description in swagger at:  
-🔗 http://127.0.0.1:8000/swagger/
+📄 [Full Documentation →](./project/docs/api_seller.md)
 
 ---
 

@@ -112,11 +112,11 @@ INSTALLED_APPS = [
     'app_orders',
     'app_admin',
     'rest_framework',
+    'drf_spectacular',
     'django_filters',
     'api_public',
     'api_seller',
     'django_celery_beat',
-    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -214,10 +214,24 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Marketplace API: Public API, Seller API',
+    'DESCRIPTION': 'API documentation for the project can be found here: https://github.com/BogdanMalashuk/marketplace-django',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': True,
+    # prefix for API in url
+    'SERVE_URL': '/api/',
+    # Additional settings
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+    },
 }
